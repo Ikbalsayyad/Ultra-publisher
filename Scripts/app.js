@@ -315,6 +315,58 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-export-word')?.addEventListener('click', () => window.ExportEngine.exportWord());
   document.getElementById('btn-export-pptx')?.addEventListener('click', () => window.ExportEngine.exportPPTX());
   document.getElementById('btn-export-xhtml')?.addEventListener('click', () => window.ExportEngine.exportXHTML());
+
+  // API Settings Modal & Actions
+  const apiSettingsBtn = document.getElementById('btn-api-settings');
+  const apiSettingsModal = document.getElementById('api-settings-modal');
+  const saveApiBtn = document.getElementById('btn-save-api');
+  const closeApiBtn = document.getElementById('btn-close-modal');
+
+  apiSettingsBtn?.addEventListener('click', () => {
+    const savedKey = localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('ultraminds_api_key') || localStorage.getItem('gemini_api_key') || '';
+    const savedProvider = localStorage.getItem('ultraminds_ai_provider') || localStorage.getItem('ultraminds_api_provider') || 'gemini';
+    const savedModel = localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.5-flash';
+
+    const providerSelect = document.getElementById('api-provider-select');
+    const keyInput = document.getElementById('api-key-input');
+    const modelInput = document.getElementById('api-model-input');
+
+    if (providerSelect) providerSelect.value = savedProvider;
+    if (keyInput) keyInput.value = savedKey;
+    if (modelInput) modelInput.value = savedModel;
+
+    if (apiSettingsModal) {
+      apiSettingsModal.classList.add('show-modal');
+      apiSettingsModal.style.display = 'flex';
+    }
+  });
+
+  closeApiBtn?.addEventListener('click', () => {
+    if (apiSettingsModal) {
+      apiSettingsModal.classList.remove('show-modal');
+      apiSettingsModal.style.display = 'none';
+    }
+  });
+
+  saveApiBtn?.addEventListener('click', () => {
+    const provider = document.getElementById('api-provider-select')?.value || 'gemini';
+    const key = document.getElementById('api-key-input')?.value.trim() || '';
+    const model = document.getElementById('api-model-input')?.value.trim() || 'gemini-3.5-flash';
+
+    localStorage.setItem('ultraminds_ai_provider', provider);
+    localStorage.setItem('ultraminds_api_provider', provider);
+    localStorage.setItem('ultraminds_ai_key', key);
+    localStorage.setItem('ultraminds_api_key', key);
+    localStorage.setItem('gemini_api_key', key);
+    localStorage.setItem('ultraminds_ai_model', model);
+    localStorage.setItem('ultraminds_api_model', model);
+
+    alert("⚙️ API Settings saved successfully in local browser storage!");
+    if (apiSettingsModal) {
+      apiSettingsModal.classList.remove('show-modal');
+      apiSettingsModal.style.display = 'none';
+    }
+  });
 });
 
 // Immediate Fallback Execution
