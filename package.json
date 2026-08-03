@@ -1,0 +1,13 @@
+{
+  "name": "ultraminds-publisher",
+  "version": "2.0.0",
+  "description": "UltraMinds AI Studio & Premium Engineering Magazine Publisher",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static deployment ready'",
+    "start": "npx serve ."
+  },
+  "keywords": ["stem", "publisher", "ultraminds"],
+  "author": "UltraMinds",
+  "license": "ISC"
+}
