@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+  <title>Mission 14: Smart Climate Monitor</title>
+  <link href="../Styles/ultraminds-core.css" rel="stylesheet" type="text/css" />
+  <link href="../Styles/ultraminds-layout.css" rel="stylesheet" type="text/css" />
+  <link href="../Styles/ultraminds-cards.css" rel="stylesheet" type="text/css" />
+  <link href="../Styles/ultraminds-utilities.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="theme-blue">
+
+  <!-- ==========================================================================
+       PAGE 1: SMART CLIMATE MONITOR (CHAPTER INTRODUCTION)
+       ========================================================================== -->
+  <article class="book-page">
+    
+    <!-- Page Header Bar -->
+    <header class="page-header-bar">
+      <span class="page-number-pill">PAGE 1</span>
+      <span class="mission-pill">MISSION 14</span>
+      <div class="mission-corner-badge">
+        <span class="badge-num">14</span>
+        <span>MISSION</span>
+      </div>
+    </header>
+
+    <!-- Top Header Banner with Character & Illustration -->
+    <div class="flex-between mb-xs" style="align-items: flex-start;">
+      <div>
+        <div class="flex-center gap-xs" style="background: #1E3A8A; color: white; padding: 4px 12px; border-radius: 50px; width: max-content; font-size: 0.8rem; font-weight: 800; margin-bottom: 6px;">
+          <span>👤 Commander Nova</span> • <span style="color: #FBBF24;">Your Mission Guide</span>
+        </div>
+        <h1 class="mission-main-title" style="font-size: 2.3rem;">SMART <span class="highlight-blue">CLIMATE</span><br/>MONITOR</h1>
+        <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 4px;">
+          Let's build a <strong>Smart Climate Monitor</strong> using <strong>DHT11</strong> and <strong>OLED</strong>!
+        </p>
+      </div>
+
+      <div class="placeholder-box" style="width: 180px; min-height: 100px; font-size: 0.75rem;">
+        [Illustration: Weather Station, Anemometer, Solar Panel &amp; Sun]
+      </div>
+    </div>
+
+    <!-- Main Content Split: Story (Left) & 3 Stacked Cards (Right) -->
+    <div class="split-layout">
+      
+      <!-- Left Column: Mission Story -->
+      <section class="nova-card card-base mb-none" style="padding: 10px 14px;">
+        <h2 class="card-title title-blue" style="font-size: 0.9rem; padding: 3px 10px; margin-bottom: 6px;">
+          <span class="icon icon-robot"></span> MISSION STORY
+        </h2>
+        <p style="font-size: 0.8rem; margin-bottom: 6px;">
+          Commander Nova has received a request from the <strong>UltraCity Environment Center</strong>.
+        </p>
+        <p style="font-size: 0.8rem; margin-bottom: 6px;">
+          Classrooms, laboratories and homes are getting <strong style="color: #DC2626;">too hot</strong> some days and <strong style="color: #2563EB;">too cold</strong> on others.
+        </p>
+        <p style="font-size: 0.8rem; margin-bottom: 6px;">
+          To maintain comfort and save energy, engineers need real-time temperature and humidity data.
+        </p>
+        <p style="font-size: 0.85rem; font-weight: 800; color: #1E3A8A;" class="mt-xs">
+          Your mission is to build a Smart Climate Monitor using the DHT11 sensor and OLED display with the UltraCore board.
+        </p>
+        
+        <div class="placeholder-box mt-xs" style="min-height: 50px; font-size: 0.7rem;">
+          [Inline Icons: School, Beaker, House, Weather Station]
+        </div>
+      </section>
+
+      <!-- Right Column: 3 Stacked Cards -->
+      <div class="flex-column gap-xs">
+        
+        <!-- Real World -->
+        <section class="real-world card-base mb-none" style="padding: 8px 12px;">
+          <div class="flex-between">
+            <div>
+              <h2 class="card-title title-green" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+                <span class="icon icon-world"></span> REAL WORLD
+              </h2>
+              <p style="font-size: 0.75rem; margin-bottom: 2px;">This data is used in:</p>
+              <ul style="font-size: 0.75rem; padding-left: 14px;">
+                <li>Smart Classrooms</li>
+                <li>Greenhouses &amp; Museums</li>
+                <li>Hospitals &amp; Weather Stations</li>
+              </ul>
+            </div>
+            <div class="placeholder-box" style="width: 70px; min-height: 60px; font-size: 0.65rem;">
+              [City Nature]
+            </div>
+          </div>
+        </section>
+
+        <!-- Curiosity Box -->
+        <section class="curiosity-box card-base mb-none" style="padding: 8px 12px;">
+          <h2 class="card-title title-yellow" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+            <span class="icon icon-lightbulb"></span> CURIOSITY BOX
+          </h2>
+          <p style="font-size: 0.75rem;">
+            Humidity affects how we feel, helps plants grow and protects electronic devices. Too much or too little can create problems!
+          </p>
+        </section>
+
+        <!-- STEM Fact -->
+        <section class="stem-fact card-base mb-none" style="padding: 8px 12px;">
+          <div class="flex-between">
+            <div>
+              <h2 class="card-title title-purple" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+                ⚙️ STEM FACT
+              </h2>
+              <p style="font-size: 0.75rem;">
+                Sensors collect data thousands of times a day to help engineers make smart decisions.
+              </p>
+            </div>
+            <div class="oled-preview" style="font-size: 0.8rem; padding: 4px 8px; min-width: 100px;">
+              Temp: 26.8°C<br/>Humi: 65%
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Mission Objectives Banner -->
+    <section class="concept-card mt-xs mb-xs" style="padding: 8px 12px;">
+      <h2 class="concept-title" style="color: #2563EB; font-size: 0.95rem; margin-bottom: 6px;">
+        <span class="icon icon-target"></span> MISSION OBJECTIVES
+      </h2>
+      <div class="objective-grid">
+        <div class="objective-card" style="padding: 4px 8px;">
+          <div class="objective-number" style="width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">1</div>
+          <p style="font-size: 0.75rem;">Read live temperature</p>
+        </div>
+        <div class="objective-card" style="padding: 4px 8px;">
+          <div class="objective-number" style="width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">2</div>
+          <p style="font-size: 0.75rem;">Read live humidity</p>
+        </div>
+        <div class="objective-card" style="padding: 4px 8px;">
+          <div class="objective-number" style="width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">3</div>
+          <p style="font-size: 0.75rem;">Store two variables</p>
+        </div>
+        <div class="objective-card" style="padding: 4px 8px;">
+          <div class="objective-number" style="width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">4</div>
+          <p style="font-size: 0.75rem;">Display on OLED screen</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Think Like an Engineer Section -->
+    <section class="think-engineer-box mt-xs" style="padding: 8px 12px;">
+      <h3 style="color: #1E3A8A; font-weight: 900; font-size: 0.9rem; margin-bottom: 4px;">🧠 THINK LIKE AN ENGINEER</h3>
+      <p style="font-size: 0.75rem;">
+        If two classrooms have the same temperature but different humidity, will they feel the same? Explain.
+      </p>
+      <div class="write-line" style="height: 16px;"></div>
+
+      <!-- Room Comparison Cards -->
+      <div class="comparison-container mt-xs">
+        <div class="comparison-card room-a" style="padding: 4px 8px;">
+          <span style="font-weight: 800; color: #15803D; font-size: 0.75rem;">Room A</span>
+          <div style="font-size: 0.85rem; font-weight: 900;">30°C | 40%</div>
+          <span class="state-tag comfortable" style="font-size: 0.7rem; padding: 2px 6px;">😊 Comfortable</span>
+        </div>
+
+        <div class="vs-badge" style="width: 28px; height: 28px; font-size: 0.75rem;">VS</div>
+
+        <div class="comparison-card room-b" style="padding: 4px 8px;">
+          <span style="font-weight: 800; color: #B91C1C; font-size: 0.75rem;">Room B</span>
+          <div style="font-size: 0.85rem; font-weight: 900;">30°C | 80%</div>
+          <span class="state-tag hot" style="font-size: 0.7rem; padding: 2px 6px;">🥵 Hot &amp; Sticky</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blockly Ribbon & Next Mission Footer -->
+    <div class="flex-between mt-xs">
+      <div class="blockly-ribbon">
+        <span class="puzzle-block event">when start</span>
+        <span class="puzzle-block sensor">read temp</span>
+        <span class="puzzle-block sensor">read humi</span>
+        <span class="puzzle-block display">show OLED</span>
+      </div>
+
+      <div class="next-mission" style="padding: 4px 12px; margin-top: 0;">
+        <span class="next-title" style="font-size: 0.7rem; color: #FBBF24;">NEXT MISSION: Smart Climate Controller ➔</span>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- ==========================================================================
+       PAGE 2: ENGINEERING EXPLORER (HARDWARE EXPLORATION)
+       ========================================================================== -->
+  <article class="book-page page-break-before">
+    
+    <!-- Page Header Bar -->
+    <header class="page-header-bar">
+      <span class="page-number-pill">PAGE 2</span>
+      <span class="mission-pill">MISSION 14</span>
+      <div class="mission-corner-badge">
+        <span class="badge-num">14</span>
+        <span>MISSION</span>
+      </div>
+    </header>
+
+    <h1 class="mission-main-title" style="font-size: 2.1rem;">ENGINEERING <span class="highlight-orange">EXPLORER</span></h1>
+    <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">• OBSERVE. DISCOVER. UNDERSTAND. •</p>
+
+    <!-- Top Row Grid: Weather Station & DHT11 Specs -->
+    <div class="split-layout">
+      
+      <!-- Left: Observe Weather Station -->
+      <section class="card-base mb-none" style="padding: 10px 12px;">
+        <h2 class="card-title title-green" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+          🔍 OBSERVE THE WEATHER STATION
+        </h2>
+        <p style="font-size: 0.75rem;">Look carefully at this weather station. What do you notice?</p>
+        
+        <div class="placeholder-box mt-xs mb-xs" style="min-height: 100px; font-size: 0.75rem;">
+          [Weather Station Callouts: Wind Speed, Temp &amp; Humidity, Solar Panel]
+        </div>
+
+        <strong style="font-size: 0.8rem; color: #1E293B;">OBSERVE &amp; ANSWER:</strong>
+        <p style="font-size: 0.75rem;" class="mt-xs">1. What can you see in this station?</p>
+        <div class="write-line" style="height: 16px;"></div>
+        <p style="font-size: 0.75rem;" class="mt-xs">2. Which part measures temperature?</p>
+        <div class="write-line" style="height: 16px;"></div>
+      </section>
+
+      <!-- Right: Meet DHT11 & Pinout -->
+      <section class="card-base mb-none" style="padding: 10px 12px;">
+        <div class="flex-between">
+          <div>
+            <h2 class="card-title title-green" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+              🧩 MEET COMPONENT: DHT11
+            </h2>
+            <h3 style="color: #16A34A; font-weight: 900; font-size: 0.85rem;">TEMPERATURE &amp; HUMIDITY SENSOR</h3>
+          </div>
+          <div class="placeholder-box" style="width: 70px; min-height: 60px; font-size: 0.65rem;">
+            [DHT11 3D Render]
+          </div>
+        </div>
+
+        <ul style="font-size: 0.75rem; padding-left: 14px;" class="mt-xs">
+          <li>✅ Measures Temp &amp; Humidity</li>
+          <li>✅ Low power, high reliability</li>
+        </ul>
+
+        <h4 class="mt-xs" style="font-size: 0.8rem; text-transform: uppercase;">PIN CONFIGURATION</h4>
+        <table class="pin-table">
+          <thead><tr><th>Pin</th><th>Name</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pin-vcc">1</span></td><td><span class="pin-vcc">VCC</span></td><td>Power (3.3V–5V)</td></tr>
+            <tr><td><span class="pin-data">2</span></td><td><span class="pin-data">DATA</span></td><td>Digital Output</td></tr>
+            <tr><td><span class="pin-gnd">3</span></td><td><span class="pin-gnd">GND</span></td><td>Ground</td></tr>
+          </tbody>
+        </table>
+
+        <div class="grid-2col mt-xs" style="font-size: 0.75rem; font-weight: 700;">
+          <div style="background: #F8FAFC; padding: 4px; border-radius: 4px;">🌡️ Temp: <span style="color: #2563EB;">0°C–50°C</span></div>
+          <div style="background: #F8FAFC; padding: 4px; border-radius: 4px;">💧 Humi: <span style="color: #16A34A;">20%–90% RH</span></div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Inside Sensor & Compare Senses -->
+    <div class="split-layout mt-xs">
+      <section class="card-base mb-none" style="padding: 8px 12px;">
+        <h2 class="card-title title-green" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+          🔬 INSIDE THE SENSOR
+        </h2>
+        <div class="placeholder-box" style="min-height: 80px; font-size: 0.75rem;">
+          [Thermistor (Temp) &amp; Capacitive Element (Humidity) Diagram]
+        </div>
+      </section>
+
+      <section class="concept-card mb-none" style="padding: 8px 12px;">
+        <h2 class="concept-title" style="font-size: 0.85rem; margin-bottom: 4px;">⚖️ COMPARE SENSES</h2>
+        <div class="comparison-container" style="margin-top: 4px;">
+          <div class="comparison-card" style="padding: 4px; font-size: 0.75rem;">
+            <strong>HUMAN SENSES</strong><br/>Feel hot/cold via skin.
+          </div>
+          <div class="vs-badge" style="width: 24px; height: 24px; font-size: 0.7rem;">VS</div>
+          <div class="comparison-card" style="padding: 4px; font-size: 0.75rem;">
+            <strong>ELECTRONIC SENSORS</strong><br/>Measure °C &amp; %RH accurately.
+          </div>
+        </div>
+        <div class="mt-xs text-center p-xs" style="background: #F0FDF4; border-radius: 4px; font-size: 0.75rem; font-weight: 800; color: #15803D;">
+          SENSORS MEASURE WHAT OUR SENSES CANNOT.
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Challenge Banner -->
+    <div class="flex-between mt-xs p-xs" style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px; font-size: 0.8rem;">
+      <div><strong>💡 DID YOU KNOW?</strong> Weather stations on Mount Everest use similar sensors to keep climbers safe.</div>
+      <div style="font-weight: 800; color: #EA580C;">Next: Connect DHT11 &amp; OLED ➔</div>
+    </div>
+
+  </article>
+
+  <!-- ==========================================================================
+       PAGE 3: BUILD LAB (HARDWARE SETUP)
+       ========================================================================== -->
+  <article class="book-page page-break-before">
+    
+    <!-- Page Header Bar -->
+    <header class="page-header-bar">
+      <span class="page-number-pill">PAGE 3</span>
+      <span class="mission-pill">MISSION 14</span>
+      <div class="mission-corner-badge">
+        <span class="badge-num">14</span>
+        <span>MISSION</span>
+      </div>
+    </header>
+
+    <h1 class="mission-main-title" style="font-size: 2.1rem;">BUILD <span class="highlight-orange">LAB</span></h1>
+    <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Let's build our Smart Climate Monitor!</p>
+
+    <!-- Lab Hero Showcase -->
+    <div class="split-layout">
+      <div class="flex-column gap-xs">
+        <section class="card-base mb-none" style="background: #0F172A; color: white; padding: 8px 12px;">
+          <h3 style="color: #60A5FA; font-weight: 900; font-size: 0.85rem; margin-bottom: 4px;">🧪 IN THIS LAB YOU WILL</h3>
+          <ul style="list-style-type: none; padding-left: 0; font-size: 0.75rem; line-height: 1.5;">
+            <li>✅ Connect DHT11 sensor</li>
+            <li>✅ Connect OLED display</li>
+            <li>✅ Upload program &amp; read values</li>
+          </ul>
+        </section>
+
+        <section class="pro-tip-card mb-none" style="padding: 6px 10px;">
+          <span class="tip-badge" style="font-size: 0.7rem;">💡 PRO TIP</span>
+          <p style="font-weight: 700; color: #92400E; font-size: 0.75rem;">
+            Always power OFF the board while making connections. Double check before uploading!
+          </p>
+        </section>
+      </div>
+
+      <div class="placeholder-box" style="min-height: 110px; font-size: 0.75rem;">
+        [Hardware Render: UltraCore Board with DHT11, OLED &amp; Callout Pins]
+      </div>
+    </div>
+
+    <!-- 4-Step Build Lab Grid -->
+    <div class="build-lab mt-xs">
+      <div class="lab-step" style="padding: 6px;">
+        <span class="step-number" style="font-size: 0.75rem;">1 CONNECT DHT11</span>
+        <table class="data-table">
+          <tr><th>VCC</th><td>➔</td><td><span class="pin-vcc">3.3V</span></td></tr>
+          <tr><th>DATA</th><td>➔</td><td><span class="pin-data">DHT11</span></td></tr>
+          <tr><th>GND</th><td>➔</td><td><span class="pin-gnd">GND</span></td></tr>
+        </table>
+      </div>
+
+      <div class="lab-step" style="padding: 6px;">
+        <span class="step-number" style="font-size: 0.75rem;">2 CONNECT OLED</span>
+        <table class="data-table">
+          <tr><th>VCC</th><td>➔</td><td><span class="pin-vcc">3.3V</span></td></tr>
+          <tr><th>SDA</th><td>➔</td><td><span class="pin-i2c">D21</span></td></tr>
+          <tr><th>SCL</th><td>➔</td><td><span class="pin-i2c">D22</span></td></tr>
+        </table>
+      </div>
+
+      <div class="lab-step" style="padding: 6px;">
+        <span class="step-number" style="font-size: 0.75rem;">3 UPLOAD CODE</span>
+        <p style="font-size: 0.75rem;" class="mt-xs">Write code &amp; upload to UltraCore board.</p>
+      </div>
+
+      <div class="lab-step" style="padding: 6px;">
+        <span class="step-number" style="font-size: 0.75rem;">4 OBSERVE OUTPUT</span>
+        <div class="oled-preview mt-xs" style="font-size: 0.75rem; padding: 4px;">Temp: 26.8°C<br/>Humi: 65%</div>
+      </div>
+    </div>
+
+    <!-- Mistakes & Device Ready Grid -->
+    <div class="split-layout mt-xs">
+      <section class="card-base mb-none" style="padding: 8px 12px;">
+        <h4 style="font-size: 0.8rem; color: #2563EB;">YOUR DEVICE IS READY!</h4>
+        <div class="placeholder-box mt-xs" style="min-height: 70px; font-size: 0.7rem;">
+          [Callouts: Reads Temp, Reads Humidity, Displays OLED, USB-C Powered]
+        </div>
+      </section>
+
+      <section class="mistakes-card card-base mb-none" style="padding: 8px 12px;">
+        <h2 class="card-title title-red" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">⚠️ COMMON MISTAKES</h2>
+        <div style="font-size: 0.75rem; font-weight: 700;">
+          <div>❌ Check VCC ➔ 3.3V (NOT 5V)</div>
+          <div>❌ Ensure wires are firmly connected</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Engineer Tip Banner -->
+    <div class="engineer-tip-banner mt-xs">
+      <span>🚀</span>
+      <div><strong>ENGINEER TIP:</strong> Good connections + careful work = Great inventions!</div>
+    </div>
+
+  </article>
+
+  <!-- ==========================================================================
+       PAGE 4: LOGIC BUILDER (SOFTWARE & FLOWCHART)
+       ========================================================================== -->
+  <article class="book-page page-break-before">
+    
+    <!-- Page Header Bar -->
+    <header class="page-header-bar">
+      <span class="page-number-pill">PAGE 4</span>
+      <span class="mission-pill">MISSION 14</span>
+      <div class="mission-corner-badge">
+        <span class="badge-num">14</span>
+        <span>MISSION</span>
+      </div>
+    </header>
+
+    <h1 class="mission-main-title" style="font-size: 2.1rem;">LOGIC <span class="highlight-blue">BUILDER</span></h1>
+    <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Let's understand the logic behind our Smart Climate Monitor.</p>
+
+    <!-- Logic Grid Split -->
+    <div class="grid-2col">
+      
+      <!-- Flowchart Column -->
+      <section class="card-base mb-none" style="padding: 8px 12px;">
+        <h2 class="card-title title-purple" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">FLOW OF LOGIC</h2>
+        <div class="flowchart" style="padding: 8px;">
+          <div class="flow-node start-node">Start</div>
+          <div class="flow-node">Read Temp from DHT11</div>
+          <div class="flow-node">Read Humi from DHT11</div>
+          <div class="flow-node">Store Variables (t, h)</div>
+          <div class="flow-node">Display values on OLED</div>
+          <div class="flow-node">Wait 2 Seconds</div>
+          <div class="flow-node start-node">Repeat Forever</div>
+        </div>
+      </section>
+
+      <!-- Python Logic Preview Column -->
+      <section class="card-base mb-none" style="padding: 8px 12px;">
+        <h2 class="card-title title-blue" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">PYTHON LOGIC PREVIEW</h2>
+        <div class="code-area" style="font-size: 0.7rem; height: 160px; overflow: hidden;">
+          <div class="code-header" style="padding: 2px 8px;"><span>PYTHON LOGIC</span><span>main.py</span></div>
+<pre><code>import dht, time
+from machine import Pin, I2C
+from ssd1306 import SSD1306_I2C
+
+sensor = dht.DHT11(Pin(4))
+i2c = I2C(1, sda=Pin(21), scl=Pin(22))
+oled = SSD1306_I2C(128, 64, i2c)
+
+while True:
+    sensor.measure()
+    t, h = sensor.temperature(), sensor.humidity()
+    oled.fill(0)
+    oled.text(f"Temp: {t}C", 0, 10)
+    oled.text(f"Humi: {h}%", 0, 30)
+    oled.show()
+    time.sleep(2)</code></pre>
+        </div>
+
+        <div class="p-xs text-center mt-xs" style="background: #F5F3FF; border-radius: 6px; font-weight: 700; color: #6D28D9; font-size: 0.75rem;">
+          🤖 Logic is the brain, code is the language.
+        </div>
+      </section>
+
+    </div>
+
+  </article>
+
+  <!-- ==========================================================================
+       PAGE 5: INNOVATION STUDIO (MINI UPGRADES & BADGE)
+       ========================================================================== -->
+  <article class="book-page page-break-before">
+    
+    <!-- Page Header Bar -->
+    <header class="page-header-bar">
+      <span class="page-number-pill">PAGE 5</span>
+      <span class="mission-pill">MISSION 14</span>
+      <div class="mission-corner-badge">
+        <span class="badge-num">14</span>
+        <span>MISSION</span>
+      </div>
+    </header>
+
+    <h1 class="mission-main-title" style="font-size: 2.1rem;">INNOVATION <span class="highlight-orange">STUDIO</span></h1>
+    <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Let's expand our Smart Climate Monitor &amp; make it even smarter!</p>
+
+    <!-- Mini Upgrades & Mood Table -->
+    <section class="concept-card mb-xs" style="padding: 8px 12px;">
+      <h2 class="concept-title" style="font-size: 0.95rem; margin-bottom: 4px;">🎨 MINI UPGRADE: Mood Icons on OLED</h2>
+      
+      <table class="mood-table">
+        <tr class="mood-row cold">
+          <td>🥶 Temp &lt; 18°C</td>
+          <td>Show "COLD"</td>
+          <td><div class="oled-preview" style="font-size: 0.75rem; padding: 2px 6px;">16.5°C 55% COLD</div></td>
+        </tr>
+        <tr class="mood-row comfortable">
+          <td>😊 18°C ≤ Temp ≤ 28°C</td>
+          <td>Show "COMFORTABLE"</td>
+          <td><div class="oled-preview" style="font-size: 0.75rem; padding: 2px 6px; color: #4ADE80;">24.6°C 58% COMFORT</div></td>
+        </tr>
+        <tr class="mood-row warm">
+          <td>😐 28°C &lt; Temp ≤ 35°C</td>
+          <td>Show "WARM"</td>
+          <td><div class="oled-preview" style="font-size: 0.75rem; padding: 2px 6px; color: #FBBF24;">31.7°C 62% WARM</div></td>
+        </tr>
+        <tr class="mood-row hot">
+          <td>😡 Temp &gt; 35°C</td>
+          <td>Show "HOT"</td>
+          <td><div class="oled-preview" style="font-size: 0.75rem; padding: 2px 6px; color: #F87171;">37.2°C 70% HOT</div></td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- Engineers Use This Everywhere Showcase -->
+    <section class="concept-card mb-xs" style="padding: 8px 12px;">
+      <h3 style="font-size: 0.85rem; color: #2563EB; margin-bottom: 4px;">ENGINEERS USE THIS EVERYWHERE!</h3>
+      <div class="grid-4col" style="font-size: 0.75rem; font-weight: 700;">
+        <div style="background: #F8FAFC; padding: 6px; border-radius: 4px; text-align: center;">🌱 Smart Agriculture</div>
+        <div style="background: #F8FAFC; padding: 6px; border-radius: 4px; text-align: center;">🏢 Smart Buildings</div>
+        <div style="background: #F8FAFC; padding: 6px; border-radius: 4px; text-align: center;">📡 Weather Stations</div>
+        <div style="background: #F8FAFC; padding: 6px; border-radius: 4px; text-align: center;">🚀 Space Exploration</div>
+      </div>
+    </section>
+
+    <!-- Ultra Achievement Badge -->
+    <section class="ultra-badge mt-xs mb-xs" style="padding: 10px 16px;">
+      <div class="badge-title" style="font-size: 1.3rem;">☁️ CLIMATE ENGINEER</div>
+      <p class="badge-text" style="font-size: 0.85rem;">
+        Mission Complete! You built your Smart Climate Monitor &amp; read real-world data!
+      </p>
+    </section>
+
+    <!-- Next Mission Footer -->
+    <a href="#next-mission" class="next-mission" style="padding: 8px 14px;">
+      <div>
+        <div class="next-title">NEXT YOU WILL LEARN</div>
+        <div class="next-subtitle">Mission 15: Smart Climate Controller</div>
+      </div>
+      <div class="next-arrow">➔</div>
+    </a>
+
+    <!-- Footer Ribbon -->
+    <div class="bottom-nav-bar mt-xs">
+      LEARN • BUILD • INNOVATE • INSPIRE | ULTRAMinds AI
+    </div>
+
+  </article>
+
+</body>
+
+</html>

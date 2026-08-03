@@ -1,0 +1,237 @@
+/* ==========================================================================
+   ULTRAMINDS CORE DESIGN SYSTEM (ultraminds-core.css)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. DESIGN TOKENS & ROOT VARIABLES
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand Theme Colors */
+  --mission-blue: #1E40AF;
+  --mission-blue-dark: #1E3A8A;
+  --mission-blue-light: #EFF6FF;
+  --mission-blue-border: #BFDBFE;
+  
+  --mission-orange: #EA580C;
+  --mission-orange-dark: #C2410C;
+  --mission-orange-light: #FFF7ED;
+  --mission-orange-border: #FFEDD5;
+
+  --mission-green: #16A34A;
+  --mission-green-dark: #15803D;
+  --mission-green-light: #F0FDF4;
+  --mission-green-border: #BBF7D0;
+
+  --mission-yellow: #D97706;
+  --mission-yellow-dark: #B45309;
+  --mission-yellow-light: #FEFCE8;
+  --mission-yellow-border: #FDE68A;
+
+  --mission-purple: #7C3AED;
+  --mission-purple-dark: #6D28D9;
+  --mission-purple-light: #F5F3FF;
+  --mission-purple-border: #DDD6FE;
+
+  --mission-red: #DC2626;
+  --mission-red-light: #FEF2F2;
+  --mission-red-border: #FECACA;
+
+  /* UI Canvas & Neutral Shades */
+  --bg-page: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --text-main: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --white: #FFFFFF;
+
+  /* OLED Screen Colors */
+  --oled-bg: #0A0F1D;
+  --oled-cyan: #00F0FF;
+  --oled-yellow: #FFD700;
+
+  /* Typography */
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-code: 'Fira Code', 'Courier New', Courier, monospace;
+
+  /* Spacing System */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Border Radii & Shadows */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-glow-blue: 0 0 20px rgba(30, 64, 175, 0.25);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   02. THEME ACTIVATION
+   -------------------------------------------------------------------------- */
+body.theme-blue { --theme-active: var(--mission-blue); --theme-active-dark: var(--mission-blue-dark); }
+body.theme-orange { --theme-active: var(--mission-orange); --theme-active-dark: var(--mission-orange-dark); }
+body.theme-green { --theme-active: var(--mission-green); --theme-active-dark: var(--mission-green-dark); }
+body.theme-purple { --theme-active: var(--mission-purple); --theme-active-dark: var(--mission-purple-dark); }
+
+/* --------------------------------------------------------------------------
+   03. BASE RESET & BODY STYLING
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  padding: var(--space-lg);
+  max-width: 1280px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   04. HEADER BANNERS & PAGE BADGES
+   -------------------------------------------------------------------------- */
+.page-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.page-number-pill {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  color: var(--white);
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.85rem;
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
+}
+
+.mission-pill {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: var(--white);
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.85rem;
+  padding: 6px 20px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.mission-corner-badge {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: var(--white);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  box-shadow: var(--shadow-md);
+}
+
+.mission-corner-badge .badge-num {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--white);
+}
+
+.mission-main-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #0F172A;
+  line-height: 1.05;
+  margin-bottom: var(--space-xs);
+  letter-spacing: -0.03em;
+}
+
+.mission-main-title .highlight-orange { color: #EA580C; }
+.mission-main-title .highlight-blue { color: #2563EB; }
+
+.mission-main-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+/* --------------------------------------------------------------------------
+   05. SVG ICON MASK SYSTEM (No external dependencies)
+   -------------------------------------------------------------------------- */
+.icon {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  vertical-align: -0.15em;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.icon-robot {
+  mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a2 2 0 0 1 2 2v2h2a3 3 0 0 1 3 3v2h2v2h-2v2a3 3 0 0 1-3 3h-2v2a2 2 0 0 1-4 0v-2H8a3 3 0 0 1-3-3v-2H3v-2h2V9a3 3 0 0 1 3-3h2V4a2 2 0 0 1 2-2zm0 2h-2v2h2V4z" fill="black"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a2 2 0 0 1 2 2v2h2a3 3 0 0 1 3 3v2h2v2h-2v2a3 3 0 0 1-3 3h-2v2a2 2 0 0 1-4 0v-2H8a3 3 0 0 1-3-3v-2H3v-2h2V9a3 3 0 0 1 3-3h2V4a2 2 0 0 1 2-2zm0 2h-2v2h2V4z" fill="black"/></svg>');
+}
+
+.icon-world {
+  mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="black" stroke-width="2"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="black" stroke-width="2"/></svg>');
+}
+
+.icon-lightbulb {
+  mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 21h6v-1H9v1zm3-19C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z" fill="black"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 21h6v-1H9v1zm3-19C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z" fill="black"/></svg>');
+}
+
+.icon-target {
+  mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="6" stroke="black" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="2" fill="black"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="6" stroke="black" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="2" fill="black"/></svg>');
+}

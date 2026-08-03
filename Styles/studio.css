@@ -1,0 +1,985 @@
+/* ==========================================================================
+   ULTRAMINDS STUDIO - WORKSPACE DESIGN SYSTEM (studio.css)
+   ========================================================================== */
+
+:root {
+  --studio-bg: #0B0F19;
+  --panel-bg: rgba(15, 23, 42, 0.92);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --accent-cyan: #00F0FF;
+  --accent-blue: #3B82F6;
+  --accent-purple: #8B5CF6;
+  --text-light: #F8FAFC;
+  --text-muted: #94A3B8;
+  --card-hover-border: #3B82F6;
+  --canvas-zoom: 0.7;
+}
+
+html, body {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+body.studio-app {
+  background: var(--studio-bg);
+  color: var(--text-light);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   01. SLEEK COMPACT TOP NAVBAR (HEIGHT: 46PX)
+   -------------------------------------------------------------------------- */
+.studio-navbar {
+  height: 46px !important;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 100;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.logo-badge {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  color: #0F172A;
+  font-weight: 900;
+  font-size: 0.75rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.logo-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   02. DUAL PANEL LAYOUT & COMPACT SIDEBAR (WIDTH: 340PX)
+   -------------------------------------------------------------------------- */
+.studio-workspace {
+  display: flex !important;
+  flex-direction: row !important;
+  flex: 1 !important;
+  width: 100% !important;
+  height: calc(100vh - 46px) !important;
+  overflow: hidden !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Left Panel: 340px SIDEBAR (FITS ALL 4 TABS CLEANLY) */
+.left-control-panel {
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+  flex: 0 0 340px !important;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+  height: calc(100vh - 46px);
+  position: relative;
+  overflow: hidden;
+  z-index: 50;
+  box-sizing: border-box !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.left-control-panel.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  flex: 0 0 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--panel-border);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px 2px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-btn.active, .tab-btn:hover {
+  color: var(--accent-cyan);
+  border-bottom-color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab-content {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: none;
+}
+
+.tab-content.active {
+  display: block !important;
+}
+
+/* 52-Element Component Palette Grid */
+.component-palette-grid {
+  display: grid !important;
+  grid-template-columns: repeat(1, 1fr) !important;
+  gap: 6px !important;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto !important;
+  padding-right: 4px;
+}
+
+.palette-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #F8FAFC !important;
+  padding: 7px 10px !important;
+  border-radius: 6px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.15s ease !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.palette-btn:hover {
+  background: var(--accent-blue) !important;
+  color: #FFFFFF !important;
+  border-color: var(--accent-cyan) !important;
+  transform: translateY(-1px) !important;
+}
+
+
+/* Compact Form Controls & Inputs */
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.form-control, textarea, select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  color: #FFF;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 180px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.form-control:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Compact Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFF;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  border: 1px solid var(--panel-border);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-danger {
+  background: #DC2626;
+  color: white;
+}
+
+/* Real-Time AI Status Monitor Panel */
+.ai-status-panel {
+  background: rgba(10, 15, 29, 0.9);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+.ai-status-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ai-spinner {
+  font-size: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.ai-status-title {
+  font-weight: 800;
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ai-status-log {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.72rem;
+  color: #E2E8F0;
+  line-height: 1.3;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Right Panel: Interactive Canvas (FILLS 100% REMAINING SPACE, NO VERTICAL GAP ON ZOOM OUT) */
+.right-canvas-viewport {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  align-self: stretch !important;
+  background: #060913;
+  padding: 20px 10px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: calc(100vh - 46px) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box !important;
+}
+
+/* TRUE TWO-PAGE BOOK SPREAD MODE (ZOOM RESIZES LAYOUT BOX SO VERTICAL GAPS ARE TIGHT AT ANY ZOOM) */
+body.view-two-page .right-canvas-viewport {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 20px !important;
+  padding: 20px 10px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.two-page-spread {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  zoom: var(--canvas-zoom, 0.7);
+  transition: zoom 0.2s ease;
+}
+
+body.view-two-page .book-page {
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Single Page View Zoom */
+body:not(.view-two-page) .book-page {
+  zoom: var(--canvas-zoom, 0.85);
+  transition: zoom 0.2s ease;
+}
+
+/* Overflow Badge */
+.overflow-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #DC2626;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
+  z-index: 50;
+}
+
+.overflow-badge button {
+  background: white;
+  color: #DC2626;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+/* Selected Element Highlight */
+.selected-card {
+  outline: 2.5px solid var(--accent-cyan) !important;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4) !important;
+}
+
+/* Inspector Panel */
+.inspector-section {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+}
+
+.inspector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.inspector-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* Modal Dialog */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-overlay.show-modal {
+  display: flex;
+}
+
+.modal-card {
+  width: 460px;
+  background: #121826;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+/* 51-Element Component Palette */
+.component-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.palette-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  color: var(--text-light);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.palette-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--accent-blue);
+}
+
+/* --------------------------------------------------------------------------
+   03. COMPACT RIGHT FLOATING CONTEXT MENU DRAWER (WIDTH: 300PX)
+   -------------------------------------------------------------------------- */
+.ultraminds-ctx-menu {
+  position: fixed;
+  right: 16px;
+  top: 56px;
+  width: 300px !important;
+  max-height: calc(100vh - 72px);
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(24px);
+  border: 1.5px solid var(--accent-blue);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9), 0 0 24px rgba(0, 240, 255, 0.25);
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  color: #FFF;
+}
+
+.ultraminds-ctx-menu.show-ctx {
+  display: flex;
+}
+
+.ctx-header {
+  background: linear-gradient(135deg, #1E40AF, #1E3A8A);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ctx-title { font-weight: 900; font-size: 0.8rem; letter-spacing: 0.03em; }
+.ctx-close-btn { background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
+.ctx-btn-danger-sm { background: #DC2626; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer; }
+
+.ctx-body {
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.ctx-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.ctx-label { font-weight: 800; font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 4px; }
+
+.ctx-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ctx-input-sm { width: 55px; padding: 4px 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 4px; font-size: 0.75rem; }
+.ctx-select { width: 100%; padding: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 4px; font-size: 0.75rem; }
+
+.ctx-presets { display: flex; gap: 5px; align-items: center; margin-top: 3px; }
+.color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; transition: transform 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+.color-dot:hover { transform: scale(1.2); }
+
+.ctx-btn-sm { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
+.ctx-btn-sm:hover { background: var(--accent-blue); }
+
+.ctx-btn-action { width: 100%; background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; color: white; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; }
+.ctx-btn-action:hover { box-shadow: 0 0 12px rgba(37, 99, 235, 0.6); }
+
+/* 8-Point Stretch & Transform Handles */
+.transform-handles-active {
+  outline: 2px dashed var(--accent-cyan) !important;
+}
+
+.transform-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-cyan);
+  border: 2px solid #0F172A;
+  border-radius: 2px;
+  z-index: 100;
+}
+
+.handle-nw { top: -5px; left: -5px; cursor: nwse-resize; }
+.handle-n { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-ne { top: -5px; right: -5px; cursor: nesw-resize; }
+.handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: ew-resize; }
+.handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+.handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: ew-resize; }
+
+/* ==========================================================================
+   06. SEMANTIC DECORATIVE COLOR PALETTES FOR 51 ELEMENTS
+   ========================================================================== */
+
+/* 🟢 EMERALD GREEN PALETTE (Labs, Challenges & Real-World Build) */
+.theme-card-green {
+  background: rgba(22, 163, 74, 0.05) !important;
+  border: 1.5px solid rgba(22, 163, 74, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.08);
+}
+.theme-card-green .capsule-header {
+  background: linear-gradient(135deg, #16A34A, #10B981) !important;
+  color: #FFFFFF !important;
+}
+.theme-card-green .card-body-text > p:first-child,
+.theme-card-green .card-body-text strong {
+  color: #15803D !important;
+}
+
+/* 🟠 WARM SUNSET ORANGE PALETTE (Mission Reviews, Recaps & Badges) */
+.theme-card-orange {
+  background: rgba(234, 88, 12, 0.05) !important;
+  border: 1.5px solid rgba(234, 88, 12, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.08);
+}
+.theme-card-orange .capsule-header,
+.theme-card-orange .incard-bottom-capsule {
+  background: linear-gradient(135deg, #EA580C, #F59E0B) !important;
+  color: #FFFFFF !important;
+}
+.theme-card-orange .card-body-text > p:first-child,
+.theme-card-orange .card-body-text strong {
+  color: #C2410C !important;
+}
+
+/* 🔵 ELECTRIC CYAN & BLUE PALETTE (Core Concepts, Code & Tech Specs) */
+.theme-card-blue {
+  background: rgba(37, 99, 235, 0.05) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+}
+.theme-card-blue .capsule-header {
+  background: linear-gradient(135deg, #2563EB, #00F0FF) !important;
+  color: #FFFFFF !important;
+}
+.theme-card-blue .card-body-text > p:first-child,
+.theme-card-blue .card-body-text strong {
+  color: #1D4ED8 !important;
+}
+
+/* 🟣 CYBER VIOLET PALETTE (Innovation, AI Thinking & Curiosity) */
+.theme-card-purple {
+  background: rgba(124, 58, 237, 0.05) !important;
+  border: 1.5px solid rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
+}
+.theme-card-purple .capsule-header {
+  background: linear-gradient(135deg, #7C3AED, #6366F1) !important;
+  color: #FFFFFF !important;
+}
+.theme-card-purple .card-body-text > p:first-child,
+.theme-card-purple .card-body-text strong {
+  color: #6D28D9 !important;
+}
+
+/* 🔴 CRIMSON RED PALETTE (Mistakes, Debug & Safety) */
+.theme-card-red {
+  background: rgba(220, 38, 38, 0.05) !important;
+  border: 1.5px solid rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
+}
+.theme-card-red .capsule-header {
+  background: linear-gradient(135deg, #DC2626, #EF4444) !important;
+  color: #FFFFFF !important;
+}
+.theme-card-red .card-body-text > p:first-child,
+.theme-card-red .card-body-text strong {
+  color: #B91C1C !important;
+}
+
+/* ⚪ CRISP SLATE & WHITE PALETTE (Notes, Career & Guidance) */
+.theme-card-slate {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+.theme-card-slate .capsule-header {
+  background: #1E293B !important;
+  color: #FFFFFF !important;
+}
+.theme-card-slate .card-body-text {
+  color: #1E293B !important;
+}
+.theme-card-slate .card-body-text > p:first-child,
+.theme-card-slate .card-body-text strong {
+  color: #0F172A !important;
+}
+
+/* ==========================================================================
+   07. AMOLED DEEP BLACK CODE SNIPPETS & OLED SCREENS
+   ========================================================================== */
+.code-box,
+pre.code-content,
+.code-snippet-card pre,
+.oled-mini-screen pre {
+  background: #05070E !important;
+  color: #00F0FF !important;
+  border: 1px solid rgba(0, 240, 255, 0.25) !important;
+  border-radius: 8px !important;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9) !important;
+  padding: 12px !important;
+  font-family: 'Fira Code', monospace !important;
+}
+
+.code-box code,
+pre.code-content code {
+  color: #00F0FF !important;
+  background: transparent !important;
+}
+
+.code-snippet-card .code-header {
+  background: #090D16 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 4px 10px !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.code-snippet-card .lang-badge {
+  background: linear-gradient(135deg, #2563EB, #00F0FF) !important;
+  color: #0F172A !important;
+  font-weight: 900 !important;
+}
+
+/* ==========================================================================
+   08. PAGE GLOBAL FONT, BACKGROUND OVERLAY & SPLIT LAYOUT FLEXBOX
+   ========================================================================== */
+
+/* Page Global Font Override */
+.book-page {
+  font-family: var(--page-global-font, 'Inter', sans-serif) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.book-page * {
+  font-family: inherit;
+}
+
+/* Page Custom Background Overlay Layer (Doesn't affect text/cards opacity!) */
+.page-background-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.book-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Side-by-Side Split Layout Flexbox Engine */
+.split-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 8px 0 !important;
+  align-items: stretch !important;
+}
+
+.split-layout > * {
+  flex: 1 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   09. IN-CARD MICRO-DESIGNER & FLOATING TEXT SELECTION TOOLBAR
+   ========================================================================== */
+
+/* Floating Selection Quick Toolbar */
+.floating-text-toolbar {
+  position: absolute;
+  z-index: 10000;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 240, 255, 0.3);
+  animation: popInFloating 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-text-toolbar.show-floating {
+  display: flex !important;
+}
+
+@keyframes popInFloating {
+  from { opacity: 0; transform: translateY(6px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.floating-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+}
+
+.floating-btn:hover {
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  border-color: var(--accent-cyan);
+}
+
+.floating-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 2px;
+}
+
+/* In-Card Inline Sub-Capsules */
+.inline-sub-capsule {
+  background: linear-gradient(135deg, #2563EB, #00F0FF) !important;
+  color: #FFFFFF !important;
+  padding: 2px 10px !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  font-size: 0.82em !important;
+  display: inline-block !important;
+  margin: 2px 4px !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4) !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Text Highlighter Pill */
+.text-highlight {
+  background: #FEF08A !important;
+  color: #0F172A !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+/* ==========================================================================
+   10. HIGH-RESOLUTION PRINT & A4 PDF EXPORT STYLES
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* HIDE ONLY STUDIO TOP NAVBAR & SIDEBAR (DO NOT HIDE .mission-header-banner!) */
+  .studio-navbar,
+  .studio-header,
+  .brand-logo,
+  .navbar-actions,
+  .left-control-panel,
+  .panel-tabs,
+  .modal-overlay,
+  .ultraminds-ctx-menu,
+  .floating-text-toolbar,
+  .transform-handle,
+  .selected-card,
+  #ai-status-monitor,
+  #elements-palette-container {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ENSURE MISSION HEADER TITLE BANNER ON PAGE 1 IS VISIBLE */
+  header.mission-header-banner,
+  .mission-header-banner {
+    display: flex !important;
+    visibility: visible !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  .studio-workspace {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .right-canvas-viewport {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    height: auto !important;
+    min-height: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  #a4-canvas-container {
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .two-page-spread {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .book-page {
+    display: block !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    page-break-before: auto !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+    float: none !important;
+  }
+
+  [contenteditable="true"] {
+    outline: none !important;
+  }
+}
+
+
+
+
+

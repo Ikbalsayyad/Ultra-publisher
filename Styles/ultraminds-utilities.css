@@ -1,0 +1,111 @@
+/* ==========================================================================
+   ULTRAMINDS UI - UTILITIES & PRINT ENGINE (ultraminds-utilities.css)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. TYPOGRAPHY & ALIGNMENT UTILITIES
+   -------------------------------------------------------------------------- */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+.text-muted { color: var(--text-muted); }
+.text-bold { font-weight: 800; }
+.text-uppercase { text-transform: uppercase; }
+
+/* Spacing Helpers */
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+.mb-none { margin-bottom: 0 !important; }
+.mb-xs { margin-bottom: var(--space-xs); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+
+/* Flex Helpers */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+
+/* --------------------------------------------------------------------------
+   02. PHASE 2: PRINT ENGINE (Exact A4 Book Printouts)
+   -------------------------------------------------------------------------- */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0mm !important; /* Full bleed exact A4 210mm x 297mm */
+  }
+
+  body.mode-landscape {
+    @page {
+      size: A4 landscape;
+      margin: 0mm !important;
+    }
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: auto !important;
+  }
+
+  body.mode-landscape {
+    width: 297mm !important;
+  }
+
+  /* Exact A4 Sheet per Page */
+  .book-page, .a4-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+    min-height: 297mm !important;
+    max-width: 210mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    page-break-before: always !important;
+    page-break-after: always !important;
+    break-before: page !important;
+    break-after: page !important;
+    overflow: hidden !important;
+  }
+
+  body.mode-landscape .book-page,
+  .book-page.landscape {
+    width: 297mm !important;
+    height: 210mm !important;
+    min-width: 297mm !important;
+    min-height: 210mm !important;
+    max-width: 297mm !important;
+    max-height: 210mm !important;
+  }
+
+  .book-page:first-of-type {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  /* Disable screen-only elements in print */
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+  <title>Mission 14: Smart Climate Monitor</title>
+  <!-- Connecting the UltraMinds CSS Engine -->
+  <link href="../Styles/ultraminds-core.css" rel="stylesheet" type="text/css" />
+  <link href="../Styles/ultraminds-layout.css" rel="stylesheet" type="text/css" />
+  <link href="../Styles/ultraminds-cards.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="theme-blue">
+
+  <!-- MISSION HEADER -->
+  <header class="mission-header">
+    <div class="mission-number">Mission 14</div>
+    <h1 class="mission-title">Smart Climate Monitor</h1>
+    <p class="mission-subtitle">Let's build a Smart Climate Monitor using DHT11 and OLED!</p>
+  </header>
+
+  <!-- COMMANDER NOVA STORY -->
+  <section class="nova-card card-base">
+    <h2 class="card-title">
+      <span class="icon icon-robot"></span> MISSION STORY
+    </h2>
+    <p>Commander Nova has received a request from the UltraCity Environment Center.</p>
+    <p>Classrooms, laboratories and homes are getting <strong>too hot</strong> some days and <strong>too cold</strong>
+      on others.</p>
+    <p>To maintain comfort and save energy, engineers need real-time temperature and humidity data.</p>
+    <p><strong>Your mission is to build a Smart Climate Monitor using the DHT11 sensor and OLED display with the
+        UltraCore board.</strong></p>
+  </section>
+
+  <div class="split-layout">
+    <!-- REAL WORLD -->
+    <section class="real-world card-base">
+      <h2 class="card-title">
+        <span class="icon icon-world"></span> REAL WORLD
+      </h2>
+      <p>This data is used in:</p>
+      <ul>
+        <li>Smart Classrooms</li>
+        <li>Greenhouses</li>
+        <li>Hospitals</li>
+        <li>Weather Stations</li>
+      </ul>
+      <p><em>Engineers use sensors to make the environment better for everyone.</em></p>
+    </section>
+
+    <!-- CURIOSITY BOX -->
+    <section class="curiosity-box card-base">
+      <h2 class="card-title">
+        <span class="icon icon-lightbulb"></span> CURIOSITY BOX
+      </h2>
+      <p>Humidity affects how we feel, helps plants grow and protects electronic devices. Too much or too little can
+        create problems!</p>
+    </section>
+  </div>
+
+  <!-- BUILD LAB SECTION -->
+  <section class="concept-card">
+    <h2 class="concept-title">
+      <span class="icon icon-robot"></span> BUILD LAB: Hardware Setup
+    </h2>
+    <p>Let's assemble the hardware before we write the logic.</p>
+
+    <div class="build-lab">
+      <!-- Step 1 -->
+      <div class="lab-step">
+        <div class="step-number">1 Connect DHT11</div>
+        <p class="step-instruction">Connect the DHT11 sensor to the digital port.</p>
+        <table class="data-table">
+          <tr>
+            <th>VCC</th>
+            <td>3.3V</td>
+          </tr>
+          <tr>
+            <th>DATA</th>
+            <td>DHT11 (Signal)</td>
+          </tr>
+          <tr>
+            <th>GND</th>
+            <td>GND</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="lab-step">
+        <div class="step-number">2 Connect OLED</div>
+        <p class="step-instruction">Connect the OLED display using the I2C port.</p>
+        <table class="data-table">
+          <tr>
+            <th>VCC</th>
+            <td>3.3V</td>
+          </tr>
+          <tr>
+            <th>GND</th>
+            <td>GND</td>
+          </tr>
+          <tr>
+            <th>SDA</th>
+            <td>I2C SDA (D21)</td>
+          </tr>
+          <tr>
+            <th>SCL</th>
+            <td>I2C SCL (D22)</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIC BUILDER / FLOWCHART SECTION -->
+  <section class="card-base">
+    <h2 class="card-title" style="background: var(--mission-blue);">FLOW OF LOGIC</h2>
+    <div class="flowchart">
+      <div class="flow-node start-node">Start</div>
+      <div class="flow-node">Read Temperature from DHT11</div>
+      <div class="flow-node">Read Humidity from DHT11</div>
+      <div class="flow-node">Store in Variables (temp, humi)</div>
+      <div class="flow-node">Display both values on OLED</div>
+      <div class="flow-node">Wait 2 Seconds</div>
+      <div class="flow-node start-node">Repeat Forever</div>
+    </div>
+  </section>
+
+  <!-- PYTHON PREVIEW -->
+  <section class="card-base">
+    <div class="code-area">
+      <div class="code-header">
+        <span>PYTHON LOGIC PREVIEW</span>
+        <span>main.py</span>
+      </div>
+      <pre><code>import dht
+import time
+from machine import Pin, I2C
+from ssd1306 import SSD1306_I2C
+
+# Initialize Sensor
+d = dht.DHT11(Pin(4))
+
+while True:
+    d.measure()
+    t = d.temperature()
+    h = d.humidity()
+    print("Temp:", t, "Humidity:", h)
+    time.sleep(2)</code></pre>
+    </div>
+  </section>
+  <!-- IMAGE FRAME & PLACEHOLDER -->
+  <section class="image-frame">
+    <!-- When you have the real image, you will replace this div with: <img src="../Images/dht11.png" alt="DHT11 Sensor" style="max-width: 100%; border-radius: 8px;" /> -->
+    <div class="placeholder-box">
+      [Illustration: DHT11 Sensor Details]
+    </div>
+    <p class="image-caption">The DHT11 has two sensing parts inside: A thermistor and a capacitive humidity sensor.</p>
+  </section>
+
+  <!-- ACHIEVEMENT BADGE -->
+  <section class="achievement-badge">
+    <div class="badge-title">☁️ Climate Engineer</div>
+    <p class="badge-text">Mission Complete! You have successfully built your Smart Climate Monitor and understood how to
+      read and display real-world data.</p>
+    <p style="margin-top: 8px;"><strong>Great work, Commander Nova!</strong></p>
+  </section>
+
+  <!-- NEXT MISSION FOOTER -->
+  <footer class="next-mission">
+    <div>
+      <div class="next-title">Next You Will Learn</div>
+      <div class="next-subtitle">Smart Climate Controller</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </footer>
+</body>
+
+</html>

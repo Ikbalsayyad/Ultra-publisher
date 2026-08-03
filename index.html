@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UltraMinds Publisher v1.0 - 52-Element Smart A4 STEM Generator</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="Styles/ultraminds-core.css" />
+  <link rel="stylesheet" href="Styles/ultraminds-layout.css" />
+  <link rel="stylesheet" href="Styles/ultraminds-cards.css" />
+  <link rel="stylesheet" href="Styles/studio.css" />
+</head>
+<body class="studio-app theme-blue">
+
+  <!-- COMPACT TOP NAVBAR (HEIGHT: 46PX) -->
+  <header class="studio-navbar">
+    <div class="brand-logo">
+      <button class="btn btn-secondary" id="btn-toggle-sidebar" style="padding: 3px 7px;" title="Toggle Left Sidebar">◀ Panel</button>
+      <span class="logo-badge">PUBLISHER V1.0</span>
+      <span class="logo-title">UltraMinds Publisher</span>
+    </div>
+
+    <div class="navbar-actions">
+      <!-- DYNAMIC CANVAS ZOOM SLIDER -->
+      <div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.06); padding:2px 7px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+        <label style="font-size:0.7rem; color:#94A3B8;">🔍 Zoom:</label>
+        <input type="range" id="canvas-zoom-slider" min="0.4" max="1.2" step="0.05" value="0.75" style="width:70px;" />
+        <span id="zoom-value-label" style="font-size:0.72rem; font-weight:bold; color:var(--accent-cyan);">75%</span>
+      </div>
+
+      <button class="btn btn-primary" id="btn-ai-tools">🤖 AI Tools</button>
+      <button class="btn btn-secondary" id="btn-page-setup">📄 Page Setup</button>
+      <button class="btn btn-secondary" id="btn-toggle-format-bar" onclick="window.ContextMenu.toggleTopFormatBar()">🎨 Format Bar</button>
+      <button class="btn btn-secondary" id="btn-api-settings">⚙️ API Settings</button>
+      <button class="btn btn-secondary" id="btn-toggle-manual">🔒 Manual (OFF)</button>
+      
+      <!-- Compact Export Menu -->
+      <button class="btn btn-primary" id="btn-export-pdf">📄 PDF</button>
+      <button class="btn btn-secondary" id="btn-export-word">📝 Word</button>
+      <button class="btn btn-secondary" id="btn-export-pptx">📊 PPT</button>
+      <button class="btn btn-secondary" id="btn-export-xhtml">🌐 XHTML</button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE MAIN -->
+  <div class="studio-workspace">
+
+    <!-- LEFT SIDEBAR CONTROL PANEL (340PX WIDTH - ALL 4 TABS 100% VISIBLE) -->
+    <aside class="left-control-panel" id="left-sidebar">
+      
+      <!-- Panel Tabs Header -->
+      <div class="panel-tabs">
+        <button class="tab-btn active" data-tab="tab-input" onclick="switchTab('tab-input', this)">📝 Data</button>
+        <button class="tab-btn" data-tab="tab-style" onclick="switchTab('tab-style', this)">🎨 Theme</button>
+        <button class="tab-btn" data-tab="tab-palette" onclick="switchTab('tab-palette', this)">🧩 52 Elements</button>
+        <button class="tab-btn" data-tab="tab-inspector" onclick="switchTab('tab-inspector', this)">🔍 Inspector</button>
+      </div>
+
+      <!-- TAB 1: MISSION DATA INPUT -->
+      <div id="tab-input" class="tab-content active">
+        <div class="form-group">
+          <label>Load Preset Sample Mission</label>
+          <select id="preset-mission-select">
+            <option value="mission14">Mission 14: Smart Climate Monitor (5 Pages)</option>
+            <option value="mission13">Mission 13: Smart Plant Waterer</option>
+            <option value="rawTextSample">Raw Text Sample (Robotic Arm)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Raw Mission Input (Text / HTML / XHTML)</label>
+          <textarea id="raw-mission-input" placeholder="Paste your raw text, unstructured notes, or HTML/XHTML mission data here..."></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btn-parse-ai" style="width: 100%;">✨ Parse & Smart Arrange (AI)</button>
+
+        <!-- REAL-TIME AI THINKING & STATUS MONITOR PANEL -->
+        <div id="ai-status-monitor" class="ai-status-panel" style="display:none; margin-top: 10px;">
+          <div class="ai-status-header">
+            <span class="ai-spinner">🤖</span>
+            <span class="ai-status-title">AI Status Stream</span>
+          </div>
+          <div id="ai-status-text" class="ai-status-log">Processing raw chapter data...</div>
+        </div>
+      </div>
+
+      <!-- TAB 2: THEME & LAYOUT CONFIG -->
+      <div id="tab-style" class="tab-content">
+        <div class="form-group">
+          <label>Color Theme Palette</label>
+          <select id="theme-picker">
+            <option value="theme-blue">Ultra Blue (Default)</option>
+            <option value="theme-green">Ultra Green (Eco / Climate)</option>
+            <option value="theme-orange">Ultra Orange (Robotics / Hardware)</option>
+            <option value="theme-purple">Ultra Purple (AI / Software)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Global Typography Scaler</label>
+          <input type="range" id="font-scaler" min="0.8" max="1.2" step="0.05" value="1.0" />
+        </div>
+      </div>
+
+      <!-- TAB 3: 51-ELEMENT PALETTE -->
+      <div id="tab-palette" class="tab-content">
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">51 UltraMinds Book Elements Library:</p>
+        <div class="component-palette-grid" id="elements-palette-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 4: ELEMENT INSPECTOR -->
+      <div id="tab-inspector" class="tab-content">
+        <div id="element-inspector">
+          <div class="inspector-placeholder" style="color: var(--text-muted); font-size: 0.78rem;">Click any card on the right canvas to inspect & edit style properties.</div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT A4 LIVE CANVAS VIEWPORT -->
+    <main class="right-canvas-viewport" id="a4-canvas-container">
+      <!-- A4 Pages injected dynamically by LayoutEngine -->
+    </main>
+
+  </div>
+
+  <!-- AI TOOLS MODAL DIALOG -->
+  <div class="modal-overlay" id="ai-tools-modal">
+    <div class="modal-card" style="width:480px;">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem;">🤖 Next-Level AI Layout Suite</h3>
+      <p style="font-size:0.8rem; color:#94A3B8; margin-bottom:12px;">Select an automated AI algorithm to optimize your active mission book layout:</p>
+      
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-primary" id="ai-tool-equalize">⚡ AI Smart Page Equalizer (Redistribute Cards Evenly)</button>
+        <button class="btn btn-secondary" id="ai-tool-reorder">📐 AI Pedagogical Flow Re-Order (Book Sequence)</button>
+        <button class="btn btn-secondary" id="ai-tool-alignfooters">🪄 AI Whitespace Auto-Aligner (Fill Page Gaps)</button>
+        <button class="btn btn-secondary" id="ai-tool-enhancehierarchy">🎨 AI Visual Hierarchy Enhancer (Hero Styling)</button>
+        <button class="btn btn-secondary" id="ai-tool-autotheme">🎨 AI Domain Theme Generator</button>
+        <button class="btn btn-secondary" id="ai-tool-debuggen">🐛 AI Common Mistakes & Debug Generator</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-secondary" id="btn-close-ai-tools">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE SETUP MODAL DIALOG -->
+  <div class="modal-overlay" id="page-setup-modal">
+    <div class="modal-card" style="width: 500px;">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem;">📄 Page Setup & Canvas Typography</h3>
+      
+      <div class="form-group">
+        <label>🔤 Global Page Typography Font</label>
+        <select id="page-font-select" class="form-control">
+          <option value="'Inter', sans-serif">Inter (Clean Modern - Default)</option>
+          <option value="'Outfit', sans-serif">Outfit (Bold STEM Heading)</option>
+          <option value="'Roboto', sans-serif">Roboto (Clean Standard)</option>
+          <option value="'Montserrat', sans-serif">Montserrat (Geometric Tech)</option>
+          <option value="'Poppins', sans-serif">Poppins (Friendly Round)</option>
+          <option value="'Fira Code', monospace">Fira Code (Code Monospace)</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia (Classic Book Serif)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Page View Mode</label>
+        <select id="page-view-mode-select" class="form-control">
+          <option value="single">Single Page View (Centered Vertical)</option>
+          <option value="two-page">Two-Page Book Spread View (Side-by-Side Spreads)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Page Background Base Color</label>
+        <input type="color" id="page-bg-color-picker" class="form-control" value="#FFFFFF" />
+      </div>
+
+      <div class="form-group">
+        <label>🖼️ Custom Page Background Image / Watermark</label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="page-bg-img-input" class="form-control" placeholder="Image URL (http://... or base64)" style="flex:1;" />
+          <button class="btn btn-secondary" id="btn-upload-bg-img" style="font-size:0.75rem; padding:4px 8px;">📁 Upload File</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Background Texture / Pattern</label>
+        <select id="page-texture-select" class="form-control">
+          <option value="none">Clean Custom Image / White</option>
+          <option value="grid">Grid Paper Pattern</option>
+          <option value="dots">Dot Grid Pattern</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>🎛️ Background Image & Overlay Opacity (0% - 100%)</label>
+        <small style="color:var(--text-muted); display:block; margin-bottom:4px;">Adjusts background overlay image only — text & cards stay 100% crisp!</small>
+        <input type="range" id="page-bg-opacity-slider" min="0.0" max="1.0" step="0.05" value="1.0" />
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-secondary" id="btn-close-page-setup">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-page-setup">Apply Page Setup</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- API SETTINGS MODAL -->
+  <div class="modal-overlay" id="api-settings-modal">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem;">⚙️ AI Provider API Settings</h3>
+      
+      <div class="form-group">
+        <label>AI Provider</label>
+        <select id="api-provider-select">
+          <option value="gemini">Google Gemini API (Recommended)</option>
+          <option value="openai">OpenAI API</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" id="api-key-input" class="form-control" placeholder="AIzaSy... or sk-..." />
+        <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Key is stored strictly in local browser storage.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Model Name (e.g., gemini-3.5-flash, gemini-3.5-pro)</label>
+        <input type="text" id="api-model-input" class="form-control" value="gemini-3.5-flash" />
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-secondary" id="btn-close-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-api">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btnEl.classList.add('active');
+      if (tabId === 'tab-palette' && window.populateElementsPalette) {
+        window.populateElementsPalette();
+      }
+    }
+  </script>
+
+  <!-- Load Scripts -->
+  <script src="Scripts/system-prompt.js"></script>
+  <script src="Scripts/sample-missions.js"></script>
+  <script src="Scripts/ai-service.js"></script>
+  <script src="Scripts/parser.js"></script>
+  <script src="Scripts/layout-engine.js"></script>
+  <script src="Scripts/canvas-editor.js"></script>
+  <script src="Scripts/context-menu.js"></script>
+  <script src="Scripts/incard-designer.js"></script>
+  <script src="Scripts/ai-tools.js"></script>
+  <script src="Scripts/export-engine.js"></script>
+  <script src="Scripts/app.js"></script>
+</body>
+</html>
+

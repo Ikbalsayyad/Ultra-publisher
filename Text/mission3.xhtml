@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <title>Class 7 - Mission 03: Smart Farm Guardian</title>
+    <link href="../Styles/ultraminds-core.css" rel="stylesheet" type="text/css" />
+    <link href="../Styles/ultraminds-layout.css" rel="stylesheet" type="text/css" />
+    <link href="../Styles/ultraminds-cards.css" rel="stylesheet" type="text/css" />
+    <link href="../Styles/ultraminds-utilities.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="theme-green">
+
+    <!-- ==========================================================================
+        : MISSION FILE OVERVIEW & BRIEF
+         ========================================================================== -->
+    <article class="book-page">
+        <div>
+            <!-- Program Header Bar -->
+            <div style="background: linear-gradient(135deg, #1E293B, #0F172A); color: var(--white); padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;"
+                class="flex-between">
+                <span>UltraMinds Intelligent Systems Program</span>
+                <span style="color: #F59E0B;">Class 7 – Mission File 03</span>
+            </div>
+
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <p style="font-size: 0.75rem; font-style: italic; color: #16A34A; font-weight: 700; margin-bottom: 4px;">
+                "Every single mission feels like a mini engineering adventure."
+            </p>
+
+            <!-- Main Title -->
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">🚜 SMART <span class="highlight-green">FARM</span>
+                GUARDIAN</h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Build an IoT Smart
+                Irrigation &amp; Farm Monitoring System</p>
+
+            <!-- Overview Grid: Story & Stats -->
+            <div class="split-layout">
+                <!-- Left: Mission Brief -->
+                <section class="nova-card card-base mb-none" style="padding: 10px 12px;">
+                    <h2 class="card-title title-green"
+                        style="font-size: 0.9rem; padding: 3px 10px; margin-bottom: 4px;">
+                        📖 MISSION BRIEF
+                    </h2>
+                    <p style="font-size: 0.8rem; margin-bottom: 4px;">The summer has been extremely hot. Farmer Ravi is
+                        worried because he has to travel to another city for three days. Nobody will be available to
+                        water his crops.</p>
+                    <p style="font-size: 0.8rem; margin-bottom: 4px;">If the soil becomes too dry... the plants may die.
+                    </p>
+                    <p style="font-size: 0.8rem; margin-bottom: 4px;">Can you build a system that automatically waters
+                        the plants and allows Farmer Ravi to monitor everything from his mobile phone?</p>
+                    <p class="text-bold text-center mt-xs" style="color: #15803D; font-size: 0.85rem;">Today, YOU are
+                        the Smart Agriculture Engineer.</p>
+
+                    <div class="mt-xs p-xs"
+                        style="background: rgba(255,255,255,0.7); border-radius: 6px; border: 1px dashed #BBF7D0; font-size: 0.75rem;">
+                        <strong style="color: #15803D;">🤖 Commander Nova Says:</strong> <em>"Great engineers don't wait
+                            for problems—they design systems that prevent them."</em>
+                    </div>
+                </section>
+
+                <!-- Right: Required Components & Illustration -->
+                <div class="flex-column gap-xs">
+                    <section class="concept-card mb-none" style="padding: 8px 12px;">
+                        <h3 style="font-size: 0.85rem; color: #15803D; margin-bottom: 4px;">🧰 Required Components:</h3>
+                        <div class="grid-2col" style="font-size: 0.75rem; font-weight: 700;">
+                            <div>• UltraCore Board</div>
+                            <div>• Soil Moisture Sensor</div>
+                            <div>• Water Pump Module</div>
+                            <div>• Relay Module</div>
+                            <div>• RGB LED</div>
+                            <div>• OLED Display</div>
+                            <div>• Wi-Fi &amp; UltraCloud</div>
+                            <div>• UltraApp Builder</div>
+                        </div>
+                    </section>
+
+                    <section class="image-frame mb-none" style="padding: 6px;">
+                        <div class="placeholder-box" style="min-height: 90px; font-size: 0.75rem;">
+                            (Illustration: Smart farm with crops, soil sensor, pump, cloud connection &amp; student
+                            holding phone)
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid-4col mt-xs mb-xs">
+                <div class="objective-card" style="padding: 4px 8px;">
+                    <div class="objective-number"
+                        style="background: #16A34A; width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">🏅
+                    </div>
+                    <div style="font-size: 0.75rem;"><strong>Badge:</strong><br />FarmTech Eng.</div>
+                </div>
+                <div class="objective-card" style="padding: 4px 8px;">
+                    <div class="objective-number"
+                        style="background: #2563EB; width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">⏳
+                    </div>
+                    <div style="font-size: 0.75rem;"><strong>Time:</strong><br />90 Minutes</div>
+                </div>
+                <div class="objective-card" style="padding: 4px 8px;">
+                    <div class="objective-number"
+                        style="background: #F59E0B; width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">🎯
+                    </div>
+                    <div style="font-size: 0.75rem;"><strong>Level:</strong><br />⭐⭐⭐☆☆</div>
+                </div>
+                <div class="objective-card" style="padding: 4px 8px;">
+                    <div class="objective-number"
+                        style="background: #7C3AED; width: 24px; height: 24px; min-width: 24px; font-size: 0.8rem;">👥
+                    </div>
+                    <div style="font-size: 0.75rem;"><strong>Team:</strong><br />5 Roles</div>
+                </div>
+            </div>
+
+            <!-- Skills & Team Split -->
+            <div class="split-layout mt-xs">
+                <div class="card-base mb-none" style="padding: 8px 12px;">
+                    <strong style="font-size: 0.8rem; color: #16A34A;">🔓 Skills You'll Unlock:</strong>
+                    <div class="grid-2col mt-xs" style="font-size: 0.75rem; font-weight: 600;">
+                        <div>✔ Soil Moisture Sensing</div>
+                        <div>✔ Smart Automation</div>
+                        <div>✔ Wi-Fi Communication</div>
+                        <div>✔ Cloud Monitoring</div>
+                        <div>✔ Mobile App Design</div>
+                        <div>✔ Product Thinking</div>
+                    </div>
+                </div>
+
+                <div class="card-base mb-none" style="padding: 8px 12px;">
+                    <strong style="font-size: 0.8rem; color: #2563EB;">👥 Today's Team Roles:</strong>
+                    <div class="grid-2col mt-xs" style="font-size: 0.75rem; font-weight: 600;">
+                        <div>🔧 Hardware Engineer</div>
+                        <div>👨‍💻 Logic Builder</div>
+                        <div>📱 App Designer</div>
+                        <div>🧪 Testing Engineer</div>
+                        <div>🎤 Presenter</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+   OBJECTIVES, WHY IMPORTANT & THINK LIKE AN ENGINEER
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">ENGINEERING <span
+                    class="highlight-orange">EXPLORER</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">• OBSERVE. DISCOVER.
+                UNDERSTAND. •</p>
+
+            <!-- Mission Objectives Section -->
+            <section class="concept-card mb-xs" style="padding: 10px 14px;">
+                <h2 class="concept-title" style="color: #15803D; font-size: 0.95rem; margin-bottom: 6px;">🎯 MISSION
+                    OBJECTIVES</h2>
+                <div class="grid-2col" style="font-size: 0.8rem; font-weight: 700;">
+                    <div>✅ Detect dry soil</div>
+                    <div>✅ Automatically start water pump</div>
+                    <div>✅ Show status on OLED</div>
+                    <div>✅ Upload data to UltraCloud</div>
+                    <div style="grid-column: span 2;">✅ Create a mobile monitoring app</div>
+                </div>
+            </section>
+
+            <!-- Why Important, Curiosity & Did You Know -->
+            <div class="split-layout mt-xs">
+                <section class="real-world card-base mb-none" style="padding: 8px 12px;">
+                    <h2 class="card-title title-green"
+                        style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+                        🌍 WHY IS THIS IMPORTANT?
+                    </h2>
+                    <p style="font-size: 0.75rem; margin-bottom: 2px;">Smart farming helps:</p>
+                    <div class="grid-2col" style="font-size: 0.75rem; font-weight: 700;">
+                        <div>🌱 Save Water</div>
+                        <div>🌾 Improve Crop Health</div>
+                        <div>📱 Monitor Remotely</div>
+                        <div>🚜 Reduce Effort</div>
+                    </div>
+                </section>
+
+                <section class="curiosity-box card-base mb-none" style="padding: 8px 12px;">
+                    <h2 class="card-title title-yellow"
+                        style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+                        💡 CURIOSITY BOX
+                    </h2>
+                    <p class="text-bold text-center" style="font-size: 0.8rem; color: #B45309;">🤔 If plants could
+                        talk...</p>
+                    <p class="text-center" style="font-size: 0.75rem;">what would they tell the farmer first?</p>
+                </section>
+            </div>
+
+            <!-- NASA Did You Know Box -->
+            <div class="p-xs mt-xs text-center"
+                style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: #1E40AF;">
+                🌟 <strong>Did You Know?</strong> NASA researches smart agriculture technologies for growing plants
+                during future space missions.
+            </div>
+
+            <!-- Think Like an Engineer Q&A Section -->
+            <section class="think-engineer-box mt-xs">
+                <h2 class="card-title title-dark" style="font-size: 0.9rem; padding: 3px 10px; margin-bottom: 6px;">🧠
+                    THINK LIKE AN ENGINEER</h2>
+                <p class="mb-xs" style="font-size: 0.8rem;">Before building, we must plan our solution.</p>
+
+                <div class="split-layout">
+                    <div>
+                        <p style="font-size: 0.75rem;"><strong>Q1. How can a machine know whether soil is wet or
+                                dry?</strong></p>
+                        <div class="write-line"></div>
+
+                        <p style="font-size: 0.75rem;" class="mt-xs"><strong>Q2. Should the pump always run
+                                automatically? Why?</strong></p>
+                        <div class="write-line"></div>
+
+                        <p style="font-size: 0.75rem;" class="mt-xs"><strong>Q4. How could a farmer know status while
+                                travelling?</strong></p>
+                        <div class="write-line"></div>
+                    </div>
+
+                    <div class="drawing-grid" style="height: 120px; padding: 8px; text-align: center;">
+                        <p style="font-size: 0.75rem; color: #1E293B;">Q3. Where should the soil sensor be placed? Draw
+                            it:</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+MEET TODAY'S HEROES & ENGINEERING CONCEPT
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">HEROES &amp; <span
+                    class="highlight-green">LOGIC</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Meet your hardware
+                components &amp; understand system flow.</p>
+
+            <!-- Meet Today's Heroes -->
+            <section class="concept-card mb-xs" style="padding: 10px 14px;">
+                <h2 class="concept-title" style="color: #16A34A; font-size: 0.95rem;">🦸 MEET TODAY'S HEROES</h2>
+
+                <div class="build-lab mt-xs">
+                    <div class="lab-step" style="padding: 6px;">
+                        <span class="step-number" style="background: #16A34A; font-size: 0.75rem;">🌱 Soil Sensor</span>
+                        <p class="step-instruction" style="font-size: 0.75rem;"><em>"Feeling how wet the soil is."</em>
+                        </p>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Used in Smart Farms &amp;
+                            Greenhouses</span>
+                    </div>
+
+                    <div class="lab-step" style="padding: 6px;">
+                        <span class="step-number" style="background: #2563EB; font-size: 0.75rem;">💧 Water Pump</span>
+                        <p class="step-instruction" style="font-size: 0.75rem;"><em>"Delivering water on demand."</em>
+                        </p>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Used in Agriculture &amp;
+                            Irrigation</span>
+                    </div>
+
+                    <div class="lab-step" style="padding: 6px;">
+                        <span class="step-number" style="background: #7C3AED; font-size: 0.75rem;">📡 Wi-Fi</span>
+                        <p class="step-instruction" style="font-size: 0.75rem;"><em>"Connecting farm to Internet."</em>
+                        </p>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Cloud Data Transmission</span>
+                    </div>
+
+                    <div class="lab-step" style="padding: 6px;">
+                        <span class="step-number" style="background: #EA580C; font-size: 0.75rem;">📱 Mobile App</span>
+                        <p class="step-instruction" style="font-size: 0.75rem;"><em>"Monitor crops from anywhere."</em>
+                        </p>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Remote Control &amp; Alerts</span>
+                    </div>
+                </div>
+
+                <div class="placeholder-box mt-xs" style="min-height: 50px; font-size: 0.7rem;">
+                    (Illustration Prompt: Four superhero-style characters introducing themselves with speech bubbles)
+                </div>
+            </section>
+
+            <!-- Engineering Concept & Sequence Logic -->
+            <section class="concept-card mb-xs" style="padding: 10px 14px;">
+                <h2 class="concept-title" style="color: #7C3AED; font-size: 0.95rem;">⚙️ ENGINEERING CONCEPT: How does
+                    it work?</h2>
+                <p style="font-size: 0.75rem;" class="mb-xs"><strong>Everyday Example:</strong> When you feel thirsty,
+                    your brain tells you to drink water. Your project works in almost the same way.</p>
+
+                <div class="flowchart" style="padding: 8px;">
+                    <div class="flow-node start-node" style="font-size: 0.75rem; padding: 4px 10px;">Dry Soil ➔ Sensor
+                        Detects ➔ UltraCore Thinks ➔ Pump Starts ➔ Cloud Updates ➔ Mobile App Updates</div>
+                </div>
+            </section>
+
+            <!-- Logic Sequence & Flowchart Canvas -->
+            <div class="split-layout mt-xs">
+                <section class="card-base mb-none" style="padding: 8px 12px;">
+                    <h2 class="card-title title-purple"
+                        style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">🧩 LOGIC BUILDER</h2>
+                    <p style="font-size: 0.75rem;">Complete the sequence:</p>
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #1E293B;" class="mt-xs">
+                        START ➔ Connect Wi-Fi ➔ Read Soil ➔ <span style="color: #DC2626;">[Is Soil Dry?]</span> ➔ YES ➔
+                        Update Cloud ➔ Repeat
+                    </div>
+                </section>
+
+                <div class="drawing-grid" style="height: 100px; padding: 8px; text-align: center;">
+                    <p style="font-size: 0.75rem; color: #1E293B;">Now draw your own flowchart here:</p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+    CODING BUILDER (STEPS, BLOCKLY & PYTHON)
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">CODING <span class="highlight-blue">BUILDER</span>
+            </h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Build the software logic
+                yourself.</p>
+
+            <!-- Guided Coding Steps -->
+            <div class="grid-2col mb-xs">
+                <div class="card-base mb-none" style="padding: 8px 12px;">
+                    <strong style="font-size: 0.8rem; color: #2563EB;">Step 1: Connect UltraCore to Wi-Fi</strong>
+                    <p style="font-size: 0.75rem;">Why is this important?</p>
+                    <div class="write-line"></div>
+                </div>
+
+                <div class="card-base mb-none" style="padding: 8px 12px;">
+                    <strong style="font-size: 0.8rem; color: #16A34A;">Step 2: Read Soil Moisture</strong>
+                    <p style="font-size: 0.75rem;">What value tells us soil is dry?</p>
+                    <div class="write-line"></div>
+                </div>
+            </div>
+
+            <!-- Step 3 & Step 4 -->
+            <section class="concept-card mb-xs" style="padding: 8px 12px;">
+                <strong style="font-size: 0.85rem; color: #EA580C;">Step 3: If soil is dry... What should happen
+                    first?</strong>
+                <div class="grid-3col mt-xs" style="font-size: 0.75rem; font-weight: 700;">
+                    <div>☐ Turn ON Pump</div>
+                    <div>☐ Send Cloud Update</div>
+                    <div>☐ Display Message</div>
+                </div>
+                <p style="font-size: 0.75rem;" class="mt-xs">Arrange the correct sequence: 1. ________ 2. ________ 3.
+                    ________</p>
+            </section>
+
+            <!-- Block Coding & Python Area Split -->
+            <div class="grid-2col mt-xs">
+                <section class="card-base mb-none" style="padding: 8px 12px;">
+                    <h2 class="card-title title-orange"
+                        style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">🧱 BLOCK CODING AREA</h2>
+                    <div class="drawing-grid" style="height: 140px;">
+                        [Reserved Block Coding Canvas]
+                    </div>
+                </section>
+
+                <section class="card-base mb-none" style="padding: 8px 12px;">
+                    <h2 class="card-title title-blue" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">
+                        🐍 PYTHON CODING AREA</h2>
+                    <div class="code-area" style="font-size: 0.7rem; height: 140px; overflow: hidden;">
+                        <div class="code-header" style="padding: 2px 8px;"><span>PYTHON LOGIC</span><span>main.py</span>
+                        </div>
+                        <pre><code>import time, machine
+soil = machine.ADC(machine.Pin(34))
+pump = machine.Pin(5, machine.Pin.OUT)
+
+while True:
+    if (soil.read()/4095)*100 &lt; 30:
+        pump.value(1) # Pump ON
+    else: pump.value(0)
+    time.sleep(5)</code></pre>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+       BUILD MISSION & MOBILE APP DESIGN
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">BUILD &amp; <span class="highlight-orange">APP
+                    DESIGN</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Assemble hardware and
+                design the mobile UI.</p>
+
+            <!-- Split Grid: Build Mission & App Design -->
+            <div class="split-layout">
+
+                <!-- Left: Build Mission -->
+                <section class="card-base mb-none" style="padding: 10px 12px;">
+                    <h2 class="card-title title-green"
+                        style="font-size: 0.9rem; padding: 3px 10px; margin-bottom: 4px;">
+                        🛠 BUILD MISSION
+                    </h2>
+                    <p style="font-size: 0.75rem;">Assemble &amp; test complete setup:</p>
+                    <div class="grid-2col mt-xs" style="font-size: 0.75rem; font-weight: 700;">
+                        <div>✔ Soil Sensor</div>
+                        <div>✔ Relay Module</div>
+                        <div>✔ Water Pump</div>
+                        <div>✔ OLED Display</div>
+                        <div>✔ Wi-Fi Connection</div>
+                    </div>
+
+                    <div class="placeholder-box mt-xs" style="min-height: 80px; font-size: 0.7rem;">
+                        (Assembly Prompt: UltraCore connected to soil sensor, relay, pump, OLED &amp; Wi-Fi)
+                    </div>
+
+                    <table class="pin-table mt-xs">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Port</th>
+                                <th>Pin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Soil Sensor</td>
+                                <td>Analog</td>
+                                <td><span class="pin-vcc">A0</span></td>
+                            </tr>
+                            <tr>
+                                <td>Relay / Pump</td>
+                                <td>Digital</td>
+                                <td><span class="pin-data">D5</span></td>
+                            </tr>
+                            <tr>
+                                <td>OLED Display</td>
+                                <td>I2C</td>
+                                <td><span class="pin-i2c">SDA/SCL</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Right: Mobile App Design -->
+                <section class="card-base mb-none" style="padding: 10px 12px;">
+                    <h2 class="card-title title-orange"
+                        style="font-size: 0.9rem; padding: 3px 10px; margin-bottom: 4px;">📱 MOBILE APP DESIGN</h2>
+                    <p style="font-size: 0.75rem;">Screen 1: 🏡 Dashboard Elements:</p>
+                    <div class="grid-2col mt-xs" style="font-size: 0.75rem; font-weight: 700;">
+                        <div>🌱 Soil Moisture %</div>
+                        <div>💧 Pump Status</div>
+                        <div>📶 Device Online</div>
+                    </div>
+
+                    <div class="drawing-grid mt-xs" style="height: 120px; font-size: 0.75rem;">
+                        [App Design Space / UI Prompt]
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+          EXPERIMENT ZONE, UPGRADE & INNOVATION
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">EXPERIMENT &amp; <span
+                    class="highlight-purple">UPGRADE</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Test, upgrade &amp; solve
+                real-world farm challenges.</p>
+
+            <!-- Experiment Zone -->
+            <section class="concept-card mb-xs" style="padding: 8px 12px;">
+                <h2 class="concept-title" style="color: #7C3AED; font-size: 0.95rem;">🧪 EXPERIMENT ZONE</h2>
+                <div class="grid-2col" style="font-size: 0.75rem; font-weight: 700;">
+                    <div class="assessment-card" style="padding: 4px 8px;">Exp 1: Wet the soil. Observe.</div>
+                    <div class="assessment-card" style="padding: 4px 8px;">Exp 2: Dry the soil. Observe.</div>
+                    <div class="assessment-card" style="padding: 4px 8px;">Exp 3: Move sensor. Does reading change?
+                    </div>
+                    <div class="assessment-card" style="padding: 4px 8px;">Exp 4: Change moisture threshold.</div>
+                </div>
+            </section>
+
+            <!-- Failure Scenario & Upgrades -->
+            <div class="split-layout mt-xs">
+                <div
+                    style="background: #FEF2F2; border: 1.5px solid #FECACA; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem;">
+                    <strong style="color: #B91C1C;">⚠️ Failure Scenario:</strong>
+                    <p class="mt-xs">Farmer Ravi calls: <em>"The Internet is not working!"</em></p>
+                    <p>Your pump should still water crops. What should system do?</p>
+                </div>
+
+                <div class="card-base mb-none" style="padding: 8px 12px;">
+                    <strong style="font-size: 0.8rem; color: #EA580C;">🚀 Upgrade Mission:</strong>
+                    <ul style="list-style-type: none; padding-left: 0; font-size: 0.75rem; margin-top: 4px;">
+                        <li><strong>🥉 Bronze:</strong> Add RGB Status (🟢/🔴)</li>
+                        <li><strong>🥈 Silver:</strong> Display live moisture on OLED</li>
+                        <li><strong>🥇 Gold:</strong> Manual app override</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Innovation Challenge & Real World -->
+            <section class="concept-card mt-xs mb-none" style="padding: 8px 12px;">
+                <h3 style="font-size: 0.85rem; color: #16A34A;">💡 Innovation Challenge (100-Acre Farm Ideas):</h3>
+                <div class="grid-3col mt-xs" style="font-size: 0.75rem; font-weight: 600;">
+                    <div>☐ Weather Forecast</div>
+                    <div>☐ AI Water Prediction</div>
+                    <div>☐ Solar Power</div>
+                    <div>☐ Drone Monitoring</div>
+                    <div>☐ SMS Alerts</div>
+                    <div>☐ Custom Invention</div>
+                </div>
+                <div class="mt-xs" style="font-size: 0.75rem;">
+                    <strong>🌎 Real World Connections:</strong> Used in Agriculture, Greenhouses, Parks, Gardens,
+                    Nurseries &amp; Smart Cities.
+                </div>
+            </section>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+         MISSION DEBRIEF & ASSESSMENT (PART 1)
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">DEBRIEF &amp; <span
+                    class="highlight-orange">ASSESSMENT</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Reflect on your mission and
+                test your knowledge.</p>
+
+            <!-- Mission Debrief -->
+            <section class="card-base mb-xs" style="padding: 8px 12px;">
+                <h2 class="card-title title-dark" style="font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px;">🎖
+                    MISSION DEBRIEF</h2>
+                <p style="font-size: 0.75rem;"><strong>Commander Nova:</strong> <em>"Excellent work, Engineer!"</em></p>
+                <div class="grid-2col mt-xs" style="font-size: 0.75rem;">
+                    <div>
+                        <p>1. What part worked best?</p>
+                        <div class="write-line"></div>
+                    </div>
+                    <div>
+                        <p>2. What challenge did you face?</p>
+                        <div class="write-line"></div>
+                    </div>
+                    <div>
+                        <p>3. How did team solve it?</p>
+                        <div class="write-line"></div>
+                    </div>
+                    <div>
+                        <p>4. What to improve in Version 2?</p>
+                        <div class="write-line"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assessment Sections A, B, C -->
+            <section class="concept-card mb-none" style="padding: 8px 12px;">
+                <h2 class="concept-title" style="color: #2563EB; font-size: 0.9rem;">📝 MISSION ASSESSMENT (PART 1)</h2>
+
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">A. Multiple Choice (5 Questions)</div>
+                    <p style="font-size: 0.75rem;">1. Which sensor detects soil wetness? [ ] DHT11 [ ] Soil Sensor [ ]
+                        Ultrasonic</p>
+                </div>
+
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">B. True / False (5 Questions)</div>
+                    <p style="font-size: 0.75rem;">1. The pump should run non-stop regardless of moisture level. [T / F]
+                    </p>
+                </div>
+
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">C. Match the Following</div>
+                    <p style="font-size: 0.75rem;">Soil Sensor ↔ Detects moisture | Relay ↔ Controls pump power | Wi-Fi
+                        ↔ Cloud data</p>
+                </div>
+            </section>
+        </div>
+    </article>
+
+    <!-- ==========================================================================
+       ASSESSMENT (PART 2) & MISSION COMPLETE BADGE
+         ========================================================================== -->
+    <article class="book-page page-break-before">
+        <div>
+            <!-- Page Header Bar -->
+            <header class="page-header-bar">
+                <span class="page-number-pill"></span>
+                <span class="mission-pill">MISSION 03</span>
+                <div class="mission-corner-badge">
+                    <span class="badge-num">03</span>
+                    <span>MISSION</span>
+                </div>
+            </header>
+
+            <h1 class="mission-main-title" style="font-size: 2.1rem;">ASSESSMENT &amp; <span
+                    class="highlight-green">BADGE</span></h1>
+            <p class="mission-main-subtitle" style="font-size: 0.95rem; margin-bottom: 8px;">Complete challenges &amp;
+                unlock your FarmTech Badge!</p>
+
+            <div class="grid-2col">
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">D. Fill in the Logic</div>
+                    <p style="font-size: 0.75rem;">If moisture &lt; _____ %, then pump = ____.</p>
+                </div>
+
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">E. Debug Challenge</div>
+                    <p style="font-size: 0.75rem;">Pump not starting? Identify 2 reasons: 1. ________ 2. ________</p>
+                </div>
+            </div>
+
+            <div class="grid-2col mt-xs">
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">F. Mobile Feature Design</div>
+                    <p style="font-size: 0.75rem;">Draw 1 additional feature for Farmer Ravi.</p>
+                    <div class="drawing-grid" style="height: 60px;">[Feature Sketch Space]</div>
+                </div>
+
+                <div class="assessment-card" style="padding: 6px 10px;">
+                    <div class="assessment-title">G. Engineering Thinking</div>
+                    <p style="font-size: 0.75rem;">Should pump run every time soil is slightly dry? Explain.</p>
+                    <div class="write-line"></div>
+                </div>
+            </div>
+
+            <div class="assessment-card mt-xs" style="padding: 6px 10px;">
+                <div class="assessment-title">H. Team Reflection</div>
+                <p style="font-size: 0.75rem;">Role performed: ______________ | What did you learn from teammates?
+                    ______________</p>
+            </div>
+
+            <!-- Achievement Badge & Mission Complete -->
+            <section class="ultra-badge mt-xs" style="padding: 12px 16px;">
+                <div class="badge-title" style="font-size: 1.4rem;">🎉 MISSION COMPLETE!</div>
+                <div style="font-size: 1.1rem; font-weight: 900; color: #FBBF24; margin: 4px 0;">🏅 BADGE UNLOCKED: 🌱
+                    FarmTech Engineer</div>
+                <p class="badge-text" style="font-size: 0.85rem;">Congratulations! You have successfully built your
+                    first IoT Smart Agriculture Product.</p>
+            </section>
+        </div>
+
+        <!-- Footer Ribbon -->
+        <div class="bottom-nav-bar">
+            LEARN • BUILD • INNOVATE • INSPIRE | ULTRAMinds AI
+        </div>
+    </article>
+
+</body>
+
+</html>
