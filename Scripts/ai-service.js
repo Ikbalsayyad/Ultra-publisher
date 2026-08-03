@@ -8,16 +8,24 @@ window.AIService = {
   getSettings() {
     return {
       provider: localStorage.getItem('ultraminds_ai_provider') || 'gemini',
-      apiKey: localStorage.getItem('ultraminds_ai_key') || '',
-      model: localStorage.getItem('ultraminds_ai_model') || 'gemini-3.5-flash',
+      apiKey: localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('ultraminds_api_key') || localStorage.getItem('gemini_api_key') || '',
+      model: localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.1-pro',
       customEndpoint: localStorage.getItem('ultraminds_ai_endpoint') || ''
     };
   },
 
   saveSettings(settings) {
     if (settings.provider) localStorage.setItem('ultraminds_ai_provider', settings.provider);
-    if (settings.apiKey !== undefined) localStorage.setItem('ultraminds_ai_key', settings.apiKey.trim());
-    if (settings.model) localStorage.setItem('ultraminds_ai_model', settings.model);
+    if (settings.apiKey !== undefined) {
+      const keyVal = settings.apiKey.trim();
+      localStorage.setItem('ultraminds_ai_key', keyVal);
+      localStorage.setItem('ultraminds_api_key', keyVal);
+      localStorage.setItem('gemini_api_key', keyVal);
+    }
+    if (settings.model) {
+      localStorage.setItem('ultraminds_ai_model', settings.model);
+      localStorage.setItem('ultraminds_api_model', settings.model);
+    }
     if (settings.customEndpoint !== undefined) localStorage.setItem('ultraminds_ai_endpoint', settings.customEndpoint.trim());
   },
 
@@ -31,17 +39,17 @@ window.AIService = {
       }
     };
 
-    // If no API Key is set, use built-in Smart Heuristic Engine
+    // If no API Key is set on this computer, inform user clearly
     if (!settings.apiKey) {
-      updateStatus("⚠️ No API key set. Using built-in Smart Heuristic Engine...");
+      updateStatus("⚠️ No API Key found on this device. Click ⚙️ API in top navbar to enter your key. Falling back to Heuristic Engine...");
       const parsed = window.HeuristicParser.parse(inputText, pageLimit);
       return this.normalizeMissionObject(parsed, inputText);
     }
 
-    const masterPrompt = window.ULTRAMINDS_MASTER_PROMPT || `You are the UltraMinds Master AI Layout Specialist. Structure the given text into an UltraMinds Book Mission JSON object.`;
+    const masterPrompt = window.ULTRAMINDS_MASTER_PROMPT || `You are the Executive Design Director for UltraMinds Engineering Magazine. Structure the given text into an UltraMinds Book Mission JSON object.`;
 
     const stepsMessages = [
-      `🚀 Step 1/10: Connecting to ${settings.provider.toUpperCase()} API (${settings.model || 'gemini-3.5-flash'})...`,
+      `🚀 Step 1/10: Connecting to ${settings.provider.toUpperCase()} API (${settings.model || 'gemini-3.1-pro'})...`,
       "🧠 Step 2/10: Analyzing raw topic & mapping 52-Element UltraMinds STEM Ontology...",
       "📖 Step 3/10: Synthesizing Page 1: Mission Story, Real World Impact & OLED STEM Fact...",
       "🎯 Step 4/10: Synthesizing Page 2: Mission Objectives Grid & Component Anatomy Specs...",
@@ -61,41 +69,28 @@ window.AIService = {
         currentStepIdx++;
         updateStatus(stepsMessages[currentStepIdx]);
       }
-    }, 1100);
+    }, 1200);
 
     try {
       let rawResult = null;
 
       if (settings.provider === 'gemini') {
-        rawResult = await this.callGemini(settings.apiKey, settings.model, masterPrompt, inputText, updateStatus);
+        rawResult = await this.callGemini(settings.apiKey, settings.model || 'gemini-3.1-pro', masterPrompt, inputText, updateStatus);
       } else if (settings.provider === 'openai') {
-        rawResult = await this.callOpenAI(settings.apiKey, settings.model, masterPrompt, inputText, updateStatus);
+        rawResult = await this.callOpenAI(settings.apiKey, settings.model || 'gpt-4o-mini', masterPrompt, inputText, updateStatus);
       } else {
         rawResult = await this.callCustom(settings.customEndpoint, settings.apiKey, masterPrompt, inputText, updateStatus);
       }
 
       clearInterval(progressTimer);
 
-      updateStatus("🖼️ Step 9/10: Resolving High-Res Hardware Schematics & Mascot Overlay Layer...");
-      const normalizedMission = this.normalizeMissionObject(rawResult, inputText);
-
-      updateStatus("✨ Step 10/10: Complete! Masterpiece A4 STEM Textbook Chapter Ready!");
-      return normalizedMission;
+      updateStatus("✨ Step 10/10: Complete! Masterpiece Premium Engineering Magazine Chapter Ready!");
+      return this.normalizeMissionObject(rawResult, inputText);
 
     } catch (err) {
       clearInterval(progressTimer);
       console.error("AI Service API Call Failed:", err);
-      updateStatus(`⚠️ API Notice: ${err.message}. Retrying with fallback Gemini 2.5 Flash / Smart Heuristic Engine...`);
-
-      try {
-        if (settings.provider === 'gemini' && settings.model !== 'gemini-2.5-flash') {
-          updateStatus("🔄 Retrying with fallback model gemini-2.5-flash...");
-          const fallbackResult = await this.callGemini(settings.apiKey, 'gemini-2.5-flash', masterPrompt, inputText, updateStatus);
-          return this.normalizeMissionObject(fallbackResult, inputText);
-        }
-      } catch (fallbackErr) {
-        console.error("Fallback Gemini model also failed:", fallbackErr);
-      }
+      updateStatus(`⚠️ API Notice: ${err.message}. Using Smart Heuristic Engine fallback...`);
 
       const fallback = window.HeuristicParser.parse(inputText, pageLimit);
       return this.normalizeMissionObject(fallback, inputText);
@@ -103,42 +98,56 @@ window.AIService = {
   },
 
   async callGemini(apiKey, model, systemPrompt, userContent, updateStatus) {
-    const modelName = model || 'gemini-3.5-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    const modelsToTry = [model || 'gemini-3.1-pro', 'gemini-3.6-flash', 'gemini-2.5-pro', 'gemini-1.5-pro'].filter(Boolean);
+    const uniqueModels = [...new Set(modelsToTry)];
+    let lastError = null;
 
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: systemPrompt },
-            { text: `Here is the raw mission topic/content to transform into an ultra-detailed 5-8 page UltraMinds JSON chapter:\n\n${userContent}` }
-          ]
+    for (const modelName of uniqueModels) {
+      try {
+        if (updateStatus) updateStatus(`🚀 Connecting to Gemini API (${modelName})...`);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+        const payload = {
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                { text: systemPrompt },
+                { text: `Here is the raw mission topic/content to transform into an ultra-detailed 5-14 page Premium Engineering Magazine JSON chapter:\n\n${userContent}` }
+              ]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            maxOutputTokens: 8192,
+            temperature: 0.7
+          }
+        };
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Gemini API Error (${res.status}): ${errText}`);
         }
-      ],
-      generationConfig: {
-        responseMimeType: "application/json",
-        maxOutputTokens: 8192,
-        temperature: 0.7
+
+        const data = await res.json();
+        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!rawText) throw new Error("Empty response from Gemini API");
+
+        const parsed = this.parseJSONSafely(rawText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn(`Gemini Model [${modelName}] failed:`, err);
+        lastError = err;
       }
-    };
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Gemini API Error (${res.status}): ${errText}`);
     }
 
-    const data = await res.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) throw new Error("Empty response from Gemini API");
-
-    return this.parseJSONSafely(rawText);
+    throw lastError || new Error("All Gemini API models failed to return valid JSON");
   },
 
   async callOpenAI(apiKey, model, systemPrompt, userContent, updateStatus) {

@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
   apiSettingsBtn?.addEventListener('click', () => {
     const savedKey = localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('ultraminds_api_key') || localStorage.getItem('gemini_api_key') || '';
     const savedProvider = localStorage.getItem('ultraminds_ai_provider') || localStorage.getItem('ultraminds_api_provider') || 'gemini';
-    const savedModel = localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.5-flash';
+    const savedModel = localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.1-pro';
 
     const providerSelect = document.getElementById('api-provider-select');
     const keyInput = document.getElementById('api-key-input');
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
   saveApiBtn?.addEventListener('click', () => {
     const provider = document.getElementById('api-provider-select')?.value || 'gemini';
     const key = document.getElementById('api-key-input')?.value.trim() || '';
-    const model = document.getElementById('api-model-input')?.value.trim() || 'gemini-3.5-flash';
+    const model = document.getElementById('api-model-input')?.value.trim() || 'gemini-3.1-pro';
 
     localStorage.setItem('ultraminds_ai_provider', provider);
     localStorage.setItem('ultraminds_api_provider', provider);
