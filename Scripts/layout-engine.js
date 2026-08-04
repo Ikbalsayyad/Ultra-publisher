@@ -240,6 +240,64 @@ window.LayoutEngine = {
       </div>
     ` : '';
 
+    // Universal Content & Array List Resolution
+    let bodyText = sec.content || sec.text || sec.desc || sec.body || sec.details || sec.rawText || sec.description || sec.summary || sec.question || sec.answer || sec.value || '';
+    
+    let arrayItems = sec.items || sec.list || sec.bullets || sec.skills || sec.team || sec.components || sec.experiments || sec.questions || sec.steps || sec.heroes;
+    if (Array.isArray(arrayItems) && arrayItems.length > 0) {
+      const listHtml = arrayItems.map(item => {
+        if (typeof item === 'string') return `<li contenteditable="true">${item}</li>`;
+        if (typeof item === 'object' && item !== null) {
+          const itemTitle = item.title || item.name || item.role || item.label || item.hero || item.stepNum || '';
+          const itemDesc = item.desc || item.content || item.value || item.quote || item.subtext || item.text || '';
+          return `<li contenteditable="true"><strong>${itemTitle}</strong>${itemDesc ? `: ${itemDesc}` : ''}</li>`;
+        }
+        return '';
+      }).filter(Boolean).join('');
+      if (listHtml) {
+        bodyText += `<ul class="custom-card-list" style="margin-top:6px; padding-left:18px; line-height:1.6;">${listHtml}</ul>`;
+      }
+    }
+
+    // Check if card requires a Drawing Canvas Grid
+    const isDrawingTitle = sec.title && (
+      sec.title.toUpperCase().includes('DRAW') ||
+      sec.title.toUpperCase().includes('APP DESIGN SPACE') ||
+      sec.title.toUpperCase().includes('FLOWCHART GRID') ||
+      sec.title.toUpperCase().includes('RESERVED') ||
+      sec.title.toUpperCase().includes('DESIGN SPACE') ||
+      sec.title.toUpperCase().includes('WORKSPACE')
+    );
+
+    let drawingGridHtml = '';
+    if (sec.type === 'drawing-canvas' || isDrawingTitle) {
+      drawingGridHtml = `
+        <div class="drawing-canvas-grid" style="min-height:140px; border:2px dashed rgba(59,130,246,0.4); border-radius:8px; background:radial-gradient(circle, rgba(59,130,246,0.08) 1px, transparent 1px); background-size:16px 16px; margin-top:8px; display:flex; align-items:center; justify-content:center; color:#64748B; font-size:0.82rem; text-align:center; padding:12px;">
+          ✏️ Drawing & Design Workspace (Draw / Design Area)
+        </div>
+      `;
+    }
+
+    // Check if card requires Question Response Lines
+    const isWorksheetTitle = sec.title && (
+      sec.title.toUpperCase().includes('Q1') ||
+      sec.title.toUpperCase().includes('Q2') ||
+      sec.title.toUpperCase().includes('Q3') ||
+      sec.title.toUpperCase().includes('Q4') ||
+      sec.title.toUpperCase().includes('THINK LIKE AN ENGINEER') ||
+      sec.title.toUpperCase().includes('MISSION ASSESSMENT')
+    );
+
+    let responseLinesHtml = '';
+    if (sec.type === 'worksheet-card' || (isWorksheetTitle && !isDrawingTitle)) {
+      responseLinesHtml = `
+        <div class="worksheet-response-lines" style="margin-top:8px;">
+          <div style="border-bottom:1.5px dashed #CBD5E1; height:24px;"></div>
+          <div style="border-bottom:1.5px dashed #CBD5E1; height:24px;"></div>
+        </div>
+      `;
+    }
+
     switch (sec.type) {
       case 'image-holder':
         const imgSrcA = (sec.imgUrl && !sec.imgUrl.includes('placeholder')) ? sec.imgUrl : (window.AIService ? window.AIService.getHardwareImageForTopic(sec.title || sec.caption || '') : 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80');
@@ -313,12 +371,12 @@ window.LayoutEngine = {
       case 'parent-connect':
       case 'teacher-notes':
       case 'qr-resources':
-        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(sec.content || '')}</div>`;
+        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(bodyText)}</div>${responseLinesHtml}${drawingGridHtml}`;
         break;
 
       case 'stem-fact':
         let oledHtml = sec.oledPreview ? `<div class="oled-mini-screen"><pre>${sec.oledPreview}</pre></div>` : '';
-        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(sec.content || '')}</div>${oledHtml}`;
+        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(bodyText)}</div>${oledHtml}`;
         break;
 
       case 'mission-objectives':
@@ -340,7 +398,7 @@ window.LayoutEngine = {
             `;
           }).join('');
         }
-        card.innerHTML = `${titleHtml}<div class="objectives-grid">${objsHtml}</div>`;
+        card.innerHTML = `${titleHtml}<div class="objectives-grid">${objsHtml || bodyText}</div>`;
         break;
 
       case 'think-engineer':
@@ -373,12 +431,10 @@ window.LayoutEngine = {
         }
         card.innerHTML = `
           ${titleHtml}
-          <div class="question-prompt" contenteditable="true">${sec.question || sec.content || ''}</div>
-          <div class="answer-dotted-lines">
-            <div class="dotted-line"></div>
-            <div class="dotted-line"></div>
-          </div>
+          <div class="question-prompt" contenteditable="true">${sec.question || bodyText || ''}</div>
+          ${responseLinesHtml || '<div class="answer-dotted-lines"><div class="dotted-line"></div><div class="dotted-line"></div></div>'}
           ${scenarioHtml}
+          ${drawingGridHtml}
         `;
         break;
 
@@ -399,15 +455,15 @@ window.LayoutEngine = {
             `;
           }).join('');
         }
-        let buildFallback = sec.content ? `<div class="card-body-text" contenteditable="true">${this.formatText(sec.content)}</div>` : '';
-        card.innerHTML = `${titleHtml}<div class="build-lab">${stepsHtml || buildFallback}</div>`;
+        let buildFallback = bodyText ? `<div class="card-body-text" contenteditable="true">${this.formatText(bodyText)}</div>` : '';
+        card.innerHTML = `${titleHtml}<div class="build-lab">${stepsHtml || buildFallback}</div>${drawingGridHtml}`;
         break;
 
       case 'code-snippet':
       case 'programming-studio':
       case 'syntax-box':
         card.className = `code-snippet-card ${themeClass} draggable-element`;
-        const codeText = sec.code || sec.content || sec.text || '// Code logic here';
+        const codeText = sec.code || bodyText || '// Code logic here';
         card.innerHTML = `
           ${titleHtml}
           <div class="code-box">
@@ -428,7 +484,7 @@ window.LayoutEngine = {
             <div class="mistake-fix">➔ <span contenteditable="true">${m.fix || ''}</span></div>
           </div>
         `).join('') : '';
-        let mistakesFallback = sec.content ? `<div class="card-body-text" contenteditable="true">${this.formatText(sec.content)}</div>` : '';
+        let mistakesFallback = bodyText ? `<div class="card-body-text" contenteditable="true">${this.formatText(bodyText)}</div>` : '';
         card.innerHTML = `${titleHtml}<div class="mistakes-list">${mistakesList || mistakesFallback}</div>`;
         break;
 
@@ -438,12 +494,12 @@ window.LayoutEngine = {
           <div class="badge-icon">🎖️</div>
           <div class="badge-title" contenteditable="true" style="color: #1E40AF; font-weight: 800; font-size: 1.1rem; text-transform: uppercase;">${sec.badgeName || sec.title || 'PRODUCTIVITY ENGINEER BADGE'}</div>
           <div class="badge-text" contenteditable="true" style="color: #2563EB; font-weight: 700; font-size: 0.85rem; margin-top: 4px;">${sec.badgeStatus || 'MISSION COMPLETE'}</div>
-          <p contenteditable="true" style="color: #334155; margin-top: 6px; font-size: 0.85rem;">${sec.congrats || sec.content || 'Congratulations! Today you built software that improves daily life.'}</p>
+          <p contenteditable="true" style="color: #334155; margin-top: 6px; font-size: 0.85rem;">${sec.congrats || bodyText || 'Congratulations! Today you built software that improves daily life.'}</p>
         `;
         break;
 
       default:
-        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(sec.content || '')}</div>`;
+        card.innerHTML = `${titleHtml}<div class="card-body-text" contenteditable="true">${this.formatText(bodyText)}</div>${responseLinesHtml}${drawingGridHtml}`;
         break;
     }
 

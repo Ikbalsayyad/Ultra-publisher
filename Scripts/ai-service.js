@@ -98,7 +98,7 @@ window.AIService = {
   },
 
   async callGemini(apiKey, model, systemPrompt, userContent, updateStatus) {
-    const modelsToTry = [model || 'gemini-3.1-pro', 'gemini-3.6-flash', 'gemini-2.5-pro', 'gemini-1.5-pro'].filter(Boolean);
+    const modelsToTry = [model, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-2.5-pro'].filter(Boolean);
     const uniqueModels = [...new Set(modelsToTry)];
     let lastError = null;
 
