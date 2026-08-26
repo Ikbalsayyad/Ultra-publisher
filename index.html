@@ -1,65 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UltraMinds Publisher v1.0 - 52-Element Smart A4 STEM Generator</title>
+  <title>UltraMinds Publisher V7.2 — AI-Powered Premium Book Layout & Design Engine</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700;900&family=Outfit:wght@600;800;900&display=swap"
+    rel="stylesheet">
 
   <!-- Core Design System CSS -->
   <link rel="stylesheet" href="Styles/ultraminds-core.css" />
   <link rel="stylesheet" href="Styles/ultraminds-layout.css" />
   <link rel="stylesheet" href="Styles/ultraminds-cards.css" />
   <link rel="stylesheet" href="Styles/studio.css" />
+  <link rel="stylesheet" href="Styles/ultraminds-dynamic-cards.css" />
+
+  <!-- External CDN Libraries for High Quality PPT & Canvas Capture -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
+
 <body class="studio-app theme-blue">
 
   <!-- COMPACT TOP NAVBAR (HEIGHT: 46PX) -->
   <header class="studio-navbar">
     <div class="brand-logo">
-      <button class="btn btn-secondary" id="btn-toggle-sidebar" style="padding: 3px 7px;" title="Toggle Left Sidebar">◀ Panel</button>
-      <span class="logo-badge">PUBLISHER V1.0</span>
+      <button class="btn btn-secondary" id="btn-toggle-sidebar" style="padding: 3px 7px;" title="Toggle Left Sidebar">◀
+        Panel</button>
+      <span class="logo-badge">V7.2</span>
       <span class="logo-title">UltraMinds Publisher</span>
     </div>
 
     <div class="navbar-actions">
       <!-- DYNAMIC CANVAS ZOOM SLIDER -->
-      <div style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.06); padding:2px 7px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div
+        style="display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.06); padding:2px 7px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
         <label style="font-size:0.7rem; color:#94A3B8;">🔍 Zoom:</label>
-        <input type="range" id="canvas-zoom-slider" min="0.4" max="1.2" step="0.05" value="0.75" style="width:70px;" />
+        <input type="range" id="canvas-zoom-slider" min="0.4" max="1.2" step="0.05" value="0.75" style="width:65px;" />
         <span id="zoom-value-label" style="font-size:0.72rem; font-weight:bold; color:var(--accent-cyan);">75%</span>
       </div>
 
-      <button class="btn btn-primary" id="btn-ai-tools">🤖 AI Tools</button>
-      <button class="btn btn-secondary" id="btn-page-setup">📄 Page Setup</button>
-      <button class="btn btn-secondary" id="btn-toggle-format-bar" onclick="window.ContextMenu.toggleTopFormatBar()">🎨 Format Bar</button>
-      <button class="btn btn-secondary" id="btn-api-settings">⚙️ API Settings</button>
-      <button class="btn btn-secondary" id="btn-toggle-manual">🔒 Manual (OFF)</button>
-      
-      <!-- Compact Export Menu -->
-      <button class="btn btn-primary" id="btn-export-pdf">📄 PDF</button>
-      <button class="btn btn-secondary" id="btn-export-word">📝 Word</button>
-      <button class="btn btn-secondary" id="btn-export-pptx">📊 PPT</button>
-      <button class="btn btn-secondary" id="btn-export-xhtml">🌐 XHTML</button>
+      <!-- QUICK SAVE & UNDO/REDO & RELEASE AUDIT -->
+      <button class="btn btn-primary" style="background:#10B981; border:none; padding:4px 10px;"
+        onclick="window.SaveEngine.exportToFile()"
+        title="Export & Save Full Project to Device (.ultraminds file — unlimited size)">💾 Save to Device</button>
+      <button class="btn btn-secondary" style="padding:4px 10px;" onclick="window.SaveEngine.importFromFile()"
+        title="Open/Load Project File from Device (.ultraminds / .json)">📂 Open File</button>
+      <button class="btn btn-primary"
+        style="background:linear-gradient(135deg, #059669, #0284C7); border:none; padding:4px 10px; font-weight:bold;"
+        onclick="if(window.VerificationEngine && window.lastCanonicalResult){ const report = window.VerificationEngine.verifyPublishedDocument(window.lastCanonicalResult, document.getElementById('a4-canvas-container')); window.ReleaseDashboard.show(report, window.lastCanonicalResult); } else { alert('Compile raw content first to run verification audit.'); }"
+        title="Open Publishing Release Dashboard">🚀 Release Audit</button>
+      <button class="btn btn-secondary" id="btn-undo" onclick="window.HistoryEngine.undo()" title="Undo Action (Ctrl+Z)"
+        style="padding:4px 8px; opacity:0.4;">↩ Undo</button>
+      <button class="btn btn-secondary" id="btn-redo" onclick="window.HistoryEngine.redo()"
+        title="Redo Action (Ctrl+Y / Ctrl+Shift+Z)" style="padding:4px 8px; opacity:0.4;">↪ Redo</button>
+
+      <!-- 1. PROJECTS DROPDOWN -->
+      <div class="nav-dropdown">
+        <button class="btn btn-secondary" style="padding:4px 10px;">📂 Projects ▼</button>
+        <div class="nav-dropdown-menu">
+          <button class="nav-dropdown-item" onclick="window.SaveEngine.exportToFile()">💾 Export Project File to Device
+            (.ultraminds)</button>
+          <button class="nav-dropdown-item" onclick="window.SaveEngine.importFromFile()">📂 Open Project File from
+            Device (.ultraminds / .json)</button>
+          <button class="nav-dropdown-item" onclick="window.SaveEngine.openModal()">📂 Local Browser Save Slots</button>
+          <button class="nav-dropdown-item" onclick="window.SaveEngine.quickSave()">⚡ Quick Cache Save (Ctrl+S)</button>
+        </div>
+      </div>
+
+      <!-- 2. AI & BUILDERS DROPDOWN -->
+      <div class="nav-dropdown">
+        <button class="btn btn-primary"
+          style="background:linear-gradient(135deg,#8B5CF6,#6366F1); border:none; padding:4px 10px;">🎨 Suite &amp; AI
+          ▼</button>
+        <div class="nav-dropdown-menu">
+          <button class="nav-dropdown-item" id="btn-ai-tools">🤖 AI Layout Suite</button>
+          <button class="nav-dropdown-item" onclick="window.BlocksEditor.open()">🧱 MIT Blocks Builder</button>
+          <button class="nav-dropdown-item" onclick="window.CardDesigner.open()">🎨 Custom Card Designer</button>
+        </div>
+      </div>
+
+      <!-- 3. EXPORT BOOK DROPDOWN -->
+      <div class="nav-dropdown">
+        <button class="btn btn-primary"
+          style="background:linear-gradient(135deg,#D97706,#B45309); border:none; padding:4px 10px; font-weight:bold;">📥
+          Export Book ▼</button>
+        <div class="nav-dropdown-menu">
+          <button class="nav-dropdown-item" id="btn-export-pptx">📊 High-Res PPTX</button>
+          <button class="nav-dropdown-item" id="btn-export-pdf">📄 PDF Document</button>
+          <button class="nav-dropdown-item" id="btn-export-word">📝 Word Document</button>
+          <button class="nav-dropdown-item" id="btn-export-xhtml">🌐 XHTML Web Package</button>
+        </div>
+      </div>
+
+      <!-- 4. SETTINGS & VIEW DROPDOWN -->
+      <div class="nav-dropdown">
+        <button class="btn btn-secondary" style="padding:4px 10px;">⚙️ Settings ▼</button>
+        <div class="nav-dropdown-menu">
+          <button class="nav-dropdown-item" id="btn-page-setup">📄 Page Setup (Margins/Bleed)</button>
+          <button class="nav-dropdown-item" id="btn-toggle-format-bar"
+            onclick="window.ContextMenu.toggleTopFormatBar()">🎨 Toggle Format Bar</button>
+          <button class="nav-dropdown-item" id="btn-api-settings" onclick="window.openApiSettings()">⚙️ AI API
+            Settings</button>
+          <button class="nav-dropdown-item" id="btn-toggle-manual">🔒 Toggle Manual Mode</button>
+        </div>
+      </div>
     </div>
   </header>
+
+  <!-- PAGE CONTROL TOOLBAR (V3 FEATURE) -->
+  <div class="page-control-toolbar"
+    style="display:flex; align-items:center; justify-content:space-between; padding:4px 16px; background:#0B0F19; border-bottom:1px solid rgba(255,255,255,0.08); font-size:0.75rem;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="color:#94A3B8; font-weight:600;">📄 Page Controls:</span>
+      <button class="ctx-btn-sm" id="pcb-add-page" style="background:#2563EB;" onclick="window.PageManager.addPage()">➕ Add Page</button>
+      <button class="ctx-btn-sm" id="pcb-delete-page" style="background:#EF4444;" onclick="window.PageManager.deletePage()">🗑 Delete Page</button>
+      <button class="ctx-btn-sm" id="pcb-move-up" onclick="window.PageManager.moveElementUp()">⬆ Move Up</button>
+      <button class="ctx-btn-sm" id="pcb-move-down" onclick="window.PageManager.moveElementDown()">⬇ Move Down</button>
+      <button class="ctx-btn-sm" id="pcb-margins" onclick="window.PageManager.openMarginModal()">📐 Margins &amp; Bleed</button>
+      <button class="ctx-btn-sm" id="pcb-landscape-toggle" onclick="window.PageManager.toggleLandscapeMode()">🔄 Landscape</button>
+      <button class="ctx-btn-sm" style="background:rgba(16,185,129,0.25); border:1px solid #10B981;" onclick="window.PageManager.addFooterToPage()" title="Add Page Footer if deleted">🦶 Add Footer</button>
+      <label style="display:flex; align-items:center; gap:4px; font-size:0.68rem; color:#94A3B8; cursor:pointer;" title="Footer Color">
+        🎨 Footer Color:
+        <input type="color" onchange="window.PageManager.setFooterColor(this.value)" value="#0F172A" style="width:20px; height:20px; border:none; border-radius:4px; cursor:pointer; background:none; padding:0;">
+      </label>
+      <label style="display:flex; align-items:center; gap:4px; font-size:0.68rem; color:#94A3B8; cursor:pointer; margin-left:4px;" title="Adjust Gap Between Pages (0px - 500px)">
+        ↔️ Page Gap:
+        <input type="range" id="page-gap-slider" min="0" max="500" value="44" step="5" oninput="window.PageManager.setPageGap(this.value)" style="width:75px; cursor:pointer; accent-color:#00F0FF;">
+        <span id="page-gap-value" style="font-weight:700; color:#00F0FF; min-width:36px;">44px</span>
+      </label>
+
+      <!-- IN-CARD QUICK ADD TOOLBAR (ALWAYS VISIBLE FOR ONE-CLICK INSERTION) -->
+      <div id="pcb-card-actions"
+        style="display:flex; align-items:center; gap:5px; margin-left:8px; padding-left:8px; border-left:1px solid rgba(255,255,255,0.15);">
+        <span style="color:var(--accent-cyan, #00F0FF); font-weight:700; font-size:0.7rem; white-space:nowrap;">➕ Add to
+          Card:</span>
+        <button class="ctx-btn-sm" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6;"
+          onclick="window.CanvasEditor.insertInCardElement('subcard')" title="Add Sub-Card to selected card">📦
+          Sub-Card</button>
+        <button class="ctx-btn-sm" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6;"
+          onclick="window.CanvasEditor.insertInCardElement('bullets')" title="Add Bullet List to selected card">📋
+          List</button>
+        <button class="ctx-btn-sm" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6;"
+          onclick="window.CanvasEditor.insertInCardElement('text')" title="Add Text Box to selected card">📄
+          Text</button>
+        <button class="ctx-btn-sm" style="background:rgba(245,158,11,0.25); border:1px solid #F59E0B;"
+          onclick="window.CanvasEditor.insertInCardElement('callout')" title="Add Callout Box to selected card">💡
+          Callout</button>
+        <button class="ctx-btn-sm" style="background:rgba(16,185,129,0.25); border:1px solid #10B981;"
+          onclick="window.CanvasEditor.insertInCardElement('pair')" title="Add Key-Value Pair to selected card">🏷️
+          Pair</button>
+        <button class="ctx-btn-sm" style="background:rgba(139,92,246,0.25); border:1px solid #8B5CF6;"
+          onclick="window.CanvasEditor.insertInCardElement('code')" title="Add Code Block to selected card">💻
+          Code</button>
+        <button class="ctx-btn-sm" style="background:rgba(0,240,255,0.25); border:1px solid #00F0FF;"
+          onclick="window.CanvasEditor.insertImageCapsule()" title="Add Caption Capsule to Image Card">📷
+          Capsule</button>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; color:#64748B;">
+      <span>Shift+Up/Down: Move Card</span>
+      <span>Double-click Emoji: Replace with Image</span>
+    </div>
+  </div>
 
   <!-- WORKSPACE MAIN -->
   <div class="studio-workspace">
 
-    <!-- LEFT SIDEBAR CONTROL PANEL (340PX WIDTH - ALL 4 TABS 100% VISIBLE) -->
+    <!-- LEFT SIDEBAR CONTROL PANEL -->
     <aside class="left-control-panel" id="left-sidebar">
-      
+
       <!-- Panel Tabs Header -->
       <div class="panel-tabs">
         <button class="tab-btn active" data-tab="tab-input" onclick="switchTab('tab-input', this)">📝 Data</button>
         <button class="tab-btn" data-tab="tab-style" onclick="switchTab('tab-style', this)">🎨 Theme</button>
         <button class="tab-btn" data-tab="tab-palette" onclick="switchTab('tab-palette', this)">🧩 52 Elements</button>
-        <button class="tab-btn" data-tab="tab-inspector" onclick="switchTab('tab-inspector', this)">🔍 Inspector</button>
+        <button class="tab-btn" data-tab="tab-insert" onclick="switchTab('tab-insert', this)">➕ Insert</button>
+        <button class="tab-btn" data-tab="tab-inspector" onclick="switchTab('tab-inspector', this)">🔍
+          Inspector</button>
       </div>
 
       <!-- TAB 1: MISSION DATA INPUT -->
@@ -67,6 +191,8 @@
         <div class="form-group">
           <label>Load Preset Sample Mission</label>
           <select id="preset-mission-select">
+            <option value="mission99" selected>🔥 Mission 99: Stress Test (Complex Curriculum)</option>
+            <option value="mission03">Mission 03: Smart Farm Guardian (IoT Irrigation)</option>
             <option value="mission14">Mission 14: Smart Climate Monitor (5 Pages)</option>
             <option value="mission13">Mission 13: Smart Plant Waterer</option>
             <option value="rawTextSample">Raw Text Sample (Robotic Arm)</option>
@@ -74,11 +200,32 @@
         </div>
 
         <div class="form-group">
-          <label>Raw Mission Input (Text / HTML / XHTML)</label>
-          <textarea id="raw-mission-input" placeholder="Paste your raw text, unstructured notes, or HTML/XHTML mission data here..."></textarea>
+          <label>⚡ Quick AI Model</label>
+          <select id="quick-model-select">
+            <option value="saved">⚙️ Active API Settings Model</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Best Quality)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fast)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Fastest)</option>
+            <option value="heuristic">🔵 Heuristic Parser (No API Key)</option>
+          </select>
         </div>
 
-        <button class="btn btn-primary" id="btn-parse-ai" style="width: 100%;">✨ Parse & Smart Arrange (AI)</button>
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label style="margin:0;">Raw Mission Input (Text / HTML / XHTML)</label>
+            <span id="token-count-badge"
+              style="font-size:0.68rem; font-weight:bold; background:rgba(0,240,255,0.15); color:var(--accent-cyan); padding:1px 6px; border-radius:4px;">~0
+              tokens</span>
+          </div>
+          <textarea id="raw-mission-input"
+            placeholder="Paste your raw chapter content, notes, curriculum text, or HTML here. All content will be preserved 100% — zero omission."></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="btn-parse-ai" style="width: 100%; font-size: 0.82rem; padding: 8px;">✨ Parse
+          &amp; Smart Arrange (AI) — Premium Layout</button>
+        <button class="btn btn-secondary" id="btn-parse-heuristic"
+          style="width: 100%; font-size: 0.75rem; padding: 5px; margin-top: 4px;">🔵 Quick Heuristic Parse
+          (Offline)</button>
 
         <!-- REAL-TIME AI THINKING & STATUS MONITOR PANEL -->
         <div id="ai-status-monitor" class="ai-status-panel" style="display:none; margin-top: 10px;">
@@ -108,18 +255,110 @@
         </div>
       </div>
 
-      <!-- TAB 3: 51-ELEMENT PALETTE -->
+      <!-- TAB 3: 52-ELEMENT PALETTE -->
       <div id="tab-palette" class="tab-content">
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">51 UltraMinds Book Elements Library:</p>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">51 UltraMinds Book Elements
+          Library:</p>
         <div class="component-palette-grid" id="elements-palette-container">
           <!-- Populated dynamically -->
         </div>
       </div>
 
-      <!-- TAB 4: ELEMENT INSPECTOR -->
+      <!-- TAB: INSERT — Quick Card Insertion Panel -->
+      <div id="tab-insert" class="tab-content">
+        <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 8px;">Insert new cards at the selected
+          position:</p>
+
+        <div class="insert-section-label">✏️ Text &amp; Content</div>
+        <div class="insert-grid">
+          <button class="insert-btn" id="ins-text" onclick="window.CanvasEditor.insertTextCard()">
+            <span class="ib-icon">📄</span><span class="ib-label">Text Block</span>
+          </button>
+          <button class="insert-btn" id="ins-bullets" onclick="window.CanvasEditor.insertBulletCard()">
+            <span class="ib-icon">📋</span><span class="ib-label">Bullet List</span>
+          </button>
+          <button class="insert-btn" id="ins-subheader" onclick="window.CanvasEditor.insertSubheaderCard()">
+            <span class="ib-icon">🏷️</span><span class="ib-label">Subheader</span>
+          </button>
+          <button class="insert-btn" id="ins-capsule" onclick="window.CanvasEditor.insertCapsuleCard()">
+            <span class="ib-icon">💡</span><span class="ib-label">Highlight</span>
+          </button>
+        </div>
+
+        <div class="insert-section-label">📊 Data &amp; Visuals</div>
+        <div class="insert-grid">
+          <button class="insert-btn" id="ins-table" onclick="window.CanvasEditor.insertTableCard()">
+            <span class="ib-icon">📊</span><span class="ib-label">Table</span>
+          </button>
+          <button class="insert-btn" id="ins-comparison" onclick="window.CanvasEditor.insertComparisonCard()">
+            <span class="ib-icon">⚖️</span><span class="ib-label">Comparison</span>
+          </button>
+          <button class="insert-btn" id="ins-image" onclick="window.CanvasEditor.insertImageCard()">
+            <span class="ib-icon">🖼️</span><span class="ib-label">Image Box</span>
+          </button>
+          <button class="insert-btn" id="ins-mixed" onclick="window.CanvasEditor.insertMixedCard()">
+            <span class="ib-icon">📦</span><span class="ib-label">Mixed Block</span>
+          </button>
+        </div>
+
+        <div class="insert-section-label">🧩 Specialty Cards</div>
+        <div class="insert-grid">
+          <button class="insert-btn" id="ins-subcard-btn"
+            onclick="window.CanvasEditor.insertComponent('in-card-subcard')">
+            <span class="ib-icon">📦</span><span class="ib-label">Plain Sub-Card</span>
+          </button>
+          <button class="insert-btn" id="ins-callout-btn" onclick="window.CanvasEditor.insertComponent('callout-box')">
+            <span class="ib-icon">💡</span><span class="ib-label">Callout Box</span>
+          </button>
+          <button class="insert-btn" id="ins-keyvalue-btn"
+            onclick="window.CanvasEditor.insertComponent('key-value-pair')">
+            <span class="ib-icon">🏷️</span><span class="ib-label">Key-Value Pair</span>
+          </button>
+          <button class="insert-btn" id="ins-synthesizer-btn"
+            onclick="window.CanvasEditor.insertComponent('dynamic-synthesized')">
+            <span class="ib-icon">⚙️</span><span class="ib-label">Synthesizer Card</span>
+          </button>
+          <button class="insert-btn" id="ins-bullets-card"
+            onclick="window.CanvasEditor.insertComponent('dynamic-bullets')">
+            <span class="ib-icon">•••</span><span class="ib-label">Bullet Card</span>
+          </button>
+          <button class="insert-btn" id="ins-space" onclick="window.CanvasEditor.insertComponent('space-filler')">
+            <span class="ib-icon">👻</span><span class="ib-label">Spacer</span>
+          </button>
+          <button class="insert-btn" id="ins-code" onclick="window.CanvasEditor.insertComponent('code-snippet')">
+            <span class="ib-icon">💻</span><span class="ib-label">Code Block</span>
+          </button>
+          <button class="insert-btn" id="ins-vocab" onclick="window.CanvasEditor.insertComponent('vocabulary-builder')">
+            <span class="ib-icon">📚</span><span class="ib-label">Vocabulary</span>
+          </button>
+        </div>
+
+        <div class="insert-section-label">⚡ Mission Cards</div>
+        <div class="insert-grid">
+          <button class="insert-btn" id="ins-tip" onclick="window.CanvasEditor.insertComponent('pro-tip')">
+            <span class="ib-icon">⭐</span><span class="ib-label">Pro Tip</span>
+          </button>
+          <button class="insert-btn" id="ins-challenge" onclick="window.CanvasEditor.insertComponent('challenge-box')">
+            <span class="ib-icon">🏆</span><span class="ib-label">Challenge</span>
+          </button>
+          <button class="insert-btn" id="ins-dyk" onclick="window.CanvasEditor.insertComponent('did-you-know')">
+            <span class="ib-icon">💡</span><span class="ib-label">Did You Know</span>
+          </button>
+          <button class="insert-btn" id="ins-flow" onclick="window.CanvasEditor.insertComponent('flowchart-sequence')">
+            <span class="ib-icon">🔄</span><span class="ib-label">Flowchart</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 4: ELEMENT INSPECTOR & AI PAGE INSPECTOR -->
       <div id="tab-inspector" class="tab-content">
+        <div style="margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1);">
+          <button class="btn btn-primary" id="btn-run-ai-page-inspector" style="width:100%; font-size:0.78rem;"
+            onclick="window.AILayoutTools?.runPageInspector()">🤖 Run AI Page Inspector</button>
+        </div>
         <div id="element-inspector">
-          <div class="inspector-placeholder" style="color: var(--text-muted); font-size: 0.78rem;">Click any card on the right canvas to inspect & edit style properties.</div>
+          <div class="inspector-placeholder" style="color: var(--text-muted); font-size: 0.78rem;">Click any card on the
+            right canvas to inspect &amp; edit style properties, or run AI Page Inspector above.</div>
         </div>
       </div>
 
@@ -132,19 +371,82 @@
 
   </div>
 
+  <!-- SAVE / LOAD SLOTS MODAL -->
+  <div class="modal-overlay" id="save-load-modal">
+    <div class="modal-card" style="width:520px; background:#0F172A;">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem; color:#F8FAFC;">💾 Project Save &amp; Load Manager</h3>
+      <p style="font-size:0.8rem; color:#94A3B8; margin-bottom:14px;">Select a slot to save or restore your project
+        layout:</p>
+
+      <div id="save-slot-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+        <!-- Filled by SaveEngine -->
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:space-between; align-items:center;">
+        <button class="btn btn-secondary" onclick="window.SaveEngine.importFromFile()">📥 Import .umproj File</button>
+        <button class="btn btn-secondary" onclick="window.SaveEngine.closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARGIN & BLEED SETUP MODAL -->
+  <div class="modal-overlay" id="margin-bleed-modal">
+    <div class="modal-card" style="width:420px; background:#0F172A;">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem; color:#F8FAFC;">📐 Page Margins &amp; Bleed Setup</h3>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Top Margin (mm)</label>
+          <input type="number" id="margin-top" class="form-control" value="15" min="0" max="50" />
+        </div>
+        <div class="form-group">
+          <label>Bottom Margin (mm)</label>
+          <input type="number" id="margin-bottom" class="form-control" value="15" min="0" max="50" />
+        </div>
+        <div class="form-group">
+          <label>Left Margin (mm)</label>
+          <input type="number" id="margin-left" class="form-control" value="12" min="0" max="50" />
+        </div>
+        <div class="form-group">
+          <label>Right Margin (mm)</label>
+          <input type="number" id="margin-right" class="form-control" value="12" min="0" max="50" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:8px;">
+        <label>Print Bleed Margin (mm)</label>
+        <input type="number" id="margin-bleed" class="form-control" value="0" min="0" max="10"
+          placeholder="0 for digital, 3 for print" />
+        <small style="color:#94A3B8; font-size:0.7rem;">Adds red trim outline to pages for print offset
+          calculation</small>
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px;">
+        <button class="btn btn-secondary" id="btn-close-margins">Cancel</button>
+        <button class="btn btn-primary" id="btn-apply-margins">Apply Margins</button>
+      </div>
+    </div>
+  </div>
+
   <!-- AI TOOLS MODAL DIALOG -->
   <div class="modal-overlay" id="ai-tools-modal">
     <div class="modal-card" style="width:480px;">
       <h3 style="margin-bottom: 12px; font-size:1.1rem;">🤖 Next-Level AI Layout Suite</h3>
-      <p style="font-size:0.8rem; color:#94A3B8; margin-bottom:12px;">Select an automated AI algorithm to optimize your active mission book layout:</p>
-      
+      <p style="font-size:0.8rem; color:#94A3B8; margin-bottom:12px;">Select an automated AI algorithm to optimize your
+        active mission book layout:</p>
+
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="btn btn-primary" id="ai-tool-equalize">⚡ AI Smart Page Equalizer (Redistribute Cards Evenly)</button>
+        <button class="btn btn-primary" id="ai-tool-equalize">⚡ AI Smart Page Equalizer (Redistribute Cards
+          Evenly)</button>
+        <button class="btn btn-secondary" id="ai-tool-autofill" onclick="window.AILayoutTools.autoFillEmptyPage()">✨ AI
+          Autofill Empty Page (Slide Up Content)</button>
         <button class="btn btn-secondary" id="ai-tool-reorder">📐 AI Pedagogical Flow Re-Order (Book Sequence)</button>
-        <button class="btn btn-secondary" id="ai-tool-alignfooters">🪄 AI Whitespace Auto-Aligner (Fill Page Gaps)</button>
-        <button class="btn btn-secondary" id="ai-tool-enhancehierarchy">🎨 AI Visual Hierarchy Enhancer (Hero Styling)</button>
+        <button class="btn btn-secondary" id="ai-tool-alignfooters">🪄 AI Whitespace Auto-Aligner (Fill Page
+          Gaps)</button>
+        <button class="btn btn-secondary" id="ai-tool-enhancehierarchy">🎨 AI Visual Hierarchy Enhancer (Hero
+          Styling)</button>
         <button class="btn btn-secondary" id="ai-tool-autotheme">🎨 AI Domain Theme Generator</button>
-        <button class="btn btn-secondary" id="ai-tool-debuggen">🐛 AI Common Mistakes & Debug Generator</button>
+        <button class="btn btn-secondary" id="ai-tool-debuggen">🐛 AI Common Mistakes &amp; Debug Generator</button>
       </div>
 
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
@@ -156,8 +458,8 @@
   <!-- PAGE SETUP MODAL DIALOG -->
   <div class="modal-overlay" id="page-setup-modal">
     <div class="modal-card" style="width: 500px;">
-      <h3 style="margin-bottom: 12px; font-size:1.1rem;">📄 Page Setup & Canvas Typography</h3>
-      
+      <h3 style="margin-bottom: 12px; font-size:1.1rem;">📄 Page Setup &amp; Canvas Typography</h3>
+
       <div class="form-group">
         <label>🔤 Global Page Typography Font</label>
         <select id="page-font-select" class="form-control">
@@ -188,8 +490,10 @@
       <div class="form-group">
         <label>🖼️ Custom Page Background Image / Watermark</label>
         <div style="display:flex; gap:6px;">
-          <input type="text" id="page-bg-img-input" class="form-control" placeholder="Image URL (http://... or base64)" style="flex:1;" />
-          <button class="btn btn-secondary" id="btn-upload-bg-img" style="font-size:0.75rem; padding:4px 8px;">📁 Upload File</button>
+          <input type="text" id="page-bg-img-input" class="form-control" placeholder="Image URL (http://... or base64)"
+            style="flex:1;" />
+          <button class="btn btn-secondary" id="btn-upload-bg-img" style="font-size:0.75rem; padding:4px 8px;">📁 Upload
+            File</button>
         </div>
       </div>
 
@@ -203,8 +507,9 @@
       </div>
 
       <div class="form-group">
-        <label>🎛️ Background Image & Overlay Opacity (0% - 100%)</label>
-        <small style="color:var(--text-muted); display:block; margin-bottom:4px;">Adjusts background overlay image only — text & cards stay 100% crisp!</small>
+        <label>🎛️ Background Image &amp; Overlay Opacity (0% - 100%)</label>
+        <small style="color:var(--text-muted); display:block; margin-bottom:4px;">Adjusts background overlay image only
+          — text &amp; cards stay 100% crisp!</small>
         <input type="range" id="page-bg-opacity-slider" min="0.0" max="1.0" step="0.05" value="1.0" />
       </div>
 
@@ -215,34 +520,51 @@
     </div>
   </div>
 
-
   <!-- API SETTINGS MODAL -->
   <div class="modal-overlay" id="api-settings-modal">
     <div class="modal-card">
       <h3 style="margin-bottom: 12px; font-size:1.1rem;">⚙️ AI Provider API Settings</h3>
-      
+
       <div class="form-group">
         <label>AI Provider</label>
         <select id="api-provider-select">
           <option value="gemini">Google Gemini API (Recommended)</option>
-          <option value="openai">OpenAI API</option>
+          <option value="nara">NaRA Router (700K Free Daily — Mistral, Agnes, StepFun)</option>
+          <option value="groq">Groq (Ultra-Fast Llama 3.3 70B — 100% Free)</option>
+          <option value="openrouter">OpenRouter (Claude 3.5, Llama 3, DeepSeek, 100+ Models)</option>
+          <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
+          <option value="deepseek">DeepSeek API (deepseek-chat / deepseek-reasoner)</option>
+          <option value="custom">Custom / Local LLM (Ollama / LM Studio / LocalAI)</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>API Key</label>
         <input type="password" id="api-key-input" class="form-control" placeholder="AIzaSy... or sk-..." />
-        <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Key is stored strictly in local browser storage.</small>
+        <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Key is stored
+          strictly in local browser storage.</small>
       </div>
 
       <div class="form-group">
-        <label>Model Name (e.g., gemini-3.1-pro, gemini-3.6-flash, gemini-2.5-pro)</label>
-        <input type="text" id="api-model-input" class="form-control" value="gemini-3.1-pro" />
+        <label>AI Model</label>
+        <input type="text" id="api-model-input" class="form-control"
+          placeholder="e.g., gemini-2.5-pro, gpt-4o, anthropic/claude-3.5-sonnet, deepseek/deepseek-r1"
+          value="gemini-2.5-flash" />
+        <small style="color: var(--text-muted); font-size: 0.7rem; display: block; margin-top: 4px;">Type any model name
+          (e.g. gemini-2.5-pro, gpt-4o, anthropic/claude-3.5-sonnet, llama-3.3-70b-versatile, deepseek-chat).</small>
+      </div>
+
+      <div class="form-group" id="custom-endpoint-group" style="display:none;">
+        <label>Custom Endpoint URL</label>
+        <input type="text" id="api-endpoint-input" class="form-control"
+          placeholder="http://localhost:11434/v1/chat/completions" />
+        <small style="color: var(--text-muted); font-size: 0.7rem; display: block; margin-top: 4px;">For Ollama:
+          http://localhost:11434/v1/chat/completions | LM Studio: http://localhost:1234/v1/chat/completions</small>
       </div>
 
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
-        <button class="btn btn-secondary" id="btn-close-modal">Cancel</button>
-        <button class="btn btn-primary" id="btn-save-api">Save Settings</button>
+        <button class="btn btn-secondary" id="btn-close-modal" onclick="window.closeApiSettings()">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-api" onclick="window.saveApiSettings()">Save Settings</button>
       </div>
     </div>
   </div>
@@ -262,8 +584,21 @@
   <!-- Load Scripts -->
   <script src="Scripts/system-prompt.js"></script>
   <script src="Scripts/sample-missions.js"></script>
-  <script src="Scripts/ai-service.js"></script>
+  <script src="Scripts/canonical-compiler.js"></script>
+  <script src="Scripts/dynamic-card-composer.js"></script>
+  <script src="Scripts/ai-role-boundary.js"></script>
+  <script src="Scripts/verification-engine.js"></script>
+  <script src="Scripts/regression-suite.js"></script>
+  <script src="Scripts/golden-master.js"></script>
+  <script src="Scripts/release-dashboard.js"></script>
+  <script src="Scripts/save-engine.js"></script>
+  <script src="Scripts/history-engine.js"></script>
+  <script src="Scripts/page-manager.js"></script>
+  <script src="Scripts/blocks-editor.js"></script>
+  <script src="Scripts/card-designer.js"></script>
+  <script src="Scripts/dynamic-card-factory.js"></script>
   <script src="Scripts/parser.js"></script>
+  <script src="Scripts/ai-service.js"></script>
   <script src="Scripts/layout-engine.js"></script>
   <script src="Scripts/canvas-editor.js"></script>
   <script src="Scripts/context-menu.js"></script>
@@ -272,5 +607,5 @@
   <script src="Scripts/export-engine.js"></script>
   <script src="Scripts/app.js"></script>
 </body>
-</html>
 
+</html>

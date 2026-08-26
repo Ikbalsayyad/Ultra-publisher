@@ -1,504 +1,249 @@
 /**
- * UltraMinds 52-Element Standard Library Specification & Masterpiece Prompt System (V11 - Strict User Input Fidelity)
+ * UltraMinds 52-Element Standard Library & Ultra-Precision Masterpiece Prompt System (V20)
+ * Complete rewrite — matches sample pages 1-5 exactly with rich JSON schema
  */
 
 window.ULTRAMINDS_50_ELEMENTS = {
-  "floating-clipart": {
-    name: "Floating Clipart Sticker (Mascot)",
-    type: "floating-clipart",
-    icon: "🧑‍🚀",
-    desc: "Borderless floating PNG sticker/mascot (e.g. Commander Nova) that can be moved anywhere on page without disturbing cards.",
-    presetData: {
-      type: "floating-clipart",
-      title: "Commander Nova Clipart",
-      imgUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80"
-    }
-  },
-  "image-holder": {
-    name: "Normal Image Holder Card",
-    type: "image-holder",
-    icon: "🖼️",
-    desc: "Clean standalone image card with top title capsule, image box, and caption.",
-    presetData: {
-      type: "image-holder",
-      title: "FIGURE 1.1 - HARDWARE SCHEMATIC",
-      icon: "🖼️",
-      imgUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-      caption: "Figure 1.1 Hardware Diagram Schematic",
-      objectFit: "cover",
-      objectPosition: "center"
-    }
-  },
-  "incard-image-holder": {
-    name: "In-Card Image Holder (Bottom Capsule)",
-    type: "incard-image-holder",
-    icon: "🖼️",
-    desc: "Compact in-card image box with clean bottom bordered caption capsule (No emoji).",
-    presetData: {
-      type: "incard-image-holder",
-      title: "Image 1",
-      imgUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-      objectFit: "cover",
-      objectPosition: "center"
-    }
-  },
-  "mission-story": {
-    name: "Mission Story",
-    type: "mission-story",
-    icon: "📖",
-    desc: "Narrative context setting the real-world engineering challenge.",
-    presetData: { type: "mission-story", title: "MISSION STORY", icon: "📖", content: "Commander Nova needs your help! Classrooms and laboratories are experiencing sudden temperature spikes. Your mission is to build a Smart Climate Monitor using the DHT11 sensor and OLED screen." }
-  },
-  "real-world": {
-    name: "Real World Impact",
-    type: "real-world",
-    icon: "🌐",
-    desc: "Industry application connecting concept to commercial tech.",
-    presetData: { type: "real-world", title: "REAL WORLD IMPACT", icon: "🌐", content: "Environmental sensing technology is used in Smart Classrooms, Commercial Greenhouses, Museums, Hospitals, and Weather Forecast Stations." }
-  },
-  "curiosity-box": {
-    name: "Curiosity Box",
-    type: "curiosity-box",
-    icon: "💡",
-    desc: "Hook question or intriguing STEM phenomenon.",
-    presetData: { type: "curiosity-box", title: "CURIOSITY BOX", icon: "💡", content: "Humidity affects how we feel! High humidity prevents sweat from evaporating, making hot days feel even hotter. Electronic sensors help us measure this accurately!" }
-  },
-  "stem-fact": {
-    name: "STEM Fact + OLED",
-    type: "stem-fact",
-    icon: "⚙️",
-    desc: "Fast scientific insight paired with live hardware preview.",
-    presetData: { type: "stem-fact", title: "STEM FACT", icon: "⚙️", content: "Sensors like the DHT11 collect data thousands of times per day, assisting engineers in automated climate control.", oledPreview: "Temp: 26.8°C\nHumi: 65%" }
-  },
-  "mission-objectives": {
-    name: "Mission Objectives Grid",
-    type: "mission-objectives",
-    icon: "🎯",
-    desc: "Structured bullet goals for the mission.",
-    presetData: { type: "mission-objectives", title: "MISSION OBJECTIVES", icon: "🎯", objectives: [{ num: 1, text: "Read Live Temp", subtext: "Thermometer Sensor" }, { num: 2, text: "Read Live Humidity", subtext: "% Humidity Sensor" }, { num: 3, text: "Store Variables", subtext: "Memory Storage" }, { num: 4, text: "Display on OLED", subtext: "OLED Screen" }] }
-  },
-  "think-engineer": {
-    name: "Think Like an Engineer",
-    type: "think-engineer",
-    icon: "🧠",
-    desc: "Interactive scenario decision prompt.",
-    presetData: { type: "think-engineer", title: "THINK LIKE AN ENGINEER", icon: "🧠", question: "Would you rather see tasks by subject, priority, or date? How could your planner become more useful?", scenario: { left: { label: "OPTION A: BY PRIORITY", temp: "High/Med/Low", hum: "Sorted", feel: "Urgent Tasks First", status: "ok" }, right: { label: "OPTION B: BY DATE", temp: "Calendar View", hum: "Scheduled", feel: "Timetable Order", status: "ok" } } }
-  },
-  "concept-card": {
-    name: "Core Concept Card",
-    type: "concept-card",
-    icon: "📘",
-    desc: "Theoretical explanation of the chapter's core topic.",
-    presetData: { type: "concept-card", title: "HOW SENSORS READ DATA", icon: "📘", content: "Microcontrollers read electrical voltage signals from sensors and convert them into digital numbers using Analog-to-Digital Converters (ADC)." }
-  },
-  "component-spotlight": {
-    name: "Component Spotlight",
-    type: "component-spotlight",
-    icon: "🔬",
-    desc: "Detailed anatomical breakdown of a specific hardware piece.",
-    presetData: { type: "component-spotlight", title: "MEET THE DHT11 SENSOR", icon: "🔬", content: "The DHT11 contains a capacitive humidity sensing element, a thermistor for measuring temperature, and an 8-bit microcontroller inside." }
-  },
-  "build-steps": {
-    name: "Build Steps / Wiring Lab",
-    type: "build-steps",
-    icon: "🛠️",
-    desc: "Step-by-step schematic and breadboard wiring guide.",
-    presetData: { type: "build-steps", title: "CIRCUIT WIRING STEPS", icon: "🛠️", steps: [{ stepNum: 1, title: "Connect VCC & GND", desc: "Connect DHT11 VCC to 3.3V and GND to GND pin.", pinTable: [{ from: "DHT11 Pin 1", to: "UltraCore 3.3V" }, { from: "DHT11 Pin 4", to: "UltraCore GND" }] }, { stepNum: 2, title: "Connect Signal Pin", desc: "Connect DHT11 Signal pin to Pin D4.", pinTable: [{ from: "DHT11 Pin 2", to: "UltraCore Pin D4" }] }] }
-  },
-  "code-snippet": {
-    name: "Code Snippet Box",
-    type: "code-snippet",
-    icon: "💻",
-    desc: "Syntax-highlighted code container for MicroPython/C++.",
-    presetData: { type: "code-snippet", title: "PYTHON LOGIC PREVIEW", icon: "💻", language: "python", code: "import dht\nfrom machine import Pin\n\nsensor = dht.DHT11(Pin(4))\nsensor.measure()\nprint('Temp:', sensor.temperature())" }
-  },
-  "common-mistakes": {
-    name: "Common Mistakes / Debug",
-    type: "common-mistakes",
-    icon: "⚠️",
-    desc: "Troubleshooting guide for typical pitfalls.",
-    presetData: { type: "common-mistakes", title: "COMMON MISTAKES", icon: "⚠️", mistakes: [{ issue: "Wrong VCC connection", fix: "Check VCC ➔ 3.3V (NOT 5V)" }, { issue: "Sensor timeout error", fix: "Ensure signal wire is tight on D4" }] }
-  },
-  "space-filler": {
-    name: "Space Filler Spacer",
-    type: "space-filler",
-    icon: "👻",
-    desc: "Invisible whitespace card to balance page layout footers.",
-    presetData: { type: "space-filler", title: "SPACE FILLER", icon: "👻", content: "Custom Whitespace Spacer" }
-  },
-  "did-you-know": {
-    name: "Did You Know?",
-    type: "did-you-know",
-    icon: "💡",
-    desc: "Fascinating science trivia card.",
-    presetData: { type: "did-you-know", title: "DID YOU KNOW?", icon: "💡", content: "Weather stations on Mount Everest use heated humidity sensors so moisture doesn't freeze inside!" }
-  },
-  "tool-explorer": {
-    name: "Tool & Hardware Explorer",
-    type: "tool-explorer",
-    icon: "🧰",
-    desc: "Overview of physical tools and hardware modules.",
-    presetData: { type: "tool-explorer", title: "HARDWARE TOOLS REQUIRED", icon: "🧰", content: "For this lab you will need an UltraCore Microcontroller, DHT11 Sensor, 0.96 OLED Screen, and 4 Jumper Wires." }
-  },
-  "ui-blueprint": {
-    name: "UI Blueprint & Wireframe",
-    type: "ui-blueprint",
-    icon: "🎨",
-    desc: "Display interface layout wireframe.",
-    presetData: { type: "ui-blueprint", title: "OLED SCREEN BLUEPRINT", icon: "🎨", content: "The top row displays temperature in °C, while the bottom row displays humidity percentage." }
-  },
-  "component-properties": {
-    name: "Component Properties",
-    type: "component-properties",
-    icon: "📊",
-    desc: "Pinout and electrical specifications.",
-    presetData: { type: "component-properties", title: "ELECTRICAL SPECS", icon: "📊", content: "Operating Voltage: 3.3V - 5.5V | Temp Range: 0°C to 50°C (±2°C) | Humidity Range: 20% to 90% (±5%)" }
-  },
-  "variable-tracker": {
-    name: "Variable Tracker",
-    type: "variable-tracker",
-    icon: "📌",
-    desc: "Code variable state and data types table.",
-    presetData: { type: "variable-tracker", title: "VARIABLE TRACKER", icon: "📌", content: "temp_c (float) - Stores live temperature | hum_pct (int) - Stores live humidity percentage." }
-  },
-  "data-flow": {
-    name: "Data Flow Diagram",
-    type: "data-flow",
-    icon: "🔄",
-    desc: "Step-by-step signal processing flow.",
-    presetData: { type: "data-flow", title: "SIGNAL DATA FLOW", icon: "🔄", content: "Environment ➔ DHT11 Sensor ➔ Digital Pulse ➔ GPIO Pin D4 ➔ MicroPython Calculation ➔ OLED Display" }
-  },
-  "mini-challenge": {
-    name: "Mini Coding Challenge",
-    type: "mini-challenge",
-    icon: "⚡",
-    desc: "Quick coding exercise for students.",
-    presetData: { type: "mini-challenge", title: "MINI CHALLENGE", icon: "⚡", content: "Modify the code to display temperature in Fahrenheit (°F) instead of Celsius!" }
-  },
-  "engineering-habit": {
-    name: "Engineering Habit",
-    type: "engineering-habit",
-    icon: "🌟",
-    desc: "Best practices in hardware & software design.",
-    presetData: { type: "engineering-habit", title: "ENGINEERING HABIT", icon: "🌟", content: "Always disconnect power before rewiring breadboard pins to prevent short circuits." }
-  },
-  "testing-lab": {
-    name: "Testing & Validation Lab",
-    type: "testing-lab",
-    icon: "🧪",
-    desc: "Verification procedure for hardware build.",
-    presetData: { type: "testing-lab", title: "TESTING YOUR CIRCUIT", icon: "🧪", content: "Breathe gently near the DHT11 sensor — you should see humidity increase instantly on screen!" }
-  },
-  "innovation-studio": {
-    name: "Innovation Studio",
-    type: "innovation-studio",
-    icon: "🚀",
-    desc: "Advanced creative project expansion.",
-    presetData: { type: "innovation-studio", title: "INNOVATION STUDIO", icon: "🚀", content: "Add a buzzer alarm that triggers if room temperature exceeds 32°C!" }
-  },
-  "upgrade-card": {
-    name: "Hardware Upgrade Card",
-    type: "upgrade-card",
-    icon: "⚡",
-    desc: "Hardware component enhancement guide.",
-    presetData: { type: "upgrade-card", title: "HARDWARE UPGRADE", icon: "⚡", content: "Upgrade to the DHT22 sensor for higher precision and wider temperature range (-40°C to 80°C)." }
-  },
-  "mission-extension": {
-    name: "Mission Extension",
-    type: "mission-extension",
-    icon: "📡",
-    desc: "IoT & Cloud extension activity.",
-    presetData: { type: "mission-extension", title: "MISSION EXTENSION", icon: "📡", content: "Connect your ESP32 Wi-Fi module to send climate data to a cloud dashboard!" }
-  },
-  "team-challenge": {
-    name: "Team Challenge",
-    type: "team-challenge",
-    icon: "👥",
-    desc: "Collaborative group lab activity.",
-    presetData: { type: "team-challenge", title: "TEAM CHALLENGE", icon: "👥", content: "Work in pairs: Engineer A handles sensor wiring while Engineer B writes the OLED display code." }
-  },
-  "build-yourself": {
-    name: "Build It Yourself Lab",
-    type: "build-yourself",
-    icon: "🧰",
-    desc: "Independent student laboratory project.",
-    presetData: { type: "build-yourself", title: "BUILD IT YOURSELF", icon: "🧰", content: "Assemble the complete circuit on your breadboard following the schematic diagram." }
-  },
-  "innovation-challenge": {
-    name: "Innovation Challenge",
-    type: "innovation-challenge",
-    icon: "💡",
-    desc: "Problem-solving design challenge.",
-    presetData: { type: "innovation-challenge", title: "CREATIVE CHALLENGE", icon: "💡", content: "Design a 3D-printable protective enclosure for your climate monitor." }
-  },
-  "ai-thinking": {
-    name: "AI & Algorithmic Thinking",
-    type: "ai-thinking",
-    icon: "🤖",
-    desc: "Computational thinking concept.",
-    presetData: { type: "ai-thinking", title: "ALGORITHMIC THINKING", icon: "🤖", content: "How can an AI model predict tomorrow's temperature based on historical humidity readings?" }
-  },
-  "real-world-eng": {
-    name: "Real-World Engineering Case",
-    type: "real-world-eng",
-    icon: "🏭",
-    desc: "Industrial case study.",
-    presetData: { type: "real-world-eng", title: "INDUSTRIAL CASE STUDY", icon: "🏭", content: "Automated HVAC systems in modern data centers save millions of dollars in electricity using smart sensor feedback." }
-  },
-  "career-spotlight": {
-    name: "STEM Career Spotlight",
-    type: "career-spotlight",
-    icon: "🎓",
-    desc: "Career pathways in engineering & tech.",
-    presetData: { type: "career-spotlight", title: "CAREER SPOTLIGHT", icon: "🎓", content: "Environmental Engineers design technologies to control climate, manage air quality, and protect natural ecosystems." }
-  },
-  "future-tech": {
-    name: "Future Tech Preview",
-    type: "future-tech",
-    icon: "🔮",
-    desc: "Emerging technological innovations.",
-    presetData: { type: "future-tech", title: "FUTURE TECH PREVIEW", icon: "🔮", content: "Microscopic MEMS climate sensors will soon be integrated directly into smart clothing!" }
-  },
-  "safety-card": {
-    name: "Lab Safety Card",
-    type: "safety-card",
-    icon: "🛑",
-    desc: "Important safety warnings.",
-    presetData: { type: "safety-card", title: "LAB SAFETY WARNING", icon: "🛑", content: "Never expose electronic sensors to direct water or liquids unless sealed in a waterproof probe!" }
-  },
-  "mission-review": {
-    name: "Mission Review",
-    type: "mission-review",
-    icon: "📝",
-    desc: "End-of-chapter review summary.",
-    presetData: { type: "mission-review", title: "MISSION REVIEW", icon: "📝", content: "You learned how to connect the DHT11 sensor, parse digital data, and render live readings on OLED!" }
-  },
-  "knowledge-check": {
-    name: "Knowledge Check Quiz",
-    type: "knowledge-check",
-    icon: "❓",
-    desc: "Quick self-assessment quiz.",
-    presetData: { type: "knowledge-check", title: "KNOWLEDGE CHECK", icon: "❓", content: "Q: Which pin on the DHT11 outputs sensor data? (A) VCC (B) Signal (C) GND" }
-  },
-  "reflection-card": {
-    name: "Self-Reflection Card",
-    type: "reflection-card",
-    icon: "💭",
-    desc: "Student learning reflection prompt.",
-    presetData: { type: "reflection-card", title: "STUDENT REFLECTION", icon: "💭", content: "What was the most challenging part of today's build, and how did you debug it?" }
-  },
-  "my-notes": {
-    name: "Personal Engineer Notes",
-    type: "my-notes",
-    icon: "📔",
-    desc: "Blank lined space for notes.",
-    presetData: { type: "my-notes", title: "ENGINEER NOTES", icon: "📔", content: "Write your custom observations, pin connections, or ideas here..." }
-  },
-  "vocabulary-builder": {
-    name: "STEM Vocabulary Builder",
-    type: "vocabulary-builder",
-    icon: "📚",
-    desc: "Key terminology definitions.",
-    presetData: { type: "vocabulary-builder", title: "STEM VOCABULARY", icon: "📚", content: "Thermistor: A resistor whose resistance changes significantly with temperature." }
-  },
-  "quick-recap": {
-    name: "Quick Chapter Recap",
-    type: "quick-recap",
-    icon: "⚡",
-    desc: "Bullet summary of key takeaways.",
-    presetData: { type: "quick-recap", title: "QUICK RECAP", icon: "⚡", content: "• VCC ➔ 3.3V Power\n• Signal ➔ Pin D4\n• MicroPython dht library measures temp & humidity." }
-  },
-  "progress-tracker": {
-    name: "Progress Tracker",
-    type: "progress-tracker",
-    icon: "📈",
-    desc: "Skill mastery progress indicator.",
-    presetData: { type: "progress-tracker", title: "SKILL PROGRESS", icon: "📈", content: "Circuit Wiring: 100% | Python Code: 100% | Debugging: 90%" }
-  },
-  "portfolio-task": {
-    name: "Portfolio Milestone Task",
-    type: "portfolio-task",
-    icon: "📂",
-    desc: "Documentation task for student portfolio.",
-    presetData: { type: "portfolio-task", title: "PORTFOLIO TASK", icon: "📂", content: "Take a photo of your working circuit and upload your code snippet to your engineering portfolio." }
-  },
-  "home-challenge": {
-    name: "At-Home STEM Challenge",
-    type: "home-challenge",
-    icon: "🏠",
-    desc: "Extended activity for home.",
-    presetData: { type: "home-challenge", title: "AT-HOME CHALLENGE", icon: "🏠", content: "Measure temperature in different rooms of your house and record your findings in a chart!" }
-  },
-  "parent-connect": {
-    name: "Parent & Mentor Connect",
-    type: "parent-connect",
-    icon: "🤝",
-    desc: "Discussion prompt for parents.",
-    presetData: { type: "parent-connect", title: "PARENT CONNECT", icon: "🤝", content: "Show your family how your sensor measures humidity when you breathe near it!" }
-  },
-  "teacher-notes": {
-    name: "Teacher Guidance Notes",
-    type: "teacher-notes",
-    icon: "👩‍🏫",
-    desc: "Instructional notes for educators.",
-    presetData: { type: "teacher-notes", title: "TEACHER NOTES", icon: "👩‍🏫", content: "Ensure students use 3.3V pin to avoid damaging the sensor microcontroller." }
-  },
-  "next-preview": {
-    name: "Next Chapter Teaser",
-    type: "next-preview",
-    icon: "⏩",
-    desc: "Teaser card for upcoming mission.",
-    presetData: { type: "next-preview", title: "NEXT MISSION PREVIEW", icon: "⏩", content: "In Mission 15, we will build a Smart Automated Plant Irrigation System using soil moisture sensors!" }
-  },
-  "qr-resources": {
-    name: "QR Code & Resource Links",
-    type: "qr-resources",
-    icon: "🔗",
-    desc: "Links to video tutorials & datasheets.",
-    presetData: { type: "qr-resources", title: "ONLINE RESOURCES", icon: "🔗", content: "Scan QR code or visit ultraminds.io/m14 for video tutorials and library downloads." }
-  },
-  "nova-card": {
-    name: "Commander Nova Guidance",
-    type: "nova-card",
-    icon: "🧑‍🚀",
-    desc: "Character guide tip box.",
-    presetData: { type: "nova-card", title: "COMMANDER NOVA TIP", icon: "🧑‍🚀", content: "Careful work leads to great inventions! Take your time testing each wire connection." }
-  },
-  "ultra-badge": {
-    name: "Achievement Badge",
-    type: "ultra-badge",
-    icon: "🎖️",
-    desc: "Badge reward for mission completion.",
-    presetData: { type: "ultra-badge", title: "ACHIEVEMENT BADGE", icon: "🎖️", badgeName: "CLIMATE MASTER BADGE", badgeStatus: "MISSION COMPLETE", congrats: "Congratulations! You successfully built a climate monitor!" }
-  },
-  "programming-studio": {
-    name: "Programming Studio Lab",
-    type: "programming-studio",
-    icon: "💻",
-    desc: "Full code editor studio block.",
-    presetData: { type: "programming-studio", title: "PROGRAMMING STUDIO", icon: "💻", language: "python", code: "while True:\n    sensor.measure()\n    print('T:', sensor.temperature())\n    time.sleep(2)" }
-  },
-  "syntax-box": {
-    name: "Syntax & API Quick Ref",
-    type: "syntax-box",
-    icon: "📖",
-    desc: "API method reference card.",
-    presetData: { type: "syntax-box", title: "SYNTAX QUICK REF", icon: "📖", content: "dht.DHT11(pin) - Initialize sensor | sensor.measure() - Read data | sensor.temperature() - Get °C" }
-  },
-  "designer-studio": {
-    name: "Hardware Designer Studio",
-    type: "designer-studio",
-    icon: "📐",
-    desc: "CAD and breadboard design lab.",
-    presetData: { type: "designer-studio", title: "HARDWARE DESIGNER STUDIO", icon: "📐", steps: [{ stepNum: 1, title: "Place Microcontroller", desc: "Align UltraCore on center breadboard rail." }] }
-  }
+  "floating-clipart": { name: "Floating Clipart Sticker (Mascot)", type: "floating-clipart", icon: "🧑‍🚀", desc: "Borderless floating PNG sticker/mascot (Commander Nova) that floats anywhere on page.", presetData: { type: "floating-clipart", title: "Commander Nova Clipart", imgUrl: "" } },
+  "image-holder": { name: "Normal Image Holder Card", type: "image-holder", icon: "🖼️", desc: "Clean standalone image card with top title capsule, image box, and caption.", presetData: { type: "image-holder", title: "FIGURE 1.1", icon: "🖼️", imgUrl: "", caption: "Figure 1.1 Hardware Diagram", objectFit: "cover" } },
+  "incard-image-holder": { name: "In-Card Image Holder", type: "incard-image-holder", icon: "🖼️", desc: "Compact in-card image box.", presetData: { type: "incard-image-holder", title: "Image 1", imgUrl: "" } },
+  "page-banner": { name: "Page Type Banner", type: "page-banner", icon: "🏷️", desc: "Styled page-type header banner (Engineering Explorer, Build Lab, Logic Builder, Innovation Studio).", presetData: { type: "page-banner", pageType: "engineering-explorer", pageNum: 2, title: "ENGINEERING EXPLORER", subtitle: "OBSERVE. DISCOVER. UNDERSTAND.", icon: "🔍" } },
+  "mission-story": { name: "Mission Story", type: "mission-story", icon: "📖", desc: "Narrative context setting the real-world engineering challenge.", presetData: { type: "mission-story", title: "MISSION STORY", icon: "📖", content: "Commander Nova has received a request..." } },
+  "real-world": { name: "Real World Impact", type: "real-world", icon: "🌐", desc: "Industry application connecting concept to commercial tech.", presetData: { type: "real-world", title: "REAL WORLD", icon: "🌐", items: ["Smart Classrooms", "Greenhouses", "Museums"], bottomNote: "Engineers use sensors to make the environment better." } },
+  "curiosity-box": { name: "Curiosity Box", type: "curiosity-box", icon: "💡", desc: "Hook question or intriguing STEM phenomenon.", presetData: { type: "curiosity-box", title: "CURIOSITY BOX", icon: "💡", content: "Humidity affects how we feel!" } },
+  "stem-fact": { name: "STEM Fact + OLED", type: "stem-fact", icon: "⚙️", desc: "Fast scientific insight paired with live hardware preview.", presetData: { type: "stem-fact", title: "STEM FACT", icon: "⚙️", content: "Sensors like the DHT11 collect data thousands of times per day.", oledPreview: "Temp: 26.8°C\nHumi: 65%" } },
+  "mission-objectives": { name: "Mission Objectives Grid", type: "mission-objectives", icon: "🎯", desc: "Structured 4-cell goal grid for the mission.", presetData: { type: "mission-objectives", title: "MISSION OBJECTIVES", icon: "🎯", objectives: [{ num: 1, text: "Read Live Temp", icon: "🌡️" }, { num: 2, text: "Read Live Humidity", icon: "💧" }, { num: 3, text: "Store Variables", icon: "📁" }, { num: 4, text: "Display on OLED", icon: "🖥️" }] } },
+  "think-engineer": { name: "Think Like an Engineer", type: "think-engineer", icon: "🧠", desc: "Interactive scenario decision prompt.", presetData: { type: "think-engineer", title: "THINK LIKE AN ENGINEER", icon: "🧠", question: "If two classrooms have the same temperature but different humidity, will they feel the same?", answerLines: 2, scenario: { left: { label: "Room A", temp: "30°C", hum: "40%", feel: "Feels Comfortable", status: "ok" }, right: { label: "Room B", temp: "30°C", hum: "80%", feel: "Feels Hot & Sticky", status: "warn" } } } },
+  "concept-card": { name: "Core Concept Card", type: "concept-card", icon: "📘", desc: "Theoretical explanation of the chapter's core topic.", presetData: { type: "concept-card", title: "HOW SENSORS READ DATA", icon: "📘", content: "Microcontrollers read electrical voltage signals from sensors." } },
+  "component-spotlight": { name: "Component Spotlight", type: "component-spotlight", icon: "🔬", desc: "Detailed anatomical breakdown of a specific hardware piece with specs.", presetData: { type: "component-spotlight", title: "MEET THE DHT11 SENSOR", icon: "🔬", componentName: "DHT11", componentSubtitle: "TEMPERATURE & HUMIDITY SENSOR", features: ["Measures Temperature and Humidity", "Easy to use", "Low power consumption", "High reliability"], pinConfig: [{ num: 1, label: "VCC", color: "red", desc: "Power Supply (3.3V – 5V)" }, { num: 2, label: "DATA", color: "blue", desc: "Digital Data Output" }, { num: 3, label: "GND", color: "black", desc: "Ground" }], specs: [{ icon: "🌡️", label: "Temperature Range", value: "0°C to 50°C" }, { icon: "💧", label: "Humidity Range", value: "20% to 90% RH" }, { icon: "🎯", label: "Accuracy", value: "Temperature: ±1°C\nHumidity: ±5% RH" }, { icon: "⚡", label: "Operating Voltage", value: "3.3V to 5V DC" }] } },
+  "observe-card": { name: "Observe & Answer Card", type: "observe-card", icon: "👁️", desc: "Observation image + numbered Q&A with dashed answer lines.", presetData: { type: "observe-card", title: "OBSERVE & ANSWER", icon: "👁️", questions: ["What can you see in this station?", "Which part do you think measures temperature?", "Which part might measure humidity?", "Why do you think we need both temperature and humidity data?"] } },
+  "inside-sensor": { name: "Inside the Sensor Diagram", type: "inside-sensor", icon: "🔬", desc: "Split diagram showing internal sensor components (temperature side + humidity side).", presetData: { type: "inside-sensor", title: "INSIDE THE SENSOR – HOW DOES IT WORK?", icon: "🔬", intro: "DHT11 has two sensing parts inside:", leftTitle: "TEMPERATURE SENSING ELEMENT", leftContent: "A thermistor measures the surrounding temperature.", rightTitle: "HUMIDITY SENSING ELEMENT", rightContent: "A capacitive humidity sensor detects the moisture in the air.", bottomNote: "The sensor converts these changes into electrical signals and sends them to the microcontroller." } },
+  "comparison-vs": { name: "Compare & Understand VS Box", type: "comparison-vs", icon: "⚖️", desc: "Two-column side-by-side comparison with VS badge in center.", presetData: { type: "comparison-vs", title: "COMPARE & UNDERSTAND", icon: "⚖️", leftTitle: "OUR HUMAN SENSES", leftItems: [{ icon: "👁️", text: "We feel hot or cold using our skin." }, { icon: "💧", text: "We feel humidity but cannot measure it exactly." }], rightTitle: "ELECTRONIC SENSORS", rightItems: [{ icon: "🌡️", text: "Sensors measure temperature in °C very accurately." }, { icon: "💧", text: "Sensors measure humidity in %RH accurately." }], bottomNote: "SENSORS HELP US MEASURE WHAT OUR SENSES CANNOT MEASURE ACCURATELY." } },
+  "build-steps": { name: "Build Steps / Wiring Lab", type: "build-steps", icon: "🛠️", desc: "Step-by-step numbered build guide with 4 columns, each with image + pin table.", presetData: { type: "build-steps", title: "BUILD LAB", icon: "🛠️", steps: [{ stepNum: 1, title: "CONNECT DHT11 SENSOR", desc: "Connect the DHT11 sensor to the DHT11 port.", pinTable: [{ label: "VCC", arrow: "3.3V" }, { label: "DATA", arrow: "DHT11 (Signal)" }, { label: "GND", arrow: "GND" }] }, { stepNum: 2, title: "CONNECT OLED DISPLAY (I2C)", desc: "Connect the OLED display using the I2C port.", pinTable: [{ label: "VCC", arrow: "3.3V" }, { label: "GND", arrow: "GND" }, { label: "SDA", arrow: "I2C SDA (D21)" }, { label: "SCL", arrow: "I2C SCL (D22)" }] }] } },
+  "code-snippet": { name: "Code Snippet Box", type: "code-snippet", icon: "💻", desc: "Syntax-highlighted code container.", presetData: { type: "code-snippet", title: "PYTHON LOGIC PREVIEW", icon: "💻", language: "python", code: "import dht\nfrom machine import Pin\n\nsensor = dht.DHT11(Pin(4))\nsensor.measure()\nprint('Temp:', sensor.temperature())" } },
+  "common-mistakes": { name: "Common Mistakes / Debug", type: "common-mistakes", icon: "⚠️", desc: "Alert-styled troubleshooting table.", presetData: { type: "common-mistakes", title: "COMMON MISTAKES", icon: "⚠️", mistakes: [{ issue: "Wrong VCC connection", icon: "🔌", fix: "Check: VCC → 3.3V (NOT 5V)" }, { issue: "Loose or jumper wires", icon: "🔧", fix: "Make sure wires are firmly connected." }] } },
+  "flowchart-sequence": { name: "Flow of Logic Diagram", type: "flowchart-sequence", icon: "🔄", desc: "Linear box-arrow flowchart showing program logic steps.", presetData: { type: "flowchart-sequence", title: "FLOW OF LOGIC", icon: "🔄", steps: [{ label: "Start", type: "start" }, { label: "Read Temperature from DHT11", type: "process", desc: "We read temperature and store it in the variable temp." }, { label: "Read Humidity from DHT11", type: "process", desc: "We read humidity and store it in the variable humi." }, { label: "Store in Variables (temp, humi)", type: "process", desc: "Variables help us remember data." }, { label: "Display both values on OLED", type: "process", desc: "We show the values on the OLED screen." }, { label: "Wait 2 Seconds", type: "wait" }, { label: "Repeat Forever", type: "end" }] } },
+  "blocks-code": { name: "MIT Blocks Logic Display", type: "blocks-code", icon: "🧱", desc: "Visual MIT App Inventor / Blocks-style code display with colored blocks.", presetData: { type: "blocks-code", title: "BLOCKS LOGIC (MIT APP INVENTOR)", icon: "🧱", blocks: [] } },
+  "variables-at-work": { name: "Variables at Work Panel", type: "variables-at-work", icon: "📌", desc: "Variable definition cards with icon + name + example value.", presetData: { type: "variables-at-work", title: "VARIABLES AT WORK", icon: "📌", intro: "We store values in variables so we can use them again.", variables: [{ name: "temp", label: "Temperature", icon: "🌡️", desc: "Stores temperature value in °C", example: "26.8" }, { name: "humi", label: "Humidity", icon: "💧", desc: "Stores humidity value in %RH", example: "65" }] } },
+  "predict-think": { name: "Predict & Think Questions", type: "predict-think", icon: "🤔", desc: "Numbered prediction questions with answer lines.", presetData: { type: "predict-think", title: "PREDICT & THINK", icon: "🤔", questions: ["What will happen if the sensor is removed?", "What if humidity is 100%?", "What if temperature suddenly changes?", "What if the OLED display is not connected?"] } },
+  "challenge-box": { name: "Challenge Box", type: "challenge-box", icon: "🏆", desc: "Colored challenge card with target icon.", presetData: { type: "challenge-box", title: "CHALLENGE", icon: "🏆", content: "Modify the logic to show a 'Comfort' message when temperature is between 20°C and 28°C and humidity between 40% and 70%." } },
+  "oled-preview": { name: "OLED Screen Preview", type: "oled-preview", icon: "🖥️", desc: "Realistic OLED screen mockup card.", presetData: { type: "oled-preview", title: "ON OLED DISPLAY", icon: "🖥️", intro: "This is what we see on the OLED screen.", screenText: "Temp: 26.8°C\nHumi: 65%" } },
+  "mission-progress": { name: "Mission Progress Tracker", type: "mission-progress", icon: "📈", desc: "Numbered circle progress tracker (1-5 with checkmarks).", presetData: { type: "mission-progress", title: "MISSION PROGRESS", icon: "📈", totalSteps: 5, completedSteps: 2 } },
+  "mini-upgrade": { name: "Mini Upgrade Card", type: "mini-upgrade", icon: "⬆️", desc: "Temperature/mood upgrade grid with OLED screen examples.", presetData: { type: "mini-upgrade", title: "MINI UPGRADE", icon: "⬆️", intro: "Let's add mood icons on OLED based on temperature!", upgrades: [{ condition: "Temp < 18°C", mood: "COLD", moodIcon: "🥶", color: "blue", oledText: "16.5°C 55%\n❄️ COLD" }, { condition: "18°C ≤ Temp ≤ 28°C", mood: "COMFORTABLE", moodIcon: "😊", color: "green", oledText: "24.6°C 58%\n😊 COMFORTABLE" }, { condition: "28°C < Temp ≤ 35°C", mood: "WARM", moodIcon: "😟", color: "orange", oledText: "31.7°C 62%\n😟 WARM" }, { condition: "Temp > 35°C", mood: "HOT", moodIcon: "😡", color: "red", oledText: "37.2°C 70%\n😡 HOT" }] } },
+  "real-challenge": { name: "Real Challenge Flow", type: "real-challenge", icon: "🚀", desc: "Process flow diagram for the real-world challenge with steps and icons.", presetData: { type: "real-challenge", title: "REAL CHALLENGE", icon: "🚀", challengeTitle: "Design a Smart Classroom Comfort System", challengeDesc: "Build a system that helps maintain a comfortable environment automatically.", flowSteps: [{ label: "Read Temp &\nHumidity", icon: "🌡️" }, { label: "Check Conditions", icon: "🔍" }, { label: "Take Action\nTurn ON Fan\n(If Temp > 30°C)", icon: "💨" }, { label: "Alert on OLED\nToo Hot!\nFan ON", icon: "🖥️" }], addMore: [{ icon: "📢", label: "Buzzer Alert" }, { icon: "💡", label: "LED Indicator" }, { icon: "🪟", label: "Window Reminder" }, { icon: "☁️", label: "Data Log (Future)" }], bottomNote: "Think like an innovator. Create solutions for real-world problems!" } },
+  "engineers-everywhere": { name: "Engineers Use This Everywhere!", type: "engineers-everywhere", icon: "🏭", desc: "4-cell industry application grid showing real-world use cases.", presetData: { type: "engineers-everywhere", title: "ENGINEERS USE THIS EVERYWHERE!", icon: "🏭", industries: [{ title: "SMART AGRICULTURE", desc: "Sensors help farmers decide irrigation and protect crops.", imgKeyword: "agriculture" }, { title: "SMART BUILDINGS", desc: "HVAC systems use sensor data to save energy and keep spaces comfortable.", imgKeyword: "building" }, { title: "WEATHER STATIONS", desc: "Collects data to predict weather and warn about extreme conditions.", imgKeyword: "weather" }, { title: "SPACE EXPLORATION", desc: "Astronauts live in controlled environments using these same sensors.", imgKeyword: "space" }] } },
+  "mission-review-table": { name: "Mission Review Table", type: "mission-review-table", icon: "📝", desc: "Checkmark Q&A summary table.", presetData: { type: "mission-review-table", title: "MISSION REVIEW", icon: "📝", rows: [{ question: "What did we build?", answer: "A Smart Climate Monitor" }, { question: "Which sensor did we use?", answer: "DHT11 (Temperature & Humidity)" }, { question: "Which values did we read?", answer: "Temperature (°C), Humidity (%RH)" }, { question: "Where did we display?", answer: "OLED Display" }, { question: "What did we learn?", answer: "Reading sensors, storing variables, displaying values and using logic" }, { question: "Where is this used?", answer: "Weather stations, smart homes, greenhouses, industries & more!" }] } },
+  "ultra-badge": { name: "Achievement Badge", type: "ultra-badge", icon: "🎖️", desc: "Badge reward for mission completion.", presetData: { type: "ultra-badge", title: "ULTRA BADGE", icon: "🎖️", badgeName: "CLIMATE ENGINEER", badgeSubtitle: "MISSION 14 COMPLETE!", congrats: "You have successfully built your Smart Climate Monitor and understood how to read and display real-world data!", mascotNote: "Great work, Commander Nova!" } },
+  "beyond-mission": { name: "Beyond Today's Mission", type: "beyond-mission", icon: "🚀", desc: "Today → Next → Future three-step progression card.", presetData: { type: "beyond-mission", title: "BEYOND TODAY'S MISSION", icon: "🚀", steps: [{ label: "Today", icon: "📡", desc: "You read and displayed temperature & humidity." }, { label: "Next", icon: "☁️", desc: "You will send this data to the cloud!" }, { label: "Future", icon: "📱", desc: "You will view it on a mobile app & analyze it with AI!" }], bottomNote: "Every great engineer starts with one simple mission, and then builds something that changes the world!" } },
+  "next-preview": { name: "Next Chapter Teaser", type: "next-preview", icon: "⏩", desc: "Teaser card for upcoming mission.", presetData: { type: "next-preview", title: "NEXT MISSION PREVIEW", icon: "⏩", content: "In Mission 15, we will build a Smart Automated Plant Irrigation System!" } },
+  "space-filler": { name: "Space Filler Spacer", type: "space-filler", icon: "👻", desc: "Invisible whitespace card to balance page layout.", presetData: { type: "space-filler", title: "SPACE FILLER", icon: "👻", content: "Custom Whitespace Spacer" } },
+  "did-you-know": { name: "Did You Know?", type: "did-you-know", icon: "💡", desc: "Fascinating science trivia card.", presetData: { type: "did-you-know", title: "DID YOU KNOW?", icon: "💡", content: "Weather stations on Mount Everest use similar sensors to help climbers and scientists stay safe." } },
+  "mission-challenge": { name: "Mission Challenge", type: "mission-challenge", icon: "🔍", desc: "End-of-page critical thinking challenge.", presetData: { type: "mission-challenge", title: "MISSION CHALLENGE", icon: "🔍", question: "Can one sensor measure everything in the environment? List two things that DHT11 cannot measure.", answerFields: ["1. ............", "2. ............"] } },
+  "engineer-tip": { name: "Engineer Tip", type: "engineer-tip", icon: "💡", desc: "Professional engineering tip card.", presetData: { type: "engineer-tip", title: "ENGINEER TIP", icon: "💡", content: "Good connections + careful work = Great inventions! Take your time and enjoy the build." } },
+  "nova-card": { name: "Commander Nova Guidance", type: "nova-card", icon: "🧑‍🚀", desc: "Character guide tip box.", presetData: { type: "nova-card", title: "COMMANDER NOVA TIP", icon: "🧑‍🚀", content: "Careful work leads to great inventions!" } },
+  "programming-studio": { name: "Programming Studio Lab", type: "programming-studio", icon: "💻", desc: "Full code editor studio block.", presetData: { type: "programming-studio", title: "PROGRAMMING STUDIO", icon: "💻", language: "python", code: "while True:\n    sensor.measure()\n    print('T:', sensor.temperature())\n    time.sleep(2)" } },
+  "pro-tip": { name: "Pro Tip Card", type: "pro-tip", icon: "⭐", desc: "Highlighted professional tip box.", presetData: { type: "pro-tip", title: "PRO TIP", icon: "⭐", content: "Always power OFF the board while making connections. Double check everything before uploading code!" } },
+  "in-this-lab": { name: "In This Lab You Will", type: "in-this-lab", icon: "🧪", desc: "Lab checklist card.", presetData: { type: "in-this-lab", title: "IN THIS LAB YOU WILL", icon: "🧪", items: ["Connect DHT11 sensor", "Connect OLED display", "Upload program", "Read temperature & humidity on the OLED!"] } },
+  "device-ready": { name: "Your Device Is Ready!", type: "device-ready", icon: "✅", desc: "Device callout image with labeled arrows.", presetData: { type: "device-ready", title: "YOUR DEVICE IS READY!", icon: "✅", callouts: [{ side: "left-top", text: "Reads live Temperature in °C" }, { side: "left-bottom", text: "Reads live Humidity in %RH" }, { side: "right-top", text: "Shows both values on OLED display" }, { side: "right-bottom", text: "Powered by USB-C 5V (Power Bank or Adapter)" }] } },
+  "worksheet-card": { name: "Worksheet / Assessment Card", type: "worksheet-card", icon: "📝", desc: "Q&A worksheet with response lines.", presetData: { type: "worksheet-card", title: "MISSION ASSESSMENT", icon: "📝", content: "Q1: What is the purpose of the DHT11 sensor?\nQ2: Name two pins on the DHT11." } },
+  "drawing-canvas": { name: "Drawing Canvas / Design Space", type: "drawing-canvas", icon: "✏️", desc: "Blank dot-grid drawing area.", presetData: { type: "drawing-canvas", title: "DESIGN WORKSPACE", icon: "✏️", content: "Draw your flowchart or design here." } },
+  "vocabulary-builder": { name: "STEM Vocabulary Builder", type: "vocabulary-builder", icon: "📚", desc: "Key terminology definitions.", presetData: { type: "vocabulary-builder", title: "STEM VOCABULARY", icon: "📚", content: "Thermistor: A resistor whose resistance changes with temperature." } },
+  "quick-recap": { name: "Quick Chapter Recap", type: "quick-recap", icon: "⚡", desc: "Bullet summary of key takeaways.", presetData: { type: "quick-recap", title: "QUICK RECAP", icon: "⚡", content: "• VCC ➔ 3.3V Power\n• Signal ➔ Pin D4\n• MicroPython dht library measures temp & humidity." } },
+  "career-spotlight": { name: "STEM Career Spotlight", type: "career-spotlight", icon: "🎓", desc: "Career pathways in engineering & tech.", presetData: { type: "career-spotlight", title: "CAREER SPOTLIGHT", icon: "🎓", content: "Environmental Engineers design technologies to control climate and manage air quality." } },
+  "safety-card": { name: "Lab Safety Card", type: "safety-card", icon: "🛑", desc: "Important safety warnings.", presetData: { type: "safety-card", title: "LAB SAFETY WARNING", icon: "🛑", content: "Never expose electronic sensors to direct water or liquids unless sealed in a waterproof probe!" } },
+  "knowledge-check": { name: "Knowledge Check Quiz", type: "knowledge-check", icon: "❓", desc: "Quick self-assessment quiz.", presetData: { type: "knowledge-check", title: "KNOWLEDGE CHECK", icon: "❓", content: "Q: Which pin on the DHT11 outputs sensor data?" } },
+  "qr-resources": { name: "QR Code & Resource Links", type: "qr-resources", icon: "🔗", desc: "Links to video tutorials & datasheets.", presetData: { type: "qr-resources", title: "ONLINE RESOURCES", icon: "🔗", content: "Scan QR code or visit ultraminds.io/m14 for video tutorials." } }
 };
 
 /**
- * MASTERPIECE AI GENERATION PROMPT SPECIFICATION (STRICT USER CONTENT FIDELITY)
+ * ULTRAMINDS PUBLISHER V20 — MASTERPIECE AI GENERATION PROMPT
+ * Strict 100% content fidelity. Exact page templates. Premium $20 book quality output.
  */
 window.ULTRAMINDS_MASTER_PROMPT = `
-You are the Executive Art Director, Chief Robotics Architect, and Senior Design Director for UltraMinds Engineering Magazine.
+You are the Executive Art Director and Chief Architect for UltraMinds Engineering Magazine — the #1 premium STEM learning book for kids aged 10-16.
 
-Target Inspiration: Apple, National Geographic Kids, LEGO Education, DK Visual Encyclopedias, Canva Editorial Layouts, MIT Tech Review.
+YOUR MANDATE: Convert raw educational content into a perfect, ultra-detailed UltraMinds Mission JSON object.
 
-ULTRAMINDS PAGE COMPOSER RULES v1.0 (STRICT COMPOSITION DIRECTIVES):
+== GOLDEN RULES (NEVER VIOLATE) ==
+RULE 1 - ZERO OMISSION: Every single word, question, code line, bullet, table row, and step from the raw input MUST appear in the output. Never summarize, skip, shorten, or paraphrase any content. Pin-to-pin fidelity is non-negotiable.
+RULE 2 - PRESENTATION ONLY: You arrange and style content. You do not change, rewrite, or invent curriculum content.
+RULE 3 - PREMIUM QUALITY: Every page must look like a $20 published engineering textbook. Use Apple, National Geographic Kids, DK Encyclopedias, LEGO Education as inspiration.
+RULE 4 - RICH STRUCTURES: Always use the richest possible JSON structure. Never use generic "content" strings when a richer array/object structure is available for the card type.
+RULE 5 - FULL PAGES: Each page must be completely filled. Use split-layout (side-by-side columns) wherever possible. Never waste space.
+RULE 6 - PAGE TEMPLATES: Match the correct page template type for each section of content.
 
-RULE 1 (STRICT 100% TEXT PRESERVATION):
-Preserve 100% of the provided mission text exactly. Never rewrite, summarize, simplify, remove, merge, reorder, or paraphrase any educational content, questions, MCQs, options, team roles, or experiments.
+== THE 5 ULTRAMINDS PAGE TEMPLATES ==
 
-RULE 2 (PRESENTATION ONLY):
-Your responsibility is presentation only, not curriculum writing. Improve layout, typography, visual hierarchy, image placement, page composition, and decorative elements.
+PAGE TYPE 1 — "cover" (Page 1 of every mission)
+  - Mission number pill + Mission title + subtitle (large header)
+  - Commander Nova mascot image (left side of header)
+  - RIGHT side: mission-specific illustration
+  - MAIN CONTENT: 2-column layout:
+    LEFT: mission-story card (tall, with inline image stickers)
+    RIGHT: stacked cards: real-world + curiosity-box + stem-fact
+  - FULL WIDTH: mission-objectives (4-column numbered grid)
+  - FULL WIDTH: think-engineer (scenario comparison A vs B)
+  - FOOTER: code pill sequence + NEXT MISSION label
 
-RULE 3 (PREMIUM ENGINEERING MAGAZINE):
-Design every page like a ₹2,500 premium engineering magazine, not a cheap school workbook.
+PAGE TYPE 2 — "engineering-explorer" (Observation & Components page)
+  - Page banner: "ENGINEERING EXPLORER" with "OBSERVE. DISCOVER. UNDERSTAND." subtitle
+  - 2-column layout:
+    LEFT: observe-card (image + numbered questions with answer lines)
+    RIGHT: component-spotlight (component name, features list, pin-config table, specs 4-cell grid)
+  - 2-column layout:
+    LEFT: inside-sensor card (red/blue split diagram)
+    RIGHT: comparison-vs card (human senses vs electronic sensors)
+  - FULL WIDTH: mission-challenge card
+  - FOOTER: did-you-know + next-page-preview
 
-RULE 4 (3-SECOND PURPOSE RECOGNITION):
-Every page must immediately communicate whether it is Story, Concept, Activity, Programming, Testing, or Review within 3 seconds.
+PAGE TYPE 3 — "build-lab" (Hardware Assembly page)
+  - Page banner: "BUILD LAB" with subtitle
+  - 2-column layout:
+    LEFT: in-this-lab checklist + pro-tip card
+    RIGHT: Large image of the board/hardware with callout arrows
+  - FULL WIDTH: build-steps (4-column numbered steps: connect sensor, connect display, upload, observe)
+    Each step: step number + orange title + description + image placeholder + pin table
+  - 2-column layout:
+    LEFT: device-ready card (assembled device image with callouts)
+    RIGHT: common-mistakes alert table (icon + issue + fix)
+  - FOOTER: engineer-tip + mascot + next-page-preview
 
-RULE 5 (GENEROUS WHITESPACE):
-Use generous whitespace. White space dominates. Accent colors highlight key info.
+PAGE TYPE 4 — "logic-builder" (Programming Logic page)
+  - Page banner: "LOGIC BUILDER" with subtitle
+  - 3-column layout:
+    LEFT (narrow): flowchart-sequence (boxes with arrows, plus explanation text for each step)
+    CENTER (wide): blocks-code (MIT App Inventor / Blockly visual code display) + variables-at-work sidebar
+    RIGHT (narrow): variables-at-work card + oled-preview
+  - 2-column layout:
+    LEFT: code-snippet (Python code, full syntax)
+    RIGHT: predict-think (numbered questions) + challenge-box
+  - FOOTER: engineer-tip + next-you-will-learn + mission-progress (1-2-3-4-5 tracker)
 
-RULE 6 (NO VERTICAL BOX STACKING):
-Never stack multiple large boxes vertically if they can be arranged as two-column layouts ('split-layout'), feature cards, or magazine panels.
+PAGE TYPE 5 — "innovation-studio" (Expansion & Review page)
+  - Page banner: "INNOVATION STUDIO" with subtitle
+  - 2-column layout:
+    LEFT: mini-upgrade card (temperature mood icon grid with OLED examples)
+    RIGHT: real-challenge (process flow + add-more components grid)
+  - 2-column layout:
+    LEFT: did-you-know (multi-fact list) + engineers-everywhere (4-industry grid)
+    RIGHT column actually merged into engineers-everywhere full row
+  - FULL WIDTH: engineers-everywhere (4-industry cards: Smart Agriculture, Smart Buildings, Weather Stations, Space)
+  - 2-column layout:
+    LEFT: mission-review-table (checkmark Q&A)
+    RIGHT: ultra-badge + mascot
+  - FULL WIDTH: beyond-mission (Today → Next → Future progression)
+  - FOOTER: next-mission-preview + brand slogan
 
-RULE 7 (VISUAL BALANCE):
-Every page must contain one dominant visual element and one secondary supporting element. Never create text-only pages.
+== RICH JSON CARD SCHEMAS ==
 
-RULE 8 (EDUCATIONAL ILLUSTRATIONS):
-Every illustration or diagram must explain something.
+For "mission-story":
+{ "type": "mission-story", "title": "MISSION STORY", "icon": "📖", "content": "Full narrative text here word for word", "images": ["keyword1", "keyword2"] }
 
-RULE 9 (SCREENSHOT & UI HOLDERS):
-Whenever screenshots/UI are required, emit an 'incard-image-holder' or 'image-holder' with Title, Recommended Illustration, Suggested Ratio, Caption Area, and Label spaces.
+For "real-world":
+{ "type": "real-world", "title": "REAL WORLD", "icon": "🌐", "items": ["Item 1", "Item 2", "Item 3"], "bottomNote": "Closing statement." }
 
-RULE 10 (DEDICATED BLOCKLY WORKSPACE):
-Whenever Blockly or App Inventor logic appears, reserve a large dedicated area ('code-snippet' / 'programming-studio'). Never squeeze Blockly diagrams.
+For "mission-objectives":
+{ "type": "mission-objectives", "title": "MISSION OBJECTIVES", "icon": "🎯", "objectives": [{ "num": 1, "text": "Exact text from source", "icon": "🌡️" }, ...] }
 
-RULE 11 (READABLE PROGRAMMING PAGES):
-Programming Studio pages prioritize code readability over decoration.
+For "think-engineer":
+{ "type": "think-engineer", "title": "THINK LIKE AN ENGINEER", "icon": "🧠", "question": "Exact question text", "answerLines": 2, "scenario": { "left": { "label": "Room A", "temp": "30°C", "hum": "40%", "feel": "Feels Comfortable", "status": "ok" }, "right": { "label": "Room B", "temp": "30°C", "hum": "80%", "feel": "Feels Hot & Sticky", "status": "warn" } } }
 
-RULE 12 (PROFESSIONAL DESIGNER STUDIO):
-Designer Studio pages visually resemble professional UI design guides with pin configurations, step cards, and callouts.
+For "component-spotlight":
+{ "type": "component-spotlight", "title": "MEET TODAY'S COMPONENT", "icon": "🔬", "componentName": "DHT11", "componentSubtitle": "TEMPERATURE & HUMIDITY SENSOR", "features": ["Feature 1 exact text", "Feature 2"], "pinConfig": [{ "num": 1, "label": "VCC", "color": "red", "desc": "Power Supply (3.3V – 5V)" }, { "num": 2, "label": "DATA", "color": "blue", "desc": "Digital Data Output" }, { "num": 3, "label": "GND", "color": "black", "desc": "Ground" }], "specs": [{ "icon": "🌡️", "label": "Temperature Range", "value": "0°C to 50°C" }, { "icon": "💧", "label": "Humidity Range", "value": "20% to 90% RH" }, { "icon": "🎯", "label": "Accuracy", "value": "Temperature: ±1°C\\nHumidity: ±5% RH" }, { "icon": "⚡", "label": "Operating Voltage", "value": "3.3V to 5V DC" }] }
 
-RULE 13 (VISUAL FLOWCHARTS):
-Flowcharts must occupy significant visual space as primary learning tools.
+For "inside-sensor":
+{ "type": "inside-sensor", "title": "INSIDE THE SENSOR – HOW DOES IT WORK?", "icon": "🔬", "intro": "DHT11 has two sensing parts inside:", "leftTitle": "TEMPERATURE SENSING ELEMENT", "leftContent": "Exact text from source", "rightTitle": "HUMIDITY SENSING ELEMENT", "rightContent": "Exact text from source", "bottomNote": "Exact text from source" }
 
-RULE 14 (MODERN TABLES):
-Tables must have colored headers, alternating row colors, and rounded corners (e.g. Pinout tables, Common Mistakes).
+For "comparison-vs":
+{ "type": "comparison-vs", "title": "COMPARE & UNDERSTAND", "icon": "⚖️", "leftTitle": "OUR HUMAN SENSES", "leftItems": [{ "icon": "👁️", "text": "Exact text" }, { "icon": "💧", "text": "Exact text" }], "rightTitle": "ELECTRONIC SENSORS", "rightItems": [{ "icon": "🌡️", "text": "Exact text" }, { "icon": "💧", "text": "Exact text" }], "bottomNote": "EXACT CONCLUDING STATEMENT IN CAPS." }
 
-RULE 15 (TYPED IMAGE PLACEHOLDERS):
-Image placeholders must indicate category (illustration, screenshot, Blockly, flowchart, app UI, photograph) using appropriate card types.
+For "build-steps":
+{ "type": "build-steps", "title": "BUILD LAB", "icon": "🛠️", "steps": [{ "stepNum": 1, "title": "CONNECT DHT11 SENSOR", "desc": "Exact instruction", "pinTable": [{ "label": "VCC", "color": "red", "arrow": "3.3V" }, { "label": "DATA", "color": "blue", "arrow": "DHT11 (Signal)" }, { "label": "GND", "color": "black", "arrow": "GND" }] }] }
 
-RULE 16 (MAX 2 CONCEPTS PER BLOCK):
-Never place more than 2 major concepts inside one visual block. Break dense information into digestible cards.
+For "common-mistakes":
+{ "type": "common-mistakes", "title": "COMMON MISTAKES", "icon": "⚠️", "mistakes": [{ "icon": "🔌", "issue": "Wrong VCC connection", "fix": "Check: VCC → 3.3V (NOT 5V)" }] }
 
-RULE 17 (PAGE EXPANSION):
-Whenever content becomes dense, increase page count (8 to 14 pages). Never reduce font size to fit more content.
+For "flowchart-sequence":
+{ "type": "flowchart-sequence", "title": "FLOW OF LOGIC", "icon": "🔄", "steps": [{ "label": "Start", "type": "start" }, { "label": "Read Temperature from DHT11", "type": "process", "desc": "Exact explanation text" }, { "label": "Repeat Forever", "type": "loop" }] }
 
-RULE 18 (TYPOGRAPHY HIERARCHY):
-Mission Title → Section Title → Subheading → Body → Caption must be visually distinct.
+For "code-snippet":
+{ "type": "code-snippet", "title": "PYTHON LOGIC PREVIEW", "icon": "💻", "language": "python", "code": "Exact code from source, preserving all indentation" }
 
-RULE 19 (VISUAL RHYTHM):
-Alternate left image, right image, full-width, split layout, comparison, and cards throughout the mission.
+For "variables-at-work":
+{ "type": "variables-at-work", "title": "VARIABLES AT WORK", "icon": "📌", "intro": "We store values in variables so we can use them again.", "variables": [{ "name": "temp", "label": "Temperature", "icon": "🌡️", "desc": "Stores temperature value in °C", "example": "26.8" }] }
 
-RULE 20 (MEMORABLE HERO ELEMENT):
-Each page must contain one memorable design element (hero illustration, infographic, timeline, comparison card, highlighted quote, or process diagram).
+For "predict-think":
+{ "type": "predict-think", "title": "PREDICT & THINK", "icon": "🤔", "questions": ["Exact question 1", "Exact question 2"] }
 
-RULE 21 (COLOR RESTRAINT):
-Use color only to guide attention. White dominates.
+For "challenge-box":
+{ "type": "challenge-box", "title": "CHALLENGE", "icon": "🏆", "content": "Exact challenge text from source." }
 
-RULE 22 (DETAILED IMAGE HOLDERS):
-Every image holder must include Title, Recommended Illustration, Suggested Ratio, and Caption Area.
+For "mini-upgrade":
+{ "type": "mini-upgrade", "title": "MINI UPGRADE", "icon": "⬆️", "intro": "Let's add mood icons on OLED based on temperature!", "upgrades": [{ "condition": "Temp < 18°C", "show": "Show 'COLD'", "mood": "COLD", "moodIcon": "🥶", "color": "blue", "oledText": "16.5°C 55%\\n❄️ COLD" }] }
 
-RULE 23 (PROCESS CONVERSION):
-Convert processes into timelines, flowcharts, or step infographics.
+For "real-challenge":
+{ "type": "real-challenge", "title": "REAL CHALLENGE", "icon": "🚀", "challengeTitle": "Design a Smart Classroom Comfort System", "challengeDesc": "Exact description", "flowSteps": [{ "label": "Exact step label", "icon": "🌡️" }], "addMore": [{ "icon": "📢", "label": "Buzzer Alert" }], "bottomNote": "Exact note." }
 
-RULE 24 (KEEP RELATED CONTENT TOGETHER):
-Never separate closely related content across pages (Designer Studio together, Programming Studio together, Testing together).
+For "engineers-everywhere":
+{ "type": "engineers-everywhere", "title": "ENGINEERS USE THIS EVERYWHERE!", "icon": "🏭", "industries": [{ "title": "SMART AGRICULTURE", "desc": "Exact text", "imgKeyword": "agriculture" }] }
 
-RULE 25 (CONSISTENT DESIGN SYSTEM):
-Maintain consistent margins, spacing, corner radius, shadows, typography, icon style, and color usage across all pages.
+For "mission-review-table":
+{ "type": "mission-review-table", "title": "MISSION REVIEW", "icon": "📝", "rows": [{ "question": "What did we build?", "answer": "Exact answer" }] }
 
-RULES 26-30 (ART DIRECTOR MANDATE):
-Think like an Art Director. Create visual rhythm (Large Image → Cards → Diagram → Challenge). Replace long paragraphs with comparison cards, timelines, or feature grids without changing original wording.
-Before finalizing every page, ensure it is of ₹2,500 premium engineering publication quality.
+For "ultra-badge":
+{ "type": "ultra-badge", "title": "ULTRA BADGE", "icon": "🎖️", "badgeName": "CLIMATE ENGINEER", "badgeSubtitle": "MISSION 14 COMPLETE!", "congrats": "Exact congratulations text from source.", "mascotNote": "Exact mascot speech from source." }
 
-OUTPUT FORMAT: Return strictly valid JSON (No conversational markdown text outside JSON):
+For "beyond-mission":
+{ "type": "beyond-mission", "title": "BEYOND TODAY'S MISSION", "icon": "🚀", "steps": [{ "label": "Today", "icon": "📡", "desc": "Exact text" }, { "label": "Next", "icon": "☁️", "desc": "Exact text" }, { "label": "Future", "icon": "📱", "desc": "Exact text" }], "bottomNote": "Exact motivational note from source." }
+
+For "split-layout" (two columns side by side):
+{ "type": "split-layout", "left": { /* any card object */ }, "right": { /* any card object */ } }
+
+For "observe-card":
+{ "type": "observe-card", "title": "OBSERVE & ANSWER", "icon": "👁️", "introText": "Look carefully at this weather station. What do you notice?", "questions": ["Exact Q1?", "Exact Q2?", "Exact Q3?", "Exact Q4?"] }
+
+For "mission-challenge":
+{ "type": "mission-challenge", "title": "MISSION CHALLENGE", "icon": "🔍", "question": "Exact question text.", "answerFields": ["1. ...", "2. ..."] }
+
+For "page-banner":
+{ "type": "page-banner", "pageType": "engineering-explorer", "pageNum": 2, "title": "ENGINEERING EXPLORER", "subtitle": "OBSERVE. DISCOVER. UNDERSTAND.", "icon": "🔍" }
+pageType options: "engineering-explorer" | "build-lab" | "logic-builder" | "innovation-studio"
+
+For "in-this-lab":
+{ "type": "in-this-lab", "title": "IN THIS LAB YOU WILL", "icon": "🧪", "items": ["Exact item 1", "Exact item 2"] }
+
+For "pro-tip":
+{ "type": "pro-tip", "title": "PRO TIP", "icon": "⭐", "content": "Exact tip text from source." }
+
+For "did-you-know":
+{ "type": "did-you-know", "title": "DID YOU KNOW?", "icon": "💡", "items": ["Fact 1 exact text", "Fact 2 exact text", "Fact 3 exact text"] }
+
+For footer objects, add to each page:
+{ "footerPills": ["when start", "read temperature", "read humidity", "store data", "show on OLED"], "footerTip": "Exact engineer tip text", "footerFact": "Exact fact text", "footerNextMission": "Smart Climate Controller 🚀", "footerNextLabel": "NEXT PAGE PREVIEW", "footerNextText": "Exact next page teaser", "brandTag": "🚀 UltraMinds AI" }
+
+== OUTPUT RULES ==
+- Return ONLY valid JSON. No markdown, no explanation text outside JSON.
+- Produce 5-14 pages as needed to fit ALL content at comfortable reading size.
+- Every page object must have: pageNumber, pageType, sections[], footerPills or footerTip, footerNextMission or footerNextText.
+- sections[] must contain ONLY the card objects as specified above.
+- Use split-layout to place two cards side by side whenever the page has multiple cards.
+- Produce maxOutputTokens worth of JSON (do not cut short).
+
+== OUTPUT FORMAT ==
 {
-  "missionNumber": "03",
-  "title": "SMART FARM GUARDIAN",
-  "missionTitle": "SMART FARM GUARDIAN",
-  "missionSubtitle": "Build an IoT Smart Irrigation & Farm Monitoring System",
+  "missionNumber": "14",
+  "missionTitle": "SMART CLIMATE MONITOR",
+  "missionSubtitle": "Let's build a Smart Climate Monitor using DHT11 and OLED!",
   "guideName": "Commander Nova",
-  "guideRole": "Lead STEM Astronaut Guide",
+  "guideRole": "Your Mission Guide",
   "theme": "theme-blue",
   "pages": [
     {
       "pageNumber": 1,
-      "sections": [
-        { "type": "nova-card", "title": "MISSION BRIEF", "icon": "📖", "content": "..." },
-        { "type": "real-world", "title": "REAL WORLD CONNECTION", "icon": "🌐", "content": "..." }
-      ]
+      "pageType": "cover",
+      "sections": [ ... ],
+      "footerPills": ["when start", "read temperature", "read humidity", "store data", "show on OLED"],
+      "footerNextMission": "Smart Climate Controller 🚀"
     }
   ]
 }

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Mission 99: Advanced Autonomous Environmental Control & Robotics Station</title>
+</head>
+<body>
+
+  <!-- MISSION METADATA -->
+  <h1 id="mission-title">Mission 99: Advanced Autonomous Environmental Control &amp; Robotics Station</h1>
+  <p id="mission-subtitle">Design, Wire, Program, and Validate a Closed-Loop Cyber-Physical Climate &amp; Irrigation Matrix</p>
+  <div id="mission-author">Commander Nova - Chief Engineering Lead</div>
+
+  <!-- MISSION BRIEF & STORY -->
+  <div id="section-story">
+    <h2>MISSION BRIEF &amp; NARRATIVE STORY</h2>
+    <p>Commander Nova has received an urgent emergency transmission from Sector 7 Research Greenhouse. The automated crop survival array has suffered a primary controller power spike, knocking out all legacy analog climate regulators. Deep within the bio-dome, rare atmospheric research plants require hyper-precise environmental regulation: the ambient air temperature must be maintained within 21.5°C to 24.0°C, relative humidity must remain between 55% RH and 65% RH, and soil moisture levels cannot drop below 450 raw ADC units without risking immediate thermal stress.</p>
+    <p>Your objective as a Senior Embedded Systems Engineer is to assemble the UltraBoard V2 Microcontroller platform, integrate high-precision digital sensors, program a MicroPython feedback loop, render live diagnostics to an OLED display, and execute a multi-phase hardware verification battery before deployment.</p>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div id="section-objectives">
+    <h2>LEARNING OBJECTIVES</h2>
+    <ul>
+      <li>Objective 01: Interface digital DHT22 temperature and humidity sensors via GPIO single-bus protocol.</li>
+      <li>Objective 02: Calibrate analog capacitive soil moisture probes using 12-bit ADC quantization.</li>
+      <li>Objective 03: Construct non-blocking asynchronous timing loops in MicroPython without using hardware-blocking sleep delays.</li>
+      <li>Objective 04: Implement PID proportional control for high-speed PWM motor speed management.</li>
+      <li>Objective 05: Execute rigorous automated diagnostic verification against technical fact locks.</li>
+    </ul>
+  </div>
+
+  <!-- REQUIRED EQUIPMENT & TECHNICAL SPECS -->
+  <div id="section-equipment">
+    <h2>REQUIRED EQUIPMENT &amp; HARDWARE INVENTORY</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Component Name</th>
+          <th>Quantity</th>
+          <th>Port Designation</th>
+          <th>Operating Voltage</th>
+          <th>Technical Specification</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>UltraBoard V2 Platform</td>
+          <td>1 Unit</td>
+          <td>MAIN_BOARD</td>
+          <td>5.0V DC (USB-C)</td>
+          <td>Dual-Core LX6 Microcontroller with Wi-Fi &amp; Bluetooth 5.0</td>
+        </tr>
+        <tr>
+          <td>DHT22 Precision Sensor</td>
+          <td>1 Unit</td>
+          <td>Sensor Port 1</td>
+          <td>3.3V DC</td>
+          <td>Temperature ±0.5°C, Humidity ±2% RH range</td>
+        </tr>
+        <tr>
+          <td>Capacitive Soil Probe v1.2</td>
+          <td>1 Unit</td>
+          <td>Input Port 2</td>
+          <td>3.3V DC</td>
+          <td>Analog Output 0V to 3.0V (12-bit ADC: 0 - 4095)</td>
+        </tr>
+        <tr>
+          <td>128x64 I2C OLED Display</td>
+          <td>1 Unit</td>
+          <td>I2C Port 1</td>
+          <td>3.3V DC</td>
+          <td>SSD1306 Driver, SDA Pin 21, SCL Pin 22</td>
+        </tr>
+        <tr>
+          <td>5V Submersible Water Pump</td>
+          <td>1 Unit</td>
+          <td>Motor Port 1</td>
+          <td>5.0V DC</td>
+          <td>Max Flow Rate: 120 L/H, Relay Isolation Control</td>
+        </tr>
+        <tr>
+          <td>PWM Exhaust Fan 40mm</td>
+          <td>1 Unit</td>
+          <td>Servo Port 2</td>
+          <td>5.0V DC</td>
+          <td>Speed: 6000 RPM, Duty Cycle range 0% to 100%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 12-STEP HARDWARE CONNECTION PROCEDURE -->
+  <div id="section-procedure">
+    <h2>12-STEP HARDWARE ASSEMBLY PROCEDURE</h2>
+    <ol>
+      <li>Disconnect USB-C power supply from the UltraBoard V2 main board before making any wiring connections.</li>
+      <li>Mount the UltraBoard V2 firmly onto the anti-static workspace workbench surface using 4 M3 nylon standoffs.</li>
+      <li>Connect the 4-pin JST harness from the 128x64 OLED Display to I2C Port 1 (VCC -> 3.3V, GND -> GND, SDA -> D21, SCL -> D22).</li>
+      <li>Plug the DHT22 Temperature &amp; Humidity Sensor cable firmly into Sensor Port 1. Verify VCC aligns with 3.3V red wire.</li>
+      <li>Connect the Analog Capacitive Soil Moisture Sensor cable into Input Port 2 (Signal Pin GPIO34).</li>
+      <li>Attach the 5V Submersible Water Pump power lead connectors into Motor Port 1 (OUT+ and OUT- terminals).</li>
+      <li>Connect the 40mm PWM Exhaust Cooling Fan signal line to Servo Port 2 (Control Signal Pin GPIO15).</li>
+      <li>Inspect all wiring terminals under adequate lighting to ensure zero cross-bridging or loose jumper strands.</li>
+      <li>Connect the 5.0V 2.5A USB-C Power Adapter to the main power terminal on UltraBoard V2.</li>
+      <li>Observe the Green Power Indicator LED (PWR) — verify steady solid green light within 500ms of boot.</li>
+      <li>Verify OLED display splash text: "UltraMinds OS v3.0 - Booting Climate Engine...".</li>
+      <li>Measure current draw with inline USB multimeter — confirm baseline idle current is below 85mA.</li>
+    </ol>
+  </div>
+
+  <!-- MICROPYTHON CODE snippet -->
+  <div id="section-code">
+    <h2>MICROPYTHON CONTROL LOOP CODE</h2>
+    <pre><code>import machine
+import time
+import dht
+
+# Pin Initialization
+dht_sensor = dht.DHT22(machine.Pin(4))
+i2c = machine.I2C(0, scl=machine.Pin(22), sda=machine.Pin(21))
+pump = machine.Pin(12, machine.Pin.OUT)
+fan_pwm = machine.PWM(machine.Pin(15), freq=1000)
+
+TEMP_SETPOINT_MAX = 24.0
+HUMI_SETPOINT_MIN = 55.0
+
+def read_climate_matrix():
+    dht_sensor.measure()
+    t = dht_sensor.temperature()
+    h = dht_sensor.humidity()
+    return t, h
+
+def execute_feedback_control(t, h):
+    if t &gt; TEMP_SETPOINT_MAX:
+        fan_pwm.duty(800) # Activate exhaust fan
+    else:
+        fan_pwm.duty(0)
+        
+    if h &lt; HUMI_SETPOINT_MIN:
+        pump.value(1) # Pulse water pump
+    else:
+        pump.value(0)
+
+while True:
+    temp, humi = read_climate_matrix()
+    execute_feedback_control(temp, humi)
+    time.sleep(2.0)
+</code></pre>
+  </div>
+
+  <!-- MATHEMATICAL & PHYSICAL EQUATIONS -->
+  <div id="section-equations">
+    <h2>PHYSICAL &amp; MATHEMATICAL EQUATIONS</h2>
+    <p>Relative Humidity Calculation Formula:</p>
+    <p><code>RH_percent = (e / e_sat) * 100</code></p>
+    <p>Where vapor pressure <code>e_sat(T) = 6.11 * 10^( (7.5 * T) / (237.3 + T) )</code> in hPa.</p>
+    <p>PWM Duty Cycle Percentage Calculation:</p>
+    <p><code>Duty_Percent = (Raw_PWM_Value / 1023.0) * 100</code></p>
+  </div>
+
+  <!-- LAB SAFETY & ENGINEERING NOTES -->
+  <div id="section-safety">
+    <h2>LAB SAFETY &amp; ENGINEERING NOTES</h2>
+    <p>CRITICAL SAFETY WARNING: Never submerge the main electronic circuit board or wiring connectors in water. Only the sealed IP68 pump motor head and waterproof probe tip may contact water.</p>
+    <p>ENGINEERING BEST PRACTICE: Always double-check wire polarities before applying 5V DC power. Reversing VCC and GND on the DHT22 sensor will cause thermal breakdown within 3 seconds.</p>
+  </div>
+
+  <!-- ASSESSMENT QUESTIONS & ANSWERS -->
+  <div id="section-assessment">
+    <h2>MISSION ASSESSMENT &amp; KNOWLEDGE CHECK</h2>
+    <p>Question 01: What is the operating voltage requirement for the DHT22 sensor when connected to Sensor Port 1?</p>
+    <p>Answer 01: The DHT22 operating voltage is strictly 3.3V DC.</p>
+    <p>Question 02: Which communication protocol is utilized by the SSD1306 128x64 OLED display?</p>
+    <p>Answer 02: Inter-Integrated Circuit (I2C) protocol utilizing SDA (Data) and SCL (Clock) lines.</p>
+    <p>Question 03: Why is non-blocking asynchronous timing preferred over time.sleep() in continuous control loops?</p>
+    <p>Answer 03: Non-blocking loops allow the microcontroller to read sensors and process emergency stops continuously without freezing execution.</p>
+    <p>Question 04: What happens if ambient temperature exceeds 24.0°C in the MicroPython feedback controller?</p>
+    <p>Answer 04: The controller activates the PWM exhaust cooling fan at 800 duty (~78% speed) on Servo Port 2.</p>
+  </div>
+
+</body>
+</html>

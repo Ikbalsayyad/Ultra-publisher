@@ -78,8 +78,58 @@ body.studio-app {
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex-wrap: nowrap;
+}
+
+/* Top Navbar Dropdown Menus */
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 190px;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 6px 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.2);
+  z-index: 99999;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 7px 14px;
+  background: transparent;
+  border: none;
+  color: #F8FAFC;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--accent-cyan);
 }
 
 /* --------------------------------------------------------------------------
@@ -574,6 +624,126 @@ body:not(.view-two-page) .book-page {
 .ctx-btn-action { width: 100%; background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; color: white; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; }
 .ctx-btn-action:hover { box-shadow: 0 0 12px rgba(37, 99, 235, 0.6); }
 
+/* Context Menu 4-Side Margin Box & Steppers */
+.ctx-margin-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 6px;
+  margin-top: 4px;
+}
+
+.ctx-margin-row-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+}
+
+.ctx-margin-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.ctx-btn-step {
+  background: rgba(255, 255, 255, 0.1);
+  color: #CBD5E1;
+  border: none;
+  width: 20px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.ctx-btn-step:hover {
+  background: var(--accent-blue);
+  color: #FFF;
+}
+
+.ctx-margin-stepper input {
+  width: 34px;
+  height: 24px;
+  padding: 0 2px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: #00F0FF;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.ctx-margin-stepper input::-webkit-outer-spin-button,
+.ctx-margin-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ctx-margin-stepper input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.ctx-margin-core-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #94A3B8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.ctx-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #E2E8F0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ctx-pill-btn:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: var(--accent-cyan);
+  color: #FFF;
+}
+
+.ctx-btn-active {
+  background: linear-gradient(135deg, #2563EB, #00F0FF) !important;
+  border-color: #00F0FF !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.ctx-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 100%;
+}
+
 /* 8-Point Stretch & Transform Handles */
 .transform-handles-active {
   outline: 2px dashed var(--accent-cyan) !important;
@@ -789,16 +959,19 @@ pre.code-content code {
 /* Floating Selection Quick Toolbar */
 .floating-text-toolbar {
   position: absolute;
-  z-index: 10000;
+  z-index: 999999;
   background: rgba(15, 23, 42, 0.96);
   backdrop-filter: blur(12px);
   border: 1px solid var(--accent-cyan);
-  border-radius: 8px;
-  padding: 4px 6px;
+  border-radius: 12px;
+  padding: 6px 12px;
   display: none;
   align-items: center;
-  gap: 4px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 240, 255, 0.3);
+  gap: 6px;
+  max-width: 92vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgba(0, 240, 255, 0.35);
   animation: popInFloating 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -815,15 +988,15 @@ pre.code-content code {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
-  padding: 3px 7px;
-  border-radius: 4px;
-  font-size: 0.72rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   transition: all 0.15s ease;
 }
 
@@ -835,9 +1008,9 @@ pre.code-content code {
 
 .floating-divider {
   width: 1px;
-  height: 16px;
+  height: 18px;
   background: rgba(255, 255, 255, 0.2);
-  margin: 0 2px;
+  margin: 0 3px;
 }
 
 /* In-Card Inline Sub-Capsules */
@@ -856,12 +1029,21 @@ pre.code-content code {
 
 /* Text Highlighter Pill */
 .text-highlight {
-  background: #FEF08A !important;
+  background-color: #FEF08A;
   color: #0F172A !important;
-  padding: 1px 4px !important;
-  border-radius: 3px !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
   font-weight: 600 !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+/* Transparent Image Frame & Holders */
+.image-frame-container,
+.incard-image-box,
+.image-holder-card .image-frame-container,
+.incard-image-box .image-frame-container {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* ==========================================================================
@@ -873,39 +1055,78 @@ pre.code-content code {
     margin: 0;
   }
 
-  html, body {
+  html,
+  body,
+  body.studio-app,
+  body.exporting-pdf {
     background: #FFFFFF !important;
     color: #0F172A !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
-    min-height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
     overflow: visible !important;
+    display: block !important;
+    position: static !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* HIDE ONLY STUDIO TOP NAVBAR & SIDEBAR (DO NOT HIDE .mission-header-banner!) */
+  /* HIDE ALL STUDIO TOOLBARS & OVERLAYS IN PRINT/PDF EXPORT */
+  header.studio-navbar,
   .studio-navbar,
+  .page-control-toolbar,
   .studio-header,
   .brand-logo,
   .navbar-actions,
   .left-control-panel,
   .panel-tabs,
+  .format-bar,
+  .top-format-bar,
   .modal-overlay,
   .ultraminds-ctx-menu,
+  #ultraminds-context-menu,
   .floating-text-toolbar,
+  #floating-selection-toolbar,
   .transform-handle,
-  .selected-card,
+  .um-resize-handle,
+  .card-move-arrows-overlay,
+  .card-selection-outline,
+  .selected-card-outline,
+  .mascot-del-btn,
+  .incard-del-btn,
+  .bullet-del-btn,
+  .step-del-btn,
+  .footer-delete-btn,
+  .page-overflow-badge,
   #ai-status-monitor,
-  #elements-palette-container {
+  #elements-palette-container,
+  ::-webkit-resizer {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
     width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Force hide all resizer grips and dotted borders on images/emojis in PDF export */
+  img,
+  svg,
+  .image-frame-container,
+  .holder-img,
+  .cover-mascot-img,
+  .card-icon-img,
+  .cover-mascot-wrapper,
+  .badge-mascot,
+  [contenteditable="true"] {
+    resize: none !important;
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   /* ENSURE MISSION HEADER TITLE BANNER ON PAGE 1 IS VISIBLE */
@@ -917,34 +1138,19 @@ pre.code-content code {
     width: 100% !important;
   }
 
-  .studio-workspace {
-    display: block !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .right-canvas-viewport {
-    padding: 0 !important;
-    margin: 0 !important;
-    background: transparent !important;
-    height: auto !important;
-    min-height: 100% !important;
-    width: 100% !important;
-    overflow: visible !important;
-    display: block !important;
-  }
-
+  .studio-workspace,
+  .right-canvas-viewport,
   #a4-canvas-container {
-    transform: none !important;
-    margin: 0 !important;
+    display: block !important;
     padding: 0 !important;
+    margin: 0 !important;
     width: 100% !important;
     height: auto !important;
-    display: block !important;
+    min-height: 0 !important;
+    max-height: none !important;
     overflow: visible !important;
+    position: static !important;
+    background: transparent !important;
   }
 
   .two-page-spread {
@@ -957,7 +1163,7 @@ pre.code-content code {
 
   .book-page {
     display: block !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
@@ -968,10 +1174,24 @@ pre.code-content code {
     break-inside: avoid !important;
     width: 210mm !important;
     height: 297mm !important;
+    max-height: 297mm !important;
     box-sizing: border-box !important;
     position: relative !important;
     overflow: hidden !important;
     float: none !important;
+  }
+
+  .book-page.page-landscape {
+    width: 297mm !important;
+    height: 210mm !important;
+    max-height: 210mm !important;
+  }
+
+  /* PREVENT EXTRA TRAILING BLANK PAGE */
+  .book-page:last-child,
+  .book-page:last-of-type {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   [contenteditable="true"] {
@@ -979,7 +1199,204 @@ pre.code-content code {
   }
 }
 
+/* STANDALONE .EXPORTING-PDF CLASS RULES FOR MULTI-PAGE PRINT EXPORT */
+body.exporting-pdf {
+  background: #FFFFFF !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block !important;
+}
 
+body.exporting-pdf .studio-navbar,
+body.exporting-pdf .page-control-toolbar,
+body.exporting-pdf .left-control-panel,
+body.exporting-pdf .transform-handle,
+body.exporting-pdf .card-move-arrows-overlay,
+body.exporting-pdf #ultraminds-context-menu {
+  display: none !important;
+}
 
+body.exporting-pdf .studio-workspace,
+body.exporting-pdf .right-canvas-viewport,
+body.exporting-pdf #a4-canvas-container {
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
 
+body.exporting-pdf .book-page {
+  display: block !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  max-height: 297mm !important;
+  margin: 0 auto !important;
+  page-break-after: always !important;
+  break-after: page !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  border: none !important;
+}
 
+body.exporting-pdf .book-page:last-child {
+  page-break-after: avoid !important;
+  break-after: avoid !important;
+}
+
+/* ==========================================================================
+   V30 UPGRADE SPECIAL STYLES
+   ========================================================================== */
+
+/* Landscape A4 Page Mode (#17) */
+.book-page.page-landscape, .page-landscape {
+  width: 297mm !important;
+  height: 210mm !important;
+  max-height: 210mm !important;
+}
+
+/* Floating Card Mode (#7) */
+.card-floating {
+  position: absolute !important;
+  z-index: 100 !important;
+  box-shadow: 0 10px 30px rgba(0,240,255,0.3) !important;
+  border: 2px dashed var(--accent-cyan) !important;
+  overflow: visible !important;
+}
+
+/* Card Directional Move Arrows Overlay (#22) */
+.card-move-arrows-overlay button:hover {
+  transform: scale(1.2);
+  color: #FFFFFF !important;
+}
+
+/* Save / Load Slots Row */
+.save-slot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+.save-slot-info {
+  display: flex;
+  flex-direction: column;
+}
+.save-slot-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #F8FAFC;
+}
+.save-slot-date {
+  font-size: 0.7rem;
+  color: #94A3B8;
+}
+.save-slot-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Subcard In-Card Step Resize Handle (#16) */
+.in-card-step, .inline-sub-capsule {
+  resize: both;
+  overflow: auto;
+}
+
+/* Page Control Toolbar Styling */
+.page-control-toolbar button:hover {
+  filter: brightness(1.2);
+}
+.page-control-toolbar .btn-active {
+  background: var(--accent-cyan) !important;
+  color: #0F172A !important;
+  font-weight: bold;
+}
+/* Page Control Toolbar Container */
+.page-control-bar, .pcb-container, #pcb-add-page {
+  display: flex;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 8px;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+/* Save / Load Modal Container */
+#save-load-modal .modal-card {
+  width: 600px;
+  max-width: 90vw;
+  background: #0F172A;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* Margin/Bleed Modal */
+#margin-bleed-modal .modal-card, .margin-bleed-container {
+  width: 500px;
+  background: #0F172A;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* Full Subcard Control & Formatting Engine Styles */
+.in-card-step,
+.step-card,
+.wiring-step-card,
+.mistake-item,
+.mistake-row,
+.hero-card,
+.hero-card-item,
+.objective-item,
+.inline-sub-capsule,
+.sub-card {
+  resize: both;
+  overflow: auto;
+  min-width: 100px;
+  min-height: 40px;
+  position: relative;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.in-card-step:hover,
+.step-card:hover,
+.wiring-step-card:hover,
+.mistake-item:hover,
+.hero-card:hover,
+.objective-item:hover,
+.inline-sub-capsule:hover {
+  outline: 1px dashed var(--accent-cyan) !important;
+}
+
+.selected-subcard {
+  border: 2px dashed var(--accent-cyan) !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
+}
+
+/* Card-Fit & Resizable Image Replacement */
+.card-icon-img,
+.round-icon-badge img,
+.badge-icon img,
+.capsule-icon img {
+  border-radius: 8px !important;
+  max-width: 100% !important;
+  max-height: 160px !important;
+  object-fit: contain !important;
+  resize: both !important;
+  overflow: auto !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+}

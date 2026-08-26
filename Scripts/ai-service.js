@@ -1,7 +1,6 @@
 /**
- * UltraMinds AI Service Engine (V6 - Smooth 10-Step Progress Stream & Null-Safe Rendering Guard)
- * Connects directly to Google Gemini 3.5 Flash / Pro API or OpenAI API using user API keys.
- * Executes a smooth progressive 10-Step Pipeline for ultra-high-precision STEM textbook chapters.
+ * UltraMinds AI Service Engine V20
+ * 32K token limit, 2-pass extraction, smart JSON repair, streaming progress
  */
 
 window.AIService = {
@@ -9,7 +8,7 @@ window.AIService = {
     return {
       provider: localStorage.getItem('ultraminds_ai_provider') || 'gemini',
       apiKey: localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('ultraminds_api_key') || localStorage.getItem('gemini_api_key') || '',
-      model: localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.1-pro',
+      model: localStorage.getItem('ultraminds_ai_model') || 'gemini-2.5-flash',
       customEndpoint: localStorage.getItem('ultraminds_ai_endpoint') || ''
     };
   },
@@ -17,10 +16,10 @@ window.AIService = {
   saveSettings(settings) {
     if (settings.provider) localStorage.setItem('ultraminds_ai_provider', settings.provider);
     if (settings.apiKey !== undefined) {
-      const keyVal = settings.apiKey.trim();
-      localStorage.setItem('ultraminds_ai_key', keyVal);
-      localStorage.setItem('ultraminds_api_key', keyVal);
-      localStorage.setItem('gemini_api_key', keyVal);
+      const k = settings.apiKey.trim();
+      localStorage.setItem('ultraminds_ai_key', k);
+      localStorage.setItem('ultraminds_api_key', k);
+      localStorage.setItem('gemini_api_key', k);
     }
     if (settings.model) {
       localStorage.setItem('ultraminds_ai_model', settings.model);
@@ -31,188 +30,342 @@ window.AIService = {
 
   async processMissionData(inputText, pageLimit = "auto", statusCallback = null) {
     const settings = this.getSettings();
-
     const updateStatus = (msg) => {
-      console.log("🤖 AI Status Pipeline:", msg);
-      if (statusCallback && typeof statusCallback === 'function') {
-        statusCallback(msg);
-      }
+      console.log("🤖 Publishing Compiler:", msg);
+      if (statusCallback) statusCallback(msg);
     };
 
-    // If no API Key is set on this computer, inform user clearly
-    if (!settings.apiKey) {
-      updateStatus("⚠️ No API Key found on this device. Click ⚙️ API in top navbar to enter your key. Falling back to Heuristic Engine...");
-      const parsed = window.HeuristicParser.parse(inputText, pageLimit);
-      return this.normalizeMissionObject(parsed, inputText);
+    // Stage 1: Always compile canonical source first
+    let canonicalResult = null;
+    if (window.CanonicalCompiler) {
+      updateStatus("🔒 Stage 1/4: Compiling Canonical Source & Locking Technical Facts...");
+      canonicalResult = window.CanonicalCompiler.compile(inputText, 'M01');
+      window.lastCanonicalResult = canonicalResult;
     }
 
-    const masterPrompt = window.ULTRAMINDS_MASTER_PROMPT || `You are the Executive Design Director for UltraMinds Engineering Magazine. Structure the given text into an UltraMinds Book Mission JSON object.`;
+    if (!settings.apiKey) {
+      updateStatus("⚠️ No API Key — using Publishing Compiler & Dynamic Composer...");
+      const parsedData = (window.HeuristicParser && typeof window.HeuristicParser.parse === 'function')
+        ? window.HeuristicParser.parse(inputText, pageLimit)
+        : null;
+      return this.normalizeMissionObject(parsedData, inputText);
+    }
 
-    const stepsMessages = [
-      `🚀 Step 1/10: Connecting to ${settings.provider.toUpperCase()} API (${settings.model || 'gemini-3.1-pro'})...`,
-      "🧠 Step 2/10: Analyzing raw topic & mapping 52-Element UltraMinds STEM Ontology...",
-      "📖 Step 3/10: Synthesizing Page 1: Mission Story, Real World Impact & OLED STEM Fact...",
-      "🎯 Step 4/10: Synthesizing Page 2: Mission Objectives Grid & Component Anatomy Specs...",
-      "🛠️ Step 5/10: Synthesizing Page 3: Breadboard Pinout Lab & Hardware Diagrams...",
-      "💻 Step 6/10: Synthesizing Page 4: MicroPython/C++ Code Snippets & API Reference...",
-      "⚠️ Step 7/10: Synthesizing Page 5: Troubleshooting Debug Corner & Scenario Comparison...",
-      "🎓 Step 8/10: Synthesizing Page 6-8: STEM Careers, Safety Warnings & Achievement Badges...",
-      "🖼️ Step 9/10: Resolving High-Res Hardware Schematics & Mascot Overlay Layer..."
+    const steps = [
+      "🚀 Stage 1/4: Canonical Source Lock & Element Tagging Complete...",
+      "🧠 Stage 2/4: AI Role B (Design Planning) — Mapping Element IDs to Layout Grid...",
+      "📐 Stage 3/4: Dynamic Card & Sub-Element Composition...",
+      "✨ Stage 4/4: Running 10-Gate Automated Verification Pipeline..."
     ];
 
-    let currentStepIdx = 0;
-    updateStatus(stepsMessages[0]);
-
-    // Smooth progressive timer for real-time UI status updates while fetching
-    const progressTimer = setInterval(() => {
-      if (currentStepIdx < stepsMessages.length - 1) {
-        currentStepIdx++;
-        updateStatus(stepsMessages[currentStepIdx]);
+    let stepIdx = 0;
+    updateStatus(steps[0]);
+    const timer = setInterval(() => {
+      if (stepIdx < steps.length - 1) {
+        stepIdx++;
+        updateStatus(steps[stepIdx]);
       }
     }, 1200);
 
     try {
       let rawResult = null;
+      const provider = settings.provider || 'gemini';
+      updateStatus(`🌐 Connecting to ${provider.toUpperCase()} API (${settings.model || 'default'}) for Layout Planning...`);
 
-      if (settings.provider === 'gemini') {
-        rawResult = await this.callGemini(settings.apiKey, settings.model || 'gemini-3.1-pro', masterPrompt, inputText, updateStatus);
-      } else if (settings.provider === 'openai') {
-        rawResult = await this.callOpenAI(settings.apiKey, settings.model || 'gpt-4o-mini', masterPrompt, inputText, updateStatus);
+      if (provider === 'gemini') {
+        rawResult = await this.callGeminiWithFallback(settings.apiKey, settings.model, inputText, updateStatus);
       } else {
-        rawResult = await this.callCustom(settings.customEndpoint, settings.apiKey, masterPrompt, inputText, updateStatus);
+        rawResult = await this.callOpenAICompatible(provider, settings.apiKey, settings.model, settings.customEndpoint, inputText, updateStatus);
       }
 
-      clearInterval(progressTimer);
-
-      updateStatus("✨ Step 10/10: Complete! Masterpiece Premium Engineering Magazine Chapter Ready!");
+      clearInterval(timer);
+      updateStatus("✅ Complete! Running 10-Gate Verification...");
       return this.normalizeMissionObject(rawResult, inputText);
-
     } catch (err) {
-      clearInterval(progressTimer);
-      console.error("AI Service API Call Failed:", err);
-      updateStatus(`⚠️ API Notice: ${err.message}. Using Smart Heuristic Engine fallback...`);
-
-      const fallback = window.HeuristicParser.parse(inputText, pageLimit);
-      return this.normalizeMissionObject(fallback, inputText);
+      clearInterval(timer);
+      console.error("AI Service Error:", err);
+      updateStatus(`⚠️ API Error: ${err.message} — Falling back to Publishing Compiler Engine...`);
+      const parsedFallback = (window.HeuristicParser && typeof window.HeuristicParser.parse === 'function')
+        ? window.HeuristicParser.parse(inputText, pageLimit)
+        : null;
+      return this.normalizeMissionObject(parsedFallback, inputText);
     }
   },
 
-  async callGemini(apiKey, model, systemPrompt, userContent, updateStatus) {
-    const modelsToTry = [model, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-2.5-pro'].filter(Boolean);
-    const uniqueModels = [...new Set(modelsToTry)];
+  async callGeminiWithFallback(apiKey, preferredModel, userContent, updateStatus) {
+    const modelsToTry = [
+      preferredModel,
+      'gemini-2.5-flash',
+      'gemini-2.5-pro',
+      'gemini-2.0-flash'
+    ].filter(m => m && !m.includes('1.5'));
+    const unique = [...new Set(modelsToTry)];
     let lastError = null;
 
-    for (const modelName of uniqueModels) {
+    for (const modelName of unique) {
       try {
-        if (updateStatus) updateStatus(`🚀 Connecting to Gemini API (${modelName})...`);
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-
-        const payload = {
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                { text: systemPrompt },
-                { text: `Here is the raw mission topic/content to transform into an ultra-detailed 5-14 page Premium Engineering Magazine JSON chapter:\n\n${userContent}` }
-              ]
-            }
-          ],
-          generationConfig: {
-            responseMimeType: "application/json",
-            maxOutputTokens: 8192,
-            temperature: 0.7
-          }
-        };
-
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(`Gemini API Error (${res.status}): ${errText}`);
-        }
-
-        const data = await res.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!rawText) throw new Error("Empty response from Gemini API");
-
-        const parsed = this.parseJSONSafely(rawText);
-        if (parsed) return parsed;
+        updateStatus(`🔗 Trying model: ${modelName}...`);
+        const result = await this.callGemini(apiKey, modelName, userContent, updateStatus);
+        if (result) return result;
       } catch (err) {
-        console.warn(`Gemini Model [${modelName}] failed:`, err);
+        console.warn(`Model [${modelName}] failed:`, err.message);
         lastError = err;
       }
     }
-
-    throw lastError || new Error("All Gemini API models failed to return valid JSON");
+    throw lastError || new Error("All Gemini models failed");
   },
 
-  async callOpenAI(apiKey, model, systemPrompt, userContent, updateStatus) {
-    const modelName = model || 'gpt-4o-mini';
-    const url = `https://api.openai.com/v1/chat/completions`;
+  async callGemini(apiKey, model, userContent, updateStatus) {
+    const systemPrompt = window.ULTRAMINDS_MASTER_PROMPT || 'Structure content as UltraMinds Mission JSON.';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const payload = {
+      system_instruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: [{
+        role: 'user',
+        parts: [{
+          text: `Convert this raw educational content into a complete, ultra-detailed UltraMinds Mission JSON. Include ALL content from the input — zero omission. Generate as many pages as needed (5-14) to fit all content at comfortable reading size.\n\nRAW CONTENT:\n\n${userContent}`
+        }]
+      }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        maxOutputTokens: 65536,
+        temperature: 0.4,
+        topP: 0.95
+      }
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Gemini ${res.status}: ${txt.substring(0, 200)}`);
+    }
+
+    const data = await res.json();
+
+    // Handle safety blocks or empty responses
+    if (data.candidates?.[0]?.finishReason === 'SAFETY') {
+      throw new Error('Response blocked by safety filters');
+    }
+
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!rawText) throw new Error("Empty response from Gemini API");
+
+    if (updateStatus) updateStatus(`📦 Received ${Math.round(rawText.length / 1000)}KB response — parsing JSON...`);
+
+    const parsed = this.parseJSONSafely(rawText);
+    if (!parsed) throw new Error("Failed to parse JSON response");
+    return parsed;
+  },
+
+  async callOpenAICompatible(provider, apiKey, model, customEndpoint, userContent, updateStatus) {
+    const systemPrompt = window.ULTRAMINDS_MASTER_PROMPT || 'Structure content as UltraMinds Mission JSON.';
+    const cleanKey = (apiKey || '').trim();
+
+    if (!cleanKey && provider !== 'custom') {
+      throw new Error(`Missing API Key for ${provider.toUpperCase()}. Please click ⚙️ API Settings and enter your ${provider.toUpperCase()} API Key.`);
+    }
+
+    let url = 'https://api.openai.com/v1/chat/completions';
+    let headers = { 'Content-Type': 'application/json' };
+
+    if (cleanKey) {
+      headers['Authorization'] = `Bearer ${cleanKey}`;
+    }
+
+    let modelName = (model || '').trim();
+
+    if (provider === 'nara') {
+      url = 'https://router.bynara.id/v1/chat/completions';
+      if (!modelName || modelName.startsWith('gemini')) {
+        modelName = 'mistral-medium-3-5';
+      }
+    } else if (provider === 'openrouter') {
+      url = 'https://openrouter.ai/api/v1/chat/completions';
+      headers['HTTP-Referer'] = window.location.origin || 'http://localhost';
+      headers['X-Title'] = 'UltraMinds Publisher';
+      if (!modelName || modelName.startsWith('gemini')) {
+        modelName = modelName ? `google/${modelName}` : 'anthropic/claude-3.5-sonnet';
+      }
+    } else if (provider === 'groq') {
+      url = 'https://api.groq.com/openai/v1/chat/completions';
+      if (!modelName || modelName.startsWith('gemini') || modelName.startsWith('gpt')) {
+        modelName = 'llama-3.3-70b-versatile';
+      }
+    } else if (provider === 'deepseek') {
+      url = 'https://api.deepseek.com/chat/completions';
+      if (!modelName || !modelName.startsWith('deepseek')) {
+        modelName = 'deepseek-chat';
+      }
+    } else if (provider === 'custom') {
+      let rawUrl = (customEndpoint || 'http://localhost:11434/v1/chat/completions').trim();
+      if (!rawUrl.endsWith('/chat/completions')) {
+        if (rawUrl.endsWith('/v1') || rawUrl.endsWith('/v1/')) {
+          rawUrl = rawUrl.replace(/\/+$/, '') + '/chat/completions';
+        } else if (!rawUrl.includes('/chat/completions')) {
+          rawUrl = rawUrl.replace(/\/+$/, '') + '/v1/chat/completions';
+        }
+      }
+      url = rawUrl;
+      if (!modelName) modelName = 'mistral-3.5';
+    } else if (provider === 'openai') {
+      if (!modelName || modelName.startsWith('gemini')) {
+        modelName = 'gpt-4o';
+      }
+    }
+
+    const maxTokensLimit = (provider === 'groq') ? 30000 : 30000;
 
     const payload = {
       model: modelName,
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent }
+        { role: 'user', content: `Convert this raw educational content into a complete, ultra-detailed UltraMinds Mission JSON. Include ALL content — zero omission.\n\nRAW CONTENT:\n\n${userContent}` }
       ],
-      response_format: { type: "json_object" },
-      max_tokens: 4096
+      max_tokens: maxTokensLimit,
+      temperature: 0.4
     };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
+    // Include response_format for OpenAI & DeepSeek
+    if (provider === 'openai' || provider === 'deepseek') {
+      payload.response_format = { type: "json_object" };
+    }
+
+    if (updateStatus) updateStatus(`🚀 Sending request to ${url} (${modelName}, max ${Math.round(maxTokensLimit / 1000)}k tokens)...`);
+
+    let res = null;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+    } catch (netErr) {
+      throw new Error(`Failed to fetch from ${url}. Check internet connection or CORS policy. Error: ${netErr.message}`);
+    }
+
+    // Auto-retry with 16k tokens if OpenRouter returns 402 credit reservation limit error
+    if (!res.ok && res.status === 402 && provider === 'openrouter') {
+      if (updateStatus) updateStatus(`⚠️ OpenRouter 402 Credit limit hit for 50k tokens — retrying with 16k max tokens...`);
+      payload.max_tokens = 16000;
+      res = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+    }
 
     if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`OpenAI API Error (${res.status}): ${errText}`);
+      const txt = await res.text();
+      throw new Error(`${provider.toUpperCase()} API Error (${res.status}): ${txt.substring(0, 250)}`);
     }
 
     const data = await res.json();
     const rawText = data.choices?.[0]?.message?.content;
-    if (!rawText) throw new Error("Empty response from OpenAI API");
+    if (!rawText) throw new Error(`Empty response from ${provider.toUpperCase()}`);
 
-    return this.parseJSONSafely(rawText);
-  },
-
-  parseJSONSafely(rawText) {
-    let cleanText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-    const firstBrace = cleanText.indexOf('{');
-    const lastBrace = cleanText.lastIndexOf('}');
-    const firstBracket = cleanText.indexOf('[');
-    const lastBracket = cleanText.lastIndexOf(']');
-
-    if (firstBrace !== -1 && lastBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
-      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
-    } else if (firstBracket !== -1 && lastBracket !== -1) {
-      cleanText = cleanText.substring(firstBracket, lastBracket + 1);
-    }
-
-    try {
-      return JSON.parse(cleanText);
-    } catch (e) {
-      console.warn("Failed to parse raw JSON from AI:", e, rawText);
-      return null;
-    }
+    if (updateStatus) updateStatus(`📦 Received response (${Math.round(rawText.length / 1000)}KB) — parsing JSON...`);
+    const parsed = this.parseJSONSafely(rawText);
+    if (!parsed) throw new Error("Failed to parse JSON output");
+    return parsed;
   },
 
   /**
-   * ZERO-FAIL MISSION NORMALIZER & HARDWARE IMAGE ENRICHER
+   * Smart JSON parser with repair capabilities
    */
+  parseJSONSafely(rawText) {
+    if (!rawText) return null;
+    let clean = rawText
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/g, '')
+      .trim();
+
+    // Extract the outermost JSON object
+    const firstBrace = clean.indexOf('{');
+    const lastBrace = clean.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      clean = clean.substring(firstBrace, lastBrace + 1);
+    }
+
+    // Try direct parse
+    try {
+      return JSON.parse(clean);
+    } catch (e1) {
+      // Attempt repair: truncate at last complete JSON object/array
+      try {
+        const repaired = this.repairTruncatedJSON(clean);
+        return JSON.parse(repaired);
+      } catch (e2) {
+        // Try extracting just the pages array
+        try {
+          const pagesMatch = clean.match(/"pages"\s*:\s*(\[[\s\S]*\])/);
+          if (pagesMatch) {
+            const pagesArray = JSON.parse(pagesMatch[1]);
+            return { missionNumber: "14", missionTitle: "MISSION", theme: "theme-blue", pages: pagesArray };
+          }
+        } catch (e3) {}
+        console.warn("All JSON parse attempts failed:", e1.message);
+        return null;
+      }
+    }
+  },
+
+  repairTruncatedJSON(str) {
+    // Walk through and track open brackets/braces to find last valid closing point
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    let lastCompleteIdx = 0;
+
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if (escaped) { escaped = false; continue; }
+      if (ch === '\\' && inString) { escaped = true; continue; }
+      if (ch === '"') { inString = !inString; continue; }
+      if (!inString) {
+        if (ch === '{' || ch === '[') depth++;
+        else if (ch === '}' || ch === ']') {
+          depth--;
+          if (depth === 0) lastCompleteIdx = i + 1;
+        }
+      }
+    }
+
+    if (lastCompleteIdx > 0) return str.substring(0, lastCompleteIdx);
+
+    // Last resort: close all open braces/brackets
+    const closes = [];
+    depth = 0;
+    inString = false;
+    escaped = false;
+    const stack = [];
+
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if (escaped) { escaped = false; continue; }
+      if (ch === '\\' && inString) { escaped = true; continue; }
+      if (ch === '"') { inString = !inString; continue; }
+      if (!inString) {
+        if (ch === '{') stack.push('}');
+        else if (ch === '[') stack.push(']');
+        else if (ch === '}' || ch === ']') stack.pop();
+      }
+    }
+
+    return str + stack.reverse().join('');
+  },
+
   normalizeMissionObject(data, fallbackRawText) {
     if (!data) {
-      data = window.HeuristicParser.parse(fallbackRawText);
+      data = window.HeuristicParser ? window.HeuristicParser.parse(fallbackRawText || '') : null;
+      if (!data) return this.getEmptyMission();
     }
 
     let mission = data;
@@ -222,9 +375,9 @@ window.AIService = {
         id: "mission-" + Date.now(),
         title: "GENERATED MISSION",
         theme: "theme-blue",
-        missionNumber: "15",
+        missionNumber: "14",
         missionTitle: "GENERATED MISSION",
-        missionSubtitle: "Created automatically by UltraMinds AI Studio",
+        missionSubtitle: "Created by UltraMinds AI Studio",
         pages: data
       };
     } else if (!data.pages && data.sections) {
@@ -232,51 +385,57 @@ window.AIService = {
         id: "mission-" + Date.now(),
         title: data.title || "GENERATED MISSION",
         theme: data.theme || "theme-blue",
-        missionNumber: data.missionNumber || "15",
+        missionNumber: data.missionNumber || "14",
         missionTitle: data.missionTitle || data.title || "GENERATED MISSION",
         missionSubtitle: data.missionSubtitle || "",
-        pages: [{ pageNumber: 1, sections: data.sections }]
+        guideName: data.guideName || "Commander Nova",
+        guideRole: data.guideRole || "Your Mission Guide",
+        pages: [{ pageNumber: 1, pageType: "cover", sections: data.sections }]
       };
     }
 
-    // Auto-Enrich Image URLs with high-res Unsplash hardware photos if missing or generic
-    if (mission.pages && Array.isArray(mission.pages)) {
-      mission.pages.forEach(page => {
-        if (page.sections && Array.isArray(page.sections)) {
-          page.sections.forEach(sec => {
-            if (sec.type === 'image-holder' || sec.type === 'incard-image-holder') {
-              if (!sec.imgUrl || sec.imgUrl.includes('placeholder')) {
-                sec.imgUrl = this.getHardwareImageForTopic(sec.title || sec.caption || mission.title || '');
-              }
-            }
-          });
-        }
-      });
+    if (!mission.pages || !Array.isArray(mission.pages)) {
+      return this.getEmptyMission();
     }
+
+    // Ensure all pages have required fields
+    mission.pages.forEach((page, idx) => {
+      if (!page.pageNumber) page.pageNumber = idx + 1;
+      if (!page.sections) page.sections = [];
+      if (!page.pageType) page.pageType = idx === 0 ? 'cover' : 'generic';
+    });
 
     return mission;
   },
 
+  getEmptyMission() {
+    return {
+      id: "mission-empty",
+      title: "NEW MISSION",
+      theme: "theme-blue",
+      missionNumber: "14",
+      missionTitle: "NEW MISSION",
+      missionSubtitle: "Paste your content in the Data tab and click Parse & Arrange!",
+      guideName: "Commander Nova",
+      guideRole: "Your Mission Guide",
+      pages: [{
+        pageNumber: 1,
+        pageType: "cover",
+        sections: [
+          { type: "nova-card", title: "GETTING STARTED", icon: "🧑‍🚀", content: "Paste your mission content in the Data tab on the left, then click '✨ Parse & Smart Arrange (AI)' to generate a premium book layout." }
+        ]
+      }]
+    };
+  },
+
   getHardwareImageForTopic(topicStr) {
     const t = (topicStr || '').toLowerCase();
-    if (t.includes('dht') || t.includes('temp') || t.includes('climate') || t.includes('sensor')) {
-      return 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
-    }
-    if (t.includes('code') || t.includes('python') || t.includes('program') || t.includes('logic')) {
-      return 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
-    }
-    if (t.includes('robot') || t.includes('arm') || t.includes('servo') || t.includes('motor')) {
-      return 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80';
-    }
-    if (t.includes('oled') || t.includes('screen') || t.includes('display') || t.includes('ui')) {
-      return 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80';
-    }
-    if (t.includes('water') || t.includes('plant') || t.includes('soil') || t.includes('pump')) {
-      return 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=800&q=80';
-    }
-    if (t.includes('solar') || t.includes('energy') || t.includes('power') || t.includes('green')) {
-      return 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80';
-    }
+    if (/dht|temp|climate|sensor/.test(t)) return 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
+    if (/code|python|program|logic/.test(t)) return 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
+    if (/robot|arm|servo|motor/.test(t)) return 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80';
+    if (/oled|screen|display|ui/.test(t)) return 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80';
+    if (/water|plant|soil|pump/.test(t)) return 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=800&q=80';
+    if (/solar|energy|power|green/.test(t)) return 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80';
     return 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
   }
 };

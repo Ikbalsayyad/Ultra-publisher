@@ -1,0 +1,1260 @@
+/**
+ * UltraMinds Dynamic Cards CSS — Premium $50 Book Magazine Aesthetic
+ * Covers: dynamic-text, dynamic-bullets, dynamic-subheader, dynamic-table,
+ *         dynamic-mixed, dynamic-capsule, dynamic-comparison, dynamic-image
+ * Also covers: universal resize handles, delete overlay, bullet add/remove controls
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   UNIVERSAL RESIZE HANDLE
+═══════════════════════════════════════════════════════════════ */
+.um-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, transparent 40%, var(--accent-cyan, #00F0FF) 40%);
+  border-bottom-right-radius: 6px;
+  cursor: se-resize;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
+
+.card-base:hover .um-resize-handle,
+.split-layout:hover > * .um-resize-handle,
+.draggable-element:hover > .um-resize-handle {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UNIVERSAL CARD DELETE HOVER OVERLAY
+═══════════════════════════════════════════════════════════════ */
+.card-base,
+.split-layout > div,
+.draggable-element {
+  position: relative;
+  overflow: visible;
+}
+
+.um-card-quick-actions {
+  position: absolute;
+  top: -12px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.card-base:hover > .um-card-quick-actions,
+.draggable-element:hover > .um-card-quick-actions {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.um-qbtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease;
+}
+
+.um-qbtn:hover { transform: scale(1.15); }
+.um-qbtn-del  { background: #EF4444; color: #fff; }
+.um-qbtn-dup  { background: #10B981; color: #fff; }
+.um-qbtn-edit { background: #3B82F6; color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC TEXT CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-text-card {
+  background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 6px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+.dynamic-text-card .card-body-text {
+  color: #CBD5E1;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.dynamic-text-card .card-body-text p {
+  margin: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC BULLETS CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-bullets-card {
+  background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
+  border: 1px solid rgba(99,102,241,0.25);
+  border-left: 3px solid var(--accent-blue, #3B82F6);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.1);
+}
+
+.dynamic-bullets-list {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dynamic-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(59,130,246,0.06);
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.dynamic-bullet-item:hover {
+  background: rgba(59,130,246,0.12);
+}
+
+.bullet-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent-cyan, #00F0FF);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  box-shadow: 0 0 6px rgba(0,240,255,0.5);
+}
+
+.bullet-text {
+  flex: 1;
+  color: #E2E8F0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  outline: none;
+  min-width: 20px;
+}
+
+.bullet-del-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.6rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.dynamic-bullet-item:hover .bullet-del-btn {
+  display: flex;
+  opacity: 1;
+}
+
+.add-bullet-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  background: rgba(0,240,255,0.08);
+  border: 1px dashed rgba(0,240,255,0.3);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--accent-cyan, #00F0FF);
+  font-size: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.add-bullet-btn:hover {
+  background: rgba(0,240,255,0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC SUBHEADER CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-subheader-card {
+  background: linear-gradient(135deg, rgba(30,41,59,0.0), transparent);
+  border: none;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, var(--accent-cyan, #00F0FF), transparent) 1;
+  padding: 6px 0 6px 10px;
+  margin: 10px 0 4px 0;
+}
+
+.dynamic-subheader-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #F1F5F9;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--accent-cyan, #00F0FF), #A78BFA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dynamic-subheader-body {
+  color: #94A3B8;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC TABLE CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-table-card {
+  background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  overflow-x: auto;
+}
+
+.dynamic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.dynamic-table th {
+  background: linear-gradient(135deg, var(--accent-blue, #3B82F6), #6366F1);
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.dynamic-table th:first-child { border-radius: 6px 0 0 6px; }
+.dynamic-table th:last-child  { border-radius: 0 6px 6px 0; }
+
+.dynamic-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(148,163,184,0.08);
+  color: #CBD5E1;
+  vertical-align: top;
+}
+
+.dynamic-table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.025);
+}
+
+.dynamic-table tr:hover td {
+  background: rgba(59,130,246,0.07);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC MIXED CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-mixed-card {
+  background: linear-gradient(145deg, rgba(30,41,59,0.85), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 6px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.dynamic-mixed-card .card-body-text {
+  color: #CBD5E1;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.dynamic-mixed-bullets {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dynamic-mixed-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  color: #E2E8F0;
+  font-size: 0.8rem;
+}
+
+.dynamic-mixed-bullets li::before {
+  content: '▸';
+  color: var(--accent-cyan, #00F0FF);
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC CAPSULE CARD — premium highlight box
+═══════════════════════════════════════════════════════════════ */
+.dynamic-capsule-card {
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.1));
+  border: 1px solid rgba(139,92,246,0.3);
+  border-left: 4px solid #8B5CF6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 6px 0;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.dynamic-capsule-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(139,92,246,0.2), transparent);
+  border-radius: 50%;
+}
+
+.dynamic-capsule-card .card-body-text {
+  color: #E9D5FF;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC COMPARISON CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-comparison-card {
+  background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 6px 0;
+}
+
+.dynamic-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.dynamic-comp-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dynamic-comp-col-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.dynamic-comp-col.comp-left .dynamic-comp-col-title {
+  background: rgba(59,130,246,0.15);
+  color: #93C5FD;
+  border-left: 2px solid #3B82F6;
+}
+
+.dynamic-comp-col.comp-right .dynamic-comp-col-title {
+  background: rgba(16,185,129,0.15);
+  color: #6EE7B7;
+  border-left: 2px solid #10B981;
+}
+
+.dynamic-comp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 6px;
+  font-size: 0.78rem;
+  color: #CBD5E1;
+}
+
+.dynamic-comp-item .ci-icon {
+  color: var(--accent-cyan, #00F0FF);
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.dynamic-vs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #000;
+  align-self: center;
+  box-shadow: 0 2px 10px rgba(245,158,11,0.4);
+  flex-shrink: 0;
+}
+
+.dynamic-comp-bottom {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  font-size: 0.76rem;
+  color: #94A3B8;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC IMAGE CARD
+═══════════════════════════════════════════════════════════════ */
+.dynamic-image-card {
+  background: rgba(15,23,42,0.8);
+  border: 1.5px dashed rgba(59,130,246,0.35);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 6px 0;
+  text-align: center;
+}
+
+.dynamic-image-frame {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.dynamic-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dynamic-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #475569;
+}
+
+.dynamic-image-placeholder span {
+  font-size: 2rem;
+}
+
+.dynamic-image-placeholder p {
+  font-size: 0.72rem;
+  margin: 0;
+}
+
+.dynamic-image-caption {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: #64748B;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INSERT PANEL QUICK BUTTONS
+═══════════════════════════════════════════════════════════════ */
+.insert-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.insert-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: rgba(30,41,59,0.8);
+  border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 8px;
+  color: #94A3B8;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.insert-btn:hover {
+  background: rgba(59,130,246,0.12);
+  border-color: var(--accent-cyan, #00F0FF);
+  color: #E2E8F0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,240,255,0.12);
+}
+
+.insert-btn .ib-icon {
+  font-size: 1.2rem;
+}
+
+.insert-btn .ib-label {
+  font-weight: 600;
+  font-size: 0.68rem;
+}
+
+.insert-section-label {
+  font-size: 0.67rem;
+  color: #475569;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 8px 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KNOWLEDGE CHECK / Q&A CARD
+═══════════════════════════════════════════════════════════════ */
+.knowledge-check-card .kc-question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.kc-question-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: rgba(59,130,246,0.06);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.kc-q-num {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #3B82F6, #6366F1);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kc-q-text {
+  color: #CBD5E1;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.kc-answer-line {
+  height: 1px;
+  background: rgba(148,163,184,0.2);
+  margin-top: 4px;
+  border-radius: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VOCABULARY BUILDER CARD
+═══════════════════════════════════════════════════════════════ */
+.vocabulary-builder-card .vocab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.vocab-item {
+  display: flex;
+  gap: 10px;
+  padding: 6px 10px;
+  background: rgba(139,92,246,0.08);
+  border-radius: 6px;
+  border-left: 2px solid #8B5CF6;
+}
+
+.vocab-term {
+  font-weight: 700;
+  color: #C4B5FD;
+  font-size: 0.8rem;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.vocab-def {
+  color: #94A3B8;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTED ELEMENT HIGHLIGHT
+═══════════════════════════════════════════════════════════════ */
+.selected-card {
+  outline: 2px solid var(--accent-cyan, #00F0FF) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0,240,255,0.15) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SMART PAGE STACKING INDICATOR
+═══════════════════════════════════════════════════════════════ */
+.page-overflow-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #EF4444;
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  display: none;
+  z-index: 10;
+}
+
+.book-page.is-overflowing .page-overflow-badge {
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE SPLIT LAYOUT IN DYNAMIC CARDS
+═══════════════════════════════════════════════════════════════ */
+.dynamic-split-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 500px) {
+  .dynamic-split-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GENERIC CARD ENHANCED (for all fallback types)
+═══════════════════════════════════════════════════════════════ */
+.generic-card {
+  position: relative;
+}
+
+.generic-card .card-body-text {
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.generic-card .custom-card-list {
+  margin: 6px 0;
+  padding-left: 16px;
+}
+
+.generic-card .custom-card-list li {
+  color: #CBD5E1;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION: Card entrance
+═══════════════════════════════════════════════════════════════ */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-base,
+.dynamic-text-card,
+.dynamic-bullets-card,
+.dynamic-subheader-card,
+.dynamic-table-card,
+.dynamic-mixed-card,
+.dynamic-capsule-card,
+.dynamic-comparison-card,
+.dynamic-image-card {
+  animation: cardFadeIn 0.25s ease both;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VERTICAL FLOWCHART SEQUENCE (Perfect 1-column alignment)
+═══════════════════════════════════════════════════════════════ */
+.flowchart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.fc-step-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+.fc-box {
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fc-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,240,255,0.25);
+}
+
+.fc-box-start {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+}
+
+.fc-box-process {
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  color: #FFFFFF;
+}
+
+.fc-box-wait {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+}
+
+.fc-box-loop {
+  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+  color: #FFFFFF;
+}
+
+.fc-arrow {
+  color: var(--accent-cyan, #00F0FF);
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin: 3px 0;
+  text-shadow: 0 0 8px rgba(0,240,255,0.6);
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKBOX LISTS (Perfect alignment, no text clipping)
+═══════════════════════════════════════════════════════════════ */
+.custom-chk-list {
+  list-style: none;
+  margin: 6px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custom-chk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.custom-chk-item:hover {
+  background: rgba(59,130,246,0.08);
+}
+
+.chk-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--accent-cyan, #00F0FF);
+  border-radius: 3px;
+  color: var(--accent-cyan, #00F0FF);
+  font-size: 0.65rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: rgba(0,240,255,0.08);
+}
+
+.chk-label {
+  color: #E2E8F0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIFFICULTY LEVEL BADGE
+═══════════════════════════════════════════════════════════════ */
+.difficulty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.1));
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #FBBF24;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  margin: 6px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HIGH-CONTRAST LIGHT TEXT ON DARK CARDS (Fixes dark text bug)
+═══════════════════════════════════════════════════════════════ */
+.theme-card-dark,
+.code-snippet-card,
+.testing-lab-card,
+.flowchart-card,
+.oled-preview-card,
+.beyond-mission-card,
+.dynamic-text-card,
+.dynamic-bullets-card,
+.dynamic-table-card,
+.dynamic-mixed-card,
+.dynamic-comparison-card,
+.dynamic-image-card {
+  color: #E2E8F0 !important;
+}
+
+.theme-card-dark .card-body-text,
+.theme-card-dark p,
+.theme-card-dark span,
+.theme-card-dark div,
+.theme-card-dark li,
+.testing-lab-card .card-body-text,
+.testing-lab-card p,
+.testing-lab-card span,
+.testing-lab-card div,
+.testing-lab-card li,
+.code-snippet-card code,
+.code-snippet-card pre {
+  color: #E2E8F0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MASCOT & EMOJI RESIZE & DELETE CONTROLS
+═══════════════════════════════════════════════════════════════ */
+.cover-mascot-wrapper,
+.badge-mascot,
+.story-img-sticker,
+.round-icon-badge,
+.card-icon-badge,
+.page-banner-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  resize: both;
+  overflow: auto;
+  min-width: 24px;
+  min-height: 24px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cover-mascot-wrapper:hover,
+.badge-mascot:hover,
+.story-img-sticker:hover {
+  outline: 1.5px dashed var(--accent-cyan, #00F0FF);
+  border-radius: 6px;
+}
+
+.cover-mascot-wrapper:hover::after,
+.badge-mascot:hover::after,
+.story-img-sticker:hover::after {
+  content: '✕';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: #EF4444;
+  color: #FFFFFF;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 99999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   IN-CARD TOOLBAR & SUBCARDS (Editor buttons hidden by default)
+═══════════════════════════════════════════════════════════════ */
+/* In-Card added sub-elements are ALWAYS fully visible inside cards */
+.incard-bullets-wrapper,
+.incard-text-wrapper,
+.incard-callout-wrapper,
+.incard-pair-wrapper,
+.incard-code-wrapper,
+.in-card-subcard {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.incard-element-bar,
+.incard-del-btn,
+.add-bullet-btn,
+.bullet-del-btn,
+.step-del-btn,
+.header-del-btn,
+.mascot-del-btn,
+.subcard-actions {
+  display: none !important;
+}
+
+/* Mascot & Pin Emoji Wrappers */
+.badge-mascot,
+.badge-mascot-wrapper,
+.cover-mascot-wrapper,
+.round-icon-badge,
+.card-icon-badge,
+.cover-illustration-placeholder,
+.pin-sticker,
+.incard-icon-box,
+.real-world-icon,
+.step-img-box,
+.industry-img-placeholder,
+.component-img-placeholder,
+.component-img-box,
+.obs-img-box,
+.observe-image-placeholder,
+.sensor-half,
+.beyond-step-icon,
+.hero-icon,
+.obj-icon,
+.mistake-icon-col,
+.capsule-icon,
+.card-icon,
+.footer-tip-label,
+.var-icon,
+.block-icon,
+.badge-icon {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.mascot-del-btn {
+  display: none !important;
+  position: absolute !important;
+  top: -10px !important;
+  right: -10px !important;
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid #FFFFFF !important;
+  border-radius: 50% !important;
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6) !important;
+}
+
+/* Restrict helper controls strictly to the active hovered item */
+.incard-bullets-wrapper:hover .incard-del-btn,
+.incard-text-wrapper:hover .incard-del-btn,
+.incard-callout-wrapper:hover .incard-del-btn,
+.incard-pair-wrapper:hover .incard-del-btn,
+.incard-code-wrapper:hover .incard-del-btn,
+.build-step-col:hover .step-del-btn,
+.step-card:hover .step-del-btn,
+.wiring-step-card:hover .step-del-btn,
+.cover-header-banner:hover .header-del-btn,
+.mission-header-banner:hover .header-del-btn,
+.badge-mascot:hover .mascot-del-btn,
+.badge-mascot-wrapper:hover .mascot-del-btn,
+.cover-mascot-wrapper:hover .mascot-del-btn,
+.round-icon-badge:hover .mascot-del-btn,
+.card-icon-badge:hover .mascot-del-btn,
+.cover-illustration-placeholder:hover .mascot-del-btn,
+.pin-sticker:hover .mascot-del-btn,
+.incard-icon-box:hover .mascot-del-btn,
+.real-world-icon:hover .mascot-del-btn,
+.step-img-box:hover .mascot-del-btn,
+.industry-img-placeholder:hover .mascot-del-btn,
+.component-img-placeholder:hover .mascot-del-btn,
+.component-img-box:hover .mascot-del-btn,
+.obs-img-box:hover .mascot-del-btn,
+.observe-image-placeholder:hover .mascot-del-btn,
+.sensor-half:hover .mascot-del-btn,
+.beyond-step-icon:hover .mascot-del-btn,
+.hero-icon:hover .mascot-del-btn,
+.obj-icon:hover .mascot-del-btn,
+.mistake-icon-col:hover .mascot-del-btn,
+.capsule-icon:hover .mascot-del-btn,
+.card-icon:hover .mascot-del-btn,
+.footer-tip-label:hover .mascot-del-btn,
+.var-icon:hover .mascot-del-btn,
+.block-icon:hover .mascot-del-btn,
+.badge-icon:hover .mascot-del-btn,
+.incard-bullets-wrapper:hover .add-bullet-btn,
+.dynamic-bullets-card:hover .add-bullet-btn {
+  display: flex !important;
+}
+
+.dynamic-bullet-item:hover .bullet-del-btn {
+  display: inline-flex !important;
+}
+
+.in-card-subcard:hover .subcard-actions {
+  display: flex !important;
+}
+
+.incard-add-btn {
+  background: rgba(15,23,42,0.85);
+  color: #93C5FD;
+  border: 1px dashed rgba(59,130,246,0.6);
+  border-radius: 4px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 3px 7px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.incard-add-btn:hover {
+  background: rgba(59,130,246,0.3);
+  border-color: #00F0FF;
+  color: #FFFFFF;
+}
+
+.in-card-subcard {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+  transition: border-color 0.15s ease;
+}
+
+.in-card-subcard:hover {
+  border-color: #00F0FF !important;
+}
+
+.footer-delete-btn {
+  display: none !important;
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: #EF4444;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 99999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.page-footer:hover .footer-delete-btn {
+  display: flex !important;
+}
+
+.page-overflow-badge {
+  position: absolute !important;
+  top: 8px !important;
+  right: 12px !important;
+  width: auto !important;
+  max-width: 260px !important;
+  height: auto !important;
+  max-height: 28px !important;
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+  font-size: 0.65rem !important;
+  font-weight: 800 !important;
+  padding: 3px 10px !important;
+  border-radius: 12px !important;
+  z-index: 99999 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(239,68,68,0.5) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  pointer-events: auto !important;
+}
+
+/* Print & Export Rules — 100% Hide all editing widgets */
+@media print {
+  .footer-delete-btn,
+  .incard-element-bar,
+  .incard-add-btn,
+  .add-bullet-btn,
+  .bullet-del-btn,
+  .subcard-actions,
+  .um-card-quick-actions,
+  .card-move-arrows-overlay,
+  .um-resize-handle,
+  .page-overflow-badge {
+    display: none !important;
+  }
+}
+
+.exporting-pdf .footer-delete-btn,
+.exporting-pdf .incard-element-bar,
+.exporting-pdf .incard-add-btn,
+.exporting-pdf .add-bullet-btn,
+.exporting-pdf .bullet-del-btn,
+.exporting-pdf .subcard-actions,
+.exporting-pdf .um-card-quick-actions,
+.exporting-pdf .card-move-arrows-overlay,
+.exporting-pdf .um-resize-handle,
+.exporting-pdf .page-overflow-badge {
+  display: none !important;
+}
+
+/* studio editing overflow override: #a4-canvas-container / .right-canvas-viewport MUST have overflow-y: auto for vertical page scrolling */
+body.studio-app:not(.exporting-pdf) #a4-canvas-container,
+body.studio-app:not(.exporting-pdf) .right-canvas-viewport {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  height: calc(100vh - 78px) !important;
+  padding: 30px 40px !important;
+  box-sizing: border-box !important;
+}
+
+/* Page & Page Body containers inside canvas: overflow visible so handles float cleanly on page edges without clipping */
+body.studio-app:not(.exporting-pdf) .book-page,
+body.studio-app:not(.exporting-pdf) .page-body-container {
+  overflow: visible !important;
+}
+
+/* 8-Point Transform Resize Handles & Overlay Stack */
+.transform-handle {
+  position: absolute !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: #00F0FF !important;
+  border: 2.5px solid #0F172A !important;
+  border-radius: 50% !important;
+  z-index: 2000000 !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.9), 0 3px 10px rgba(0,0,0,0.8) !important;
+  pointer-events: auto !important;
+  touch-action: none !important;
+  cursor: pointer;
+}
+
+.transform-handle::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  cursor: inherit;
+}
+
+.card-move-arrows-overlay {
+  position: absolute !important;
+  top: -38px !important;
+  right: 4px !important;
+  z-index: 1000000 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: rgba(15, 23, 42, 0.96) !important;
+  padding: 4px 10px !important;
+  border-radius: 14px !important;
+  border: 1.5px solid #00F0FF !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 12px rgba(0,240,255,0.4) !important;
+  pointer-events: auto !important;
+  white-space: nowrap !important;
+}
+
+.selected-card,
+.selected-card-outline,
+.transform-handles-active,
+.floating-clipart-sticker.selected-card,
+.card-base.selected-card,
+.concept-card.selected-card,
+.code-snippet-card.selected-card,
+.image-holder-card.selected-card,
+.space-filler-card.selected-card,
+.sub-card.selected-card,
+.in-card-step.selected-card,
+.build-step-col.selected-card,
+.incard-image-box.selected-card {
+  overflow: visible !important;
+  z-index: 99999 !important;
+}
+
+/* Top handles */
+.handle-nw { top: 0 !important; left: 0 !important; transform: translate(-50%, -50%) !important; cursor: nwse-resize !important; }
+.handle-n  { top: 0 !important; left: 50% !important; transform: translate(-50%, -50%) !important; cursor: ns-resize !important; }
+.handle-ne { top: 0 !important; right: 0 !important; transform: translate(50%, -50%) !important; cursor: nesw-resize !important; }
+
+/* Middle side handles */
+.handle-e  { top: 50% !important; right: 0 !important; transform: translate(50%, -50%) !important; cursor: ew-resize !important; }
+.handle-w  { top: 50% !important; left: 0 !important; transform: translate(-50%, -50%) !important; cursor: ew-resize !important; }
+
+/* Bottom handles */
+.handle-se { bottom: 0 !important; right: 0 !important; transform: translate(50%, 50%) !important; cursor: nwse-resize !important; }
+.handle-s  { bottom: 0 !important; left: 50% !important; transform: translate(-50%, 50%) !important; cursor: ns-resize !important; }
+.handle-sw { bottom: 0 !important; left: 0 !important; transform: translate(-50%, 50%) !important; cursor: nesw-resize !important; }
+
+

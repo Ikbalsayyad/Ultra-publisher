@@ -1,0 +1,15 @@
+# Node & Dependency files
+node_modules/
+dist/
+
+# Zip Archives
+*.zip
+
+# Scratch & temporary test files
+scratch/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

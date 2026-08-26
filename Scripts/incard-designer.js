@@ -18,18 +18,32 @@ window.InCardDesigner = {
     toolbar.id = 'floating-selection-toolbar';
     toolbar.className = 'floating-text-toolbar';
     toolbar.innerHTML = `
-      <button class="floating-btn" onclick="window.InCardDesigner.toggleBold()" title="Bold Selection"><b>B</b> Bold</button>
-      <button class="floating-btn" onclick="window.InCardDesigner.toggleItalic()" title="Italic Selection"><i>I</i> Italic</button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.toggleBold()" title="Bold Selection"><b>B</b></button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.toggleItalic()" title="Italic Selection"><i>I</i></button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.toggleUnderline()" title="Underline Selection"><u>U</u></button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.toggleStrikethrough()" title="Strikethrough Selection"><s>S</s></button>
+      
+      <div class="floating-divider"></div>
+
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.alignText('left')" title="Align Left">L</button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.alignText('center')" title="Align Center">C</button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.alignText('right')" title="Align Right">R</button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.alignText('justify')" title="Justify Text">J</button>
+
+      <div class="floating-divider"></div>
+
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.changeFontSize(1)" title="Increase Font Size">A+</button>
+      <button class="floating-btn" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.changeFontSize(-1)" title="Decrease Font Size">A-</button>
+
+      <div class="floating-divider"></div>
+      
+      <button class="floating-btn" style="background:#FEF08A; color:#0F172A;" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.applyHighlight('#FEF08A')" title="Yellow Highlight">🟨</button>
+      <button class="floating-btn" style="background:#86EFAC; color:#0F172A;" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.applyHighlight('#86EFAC')" title="Green Highlight">🟩</button>
+      <button class="floating-btn" style="background:#A5F3FC; color:#0F172A;" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.applyHighlight('#A5F3FC')" title="Cyan Highlight">🟦</button>
       
       <div class="floating-divider"></div>
       
-      <button class="floating-btn" style="background:#FEF08A; color:#0F172A;" onclick="window.InCardDesigner.applyHighlight('#FEF08A')" title="Yellow Highlight">🟨 Highlight</button>
-      <button class="floating-btn" style="background:#86EFAC; color:#0F172A;" onclick="window.InCardDesigner.applyHighlight('#86EFAC')" title="Green Highlight">🟩 Green</button>
-      <button class="floating-btn" style="background:#A5F3FC; color:#0F172A;" onclick="window.InCardDesigner.applyHighlight('#A5F3FC')" title="Cyan Highlight">🟦 Cyan</button>
-      
-      <div class="floating-divider"></div>
-      
-      <button class="floating-btn" style="background:linear-gradient(135deg, #2563EB, #00F0FF); color:#FFF;" onclick="window.InCardDesigner.createInCardCapsule()" title="Convert Selected Text to Capsule Badge">🏷️ Create Capsule</button>
+      <button class="floating-btn" style="background:linear-gradient(135deg, #2563EB, #00F0FF); color:#FFF;" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.createInCardCapsule()" title="Convert Selected Text to Capsule Badge">🏷️</button>
       
       <div class="floating-divider"></div>
       
@@ -40,7 +54,7 @@ window.InCardDesigner = {
 
       <div class="floating-divider"></div>
 
-      <button class="floating-btn" style="background:#0F172A; border-color:var(--accent-cyan);" onclick="window.InCardDesigner.insertInCardImage()" title="Insert In-Card Image at Cursor">🖼️ Image</button>
+      <button class="floating-btn" style="background:#0F172A; border-color:var(--accent-cyan);" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.insertInCardImage()" title="Insert In-Card Image at Cursor">🖼️ Image</button>
 
       <button class="floating-btn" style="background:rgba(255,255,255,0.1); font-size:0.65rem;" onclick="window.InCardDesigner.hideToolbar()" title="Close Toolbar (Esc)">✕</button>
     `;
@@ -122,6 +136,7 @@ window.InCardDesigner = {
 
     toolbar.style.top = `${clampTop}px`;
     toolbar.style.left = `${clampLeft}px`;
+    toolbar.style.zIndex = '999999';
     toolbar.classList.add('show-floating');
   },
 
@@ -135,26 +150,47 @@ window.InCardDesigner = {
 
   restoreSelection() {
     if (this.activeSelectionRange) {
+      if (!this.activeSelectionRange.startContainer.isConnected) return false;
       const selection = window.getSelection();
       selection.removeAllRanges();
       selection.addRange(this.activeSelectionRange);
+      return true;
     }
+    return false;
   },
 
   toggleBold() {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     document.execCommand('bold', false, null);
     window.LayoutEngine.autoReflowPages();
   },
 
   toggleItalic() {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     document.execCommand('italic', false, null);
     window.LayoutEngine.autoReflowPages();
   },
 
+  toggleUnderline() {
+    if (!this.restoreSelection()) return;
+    document.execCommand('underline', false, null);
+    window.LayoutEngine.autoReflowPages();
+  },
+
+  toggleStrikethrough() {
+    if (!this.restoreSelection()) return;
+    document.execCommand('strikeThrough', false, null);
+    window.LayoutEngine.autoReflowPages();
+  },
+
+  alignText(alignType) {
+    if (!this.restoreSelection()) return;
+    document.execCommand('justify' + alignType.charAt(0).toUpperCase() + alignType.slice(1), false, null);
+    window.LayoutEngine.autoReflowPages();
+  },
+
   applyHighlight(colorHex) {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
@@ -165,7 +201,8 @@ window.InCardDesigner = {
 
     const mark = document.createElement('mark');
     mark.className = 'text-highlight';
-    mark.style.backgroundColor = colorHex;
+    mark.style.setProperty('background-color', colorHex, 'important');
+    mark.style.setProperty('color', '#0F172A', 'important');
     mark.textContent = selectedText;
 
     range.deleteContents();
@@ -176,7 +213,7 @@ window.InCardDesigner = {
   },
 
   createInCardCapsule() {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
@@ -196,13 +233,26 @@ window.InCardDesigner = {
   },
 
   applyTextColor(colorHex) {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     document.execCommand('foreColor', false, colorHex);
     window.LayoutEngine.autoReflowPages();
   },
 
+  changeFontSize(delta) {
+    if (!this.restoreSelection()) return;
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    const node = selection.anchorNode?.parentElement;
+    if (node) {
+      const currentSize = parseFloat(window.getComputedStyle(node).fontSize) || 14;
+      const newSize = Math.max(10, Math.min(48, currentSize + delta * 2));
+      node.style.fontSize = `${newSize}px`;
+    }
+    window.LayoutEngine.autoReflowPages();
+  },
+
   insertInCardImage() {
-    this.restoreSelection();
+    if (!this.restoreSelection()) return;
     window.CanvasEditor.insertComponent('incard-image-holder');
     this.hideToolbar();
   }

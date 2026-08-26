@@ -4,7 +4,18 @@
 
 window.populateElementsPalette = function() {
   const container = document.getElementById('elements-palette-container');
-  if (!container || !window.ULTRAMINDS_50_ELEMENTS) return;
+  if (!container) return;
+
+  if (!window.ULTRAMINDS_50_ELEMENTS) window.ULTRAMINDS_50_ELEMENTS = {};
+
+  const newPaletteItems = {
+    'in-card-subcard': { type: 'in-card-subcard', name: 'Plain Sub-Card Box', icon: '📦', desc: 'Nested plain sub-card container' },
+    'callout-box': { type: 'callout-box', name: 'Callout Alert Box', icon: '💡', desc: 'Styled key takeaway callout box' },
+    'key-value-pair': { type: 'key-value-pair', name: 'Key-Value Pair Matrix', icon: '🏷️', desc: 'Specification label-value pair grid' },
+    'dynamic-synthesized': { type: 'dynamic-synthesized', name: 'Smart Synthesizer Card', icon: '⚙️', desc: 'Universal dynamic synthesizer card' }
+  };
+
+  Object.assign(window.ULTRAMINDS_50_ELEMENTS, newPaletteItems);
 
   container.innerHTML = '';
   const allItems = Object.values(window.ULTRAMINDS_50_ELEMENTS);
@@ -45,10 +56,22 @@ window.populateElementsPalette = function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Core Engines
+  // Initialize Core Engines (V3 Stack)
   window.CanvasEditor.init();
   window.ContextMenu.init();
   if (window.InCardDesigner) window.InCardDesigner.init();
+  if (window.PageManager) window.PageManager.init();
+  if (window.BlocksEditor) window.BlocksEditor.init();
+  if (window.CardDesigner) window.CardDesigner.init();
+  if (window.PageManager) window.PageManager.loadSavedMargins();
+
+  // Ctrl+S Quick Save Shortcut
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      window.SaveEngine?.quickSave();
+    }
+  });
 
   // Load Default Mission (Mission 14)
   window.currentMission = window.SAMPLE_MISSIONS.mission14;
@@ -56,7 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasContainer = document.getElementById('a4-canvas-container');
   const presetSelect = document.getElementById('preset-mission-select');
   const rawInputText = document.getElementById('raw-mission-input');
+  const tokenBadge = document.getElementById('token-count-badge');
   const parseBtn = document.getElementById('btn-parse-ai');
+  const parseHeuristicBtn = document.getElementById('btn-parse-heuristic');
+  const quickModelSelect = document.getElementById('quick-model-select');
   const themeSelect = document.getElementById('theme-picker');
   const fontScaler = document.getElementById('font-scaler');
   const manualModeBtn = document.getElementById('btn-toggle-manual');
@@ -72,22 +98,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const aiStatusMonitor = document.getElementById('ai-status-monitor');
   const aiStatusText = document.getElementById('ai-status-text');
 
+  // Real-Time Token Counter (#13)
+  const updateTokenCount = () => {
+    if (!rawInputText || !tokenBadge) return;
+    const text = rawInputText.value || '';
+    const approxTokens = Math.ceil(text.length / 4);
+    tokenBadge.textContent = `~${approxTokens.toLocaleString()} tokens`;
+  };
+
   // Pre-fill raw text box
   if (rawInputText) {
     rawInputText.value = JSON.stringify(window.currentMission, null, 2);
+    updateTokenCount();
+    rawInputText.addEventListener('input', updateTokenCount);
   }
 
   // Populate 52 Elements Palette
   window.populateElementsPalette();
 
-  // Initial Render
-  window.LayoutEngine.renderMission(window.currentMission, canvasContainer);
+  // Initial Render — try to restore last quick-save first
+  try {
+    const hasQuickSave = localStorage.getItem(`${window.SaveEngine?.SLOT_PREFIX || 'umproj_slot_'}0`);
+    if (hasQuickSave && window.SaveEngine) {
+      // Silently restore without toast on startup
+      const raw = localStorage.getItem(`${window.SaveEngine.SLOT_PREFIX}0`);
+      try {
+        const snap = JSON.parse(raw);
+        window.SaveEngine.restoreSnapshot(snap);
+      } catch (err) {
+        console.error("Failed to restore save:", err);
+        window.LayoutEngine.renderMission(window.currentMission, canvasContainer);
+      }
+    } else {
+      window.LayoutEngine.renderMission(window.currentMission, canvasContainer);
+    }
+  } catch (err) {
+    console.error("Critical error during initial render:", err);
+  }
+
+  // Initialize Safety History System (10-Step Undo/Redo)
+  if (window.HistoryEngine) window.HistoryEngine.init();
+
+  // Sync zoom label on startup
+  const initialZoom = parseFloat(zoomSlider?.value || 0.75);
+  if (zoomLabel) zoomLabel.textContent = `${Math.round(initialZoom * 100)}%`;
+  document.documentElement.style.setProperty('--canvas-zoom', initialZoom);
 
   // Dynamic Zoom Slider Handler
   zoomSlider?.addEventListener('input', (e) => {
     const val = parseFloat(e.target.value);
     const pct = Math.round(val * 100);
     if (zoomLabel) zoomLabel.textContent = `${pct}%`;
+
     document.documentElement.style.setProperty('--canvas-zoom', val);
     window.LayoutEngine.autoReflowPages();
   });
@@ -109,11 +171,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Preset Mission Picker
-  presetSelect?.addEventListener('change', (e) => {
+  presetSelect?.addEventListener('change', async (e) => {
     const selectedKey = e.target.value;
-    if (selectedKey === 'rawTextSample') {
+    const parseText = (t) => (window.HeuristicParser && window.HeuristicParser.parse) ? window.HeuristicParser.parse(t) : null;
+    if (selectedKey === 'mission99') {
+      try {
+        const resp = await fetch('Text/stress-test-mission.xhtml');
+        const text = await resp.text();
+        rawInputText.value = text;
+        window.currentMission = window.AIService.normalizeMissionObject(parseText(text), text);
+      } catch(err) {
+        alert("Failed to load Mission 99 stress test text: " + err.message);
+      }
+    } else if (selectedKey === 'mission03') {
+      rawInputText.value = window.SAMPLE_MISSIONS.mission03Text;
+      window.currentMission = window.AIService.normalizeMissionObject(parseText(window.SAMPLE_MISSIONS.mission03Text), window.SAMPLE_MISSIONS.mission03Text);
+    } else if (selectedKey === 'rawTextSample') {
       rawInputText.value = window.SAMPLE_MISSIONS.rawTextSample;
-      window.currentMission = window.HeuristicParser.parse(window.SAMPLE_MISSIONS.rawTextSample);
+      window.currentMission = window.AIService.normalizeMissionObject(parseText(window.SAMPLE_MISSIONS.rawTextSample), window.SAMPLE_MISSIONS.rawTextSample);
     } else if (window.SAMPLE_MISSIONS[selectedKey]) {
       window.currentMission = window.SAMPLE_MISSIONS[selectedKey];
       rawInputText.value = JSON.stringify(window.currentMission, null, 2);
@@ -139,17 +214,48 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      window.currentMission = await window.AIService.processMissionData(text, "auto", updateStatusUI);
+      // Sync model from quick-model-select if user set a specific quick model
+      const quickModel = quickModelSelect?.value;
+      if (quickModel && quickModel !== 'heuristic' && quickModel !== 'saved') {
+        window.AIService?.saveSettings?.({ model: quickModel });
+      }
+
+      if (quickModel === 'heuristic') {
+        updateStatusUI('🔵 Running Smart Heuristic Parser (No API)...');
+        const parsed = (window.HeuristicParser && window.HeuristicParser.parse) ? window.HeuristicParser.parse(text) : null;
+        window.currentMission = window.AIService?.normalizeMissionObject ? window.AIService.normalizeMissionObject(parsed, text) : parsed;
+      } else if (window.AIService?.processMissionData) {
+        window.currentMission = await window.AIService.processMissionData(text, "auto", updateStatusUI);
+      } else {
+        const parsed = (window.HeuristicParser && window.HeuristicParser.parse) ? window.HeuristicParser.parse(text) : null;
+        window.currentMission = parsed;
+      }
       window.LayoutEngine.renderMission(window.currentMission, canvasContainer);
     } catch (err) {
       console.error(err);
       alert("Error parsing mission data: " + err.message);
     } finally {
       parseBtn.disabled = false;
-      parseBtn.innerHTML = '✨ Parse & Smart Arrange (AI)';
+      parseBtn.innerHTML = '✨ Parse &amp; Smart Arrange (AI) — Premium Layout';
       setTimeout(() => {
         if (aiStatusMonitor) aiStatusMonitor.style.display = 'none';
       }, 5000);
+    }
+  });
+
+  // Quick Heuristic Parse Button (offline)
+  parseHeuristicBtn?.addEventListener('click', () => {
+    const text = rawInputText?.value || '';
+    if (!text.trim()) { alert('Paste content first!'); return; }
+    const parsed = (window.HeuristicParser && window.HeuristicParser.parse) ? window.HeuristicParser.parse(text) : null;
+    window.currentMission = window.AIService.normalizeMissionObject(parsed, text);
+    window.LayoutEngine.renderMission(window.currentMission, canvasContainer);
+  });
+
+  // Sync quick model select ↔ AI settings
+  quickModelSelect?.addEventListener('change', (e) => {
+    if (e.target.value !== 'heuristic' && e.target.value !== 'saved') {
+      window.AIService?.saveSettings?.({ model: e.target.value });
     }
   });
 
@@ -316,58 +422,101 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-export-pptx')?.addEventListener('click', () => window.ExportEngine.exportPPTX());
   document.getElementById('btn-export-xhtml')?.addEventListener('click', () => window.ExportEngine.exportXHTML());
 
-  // API Settings Modal & Actions
-  const apiSettingsBtn = document.getElementById('btn-api-settings');
-  const apiSettingsModal = document.getElementById('api-settings-modal');
-  const saveApiBtn = document.getElementById('btn-save-api');
-  const closeApiBtn = document.getElementById('btn-close-modal');
+  // Extracted API Settings functions below
 
-  apiSettingsBtn?.addEventListener('click', () => {
-    const savedKey = localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('ultraminds_api_key') || localStorage.getItem('gemini_api_key') || '';
-    const savedProvider = localStorage.getItem('ultraminds_ai_provider') || localStorage.getItem('ultraminds_api_provider') || 'gemini';
-    const savedModel = localStorage.getItem('ultraminds_ai_model') || localStorage.getItem('ultraminds_api_model') || 'gemini-3.1-pro';
-
-    const providerSelect = document.getElementById('api-provider-select');
+  document.getElementById('btn-api-settings')?.addEventListener('click', window.openApiSettings);
+  document.getElementById('btn-close-modal')?.addEventListener('click', window.closeApiSettings);
+  document.getElementById('btn-save-api')?.addEventListener('click', window.saveApiSettings);
+  document.getElementById('api-provider-select')?.addEventListener('change', (e) => {
+    const p = e.target.value;
+    const customGroup = document.getElementById('custom-endpoint-group');
     const keyInput = document.getElementById('api-key-input');
     const modelInput = document.getElementById('api-model-input');
 
-    if (providerSelect) providerSelect.value = savedProvider;
-    if (keyInput) keyInput.value = savedKey;
-    if (modelInput) modelInput.value = savedModel;
+    if (customGroup) customGroup.style.display = (p === 'custom') ? 'block' : 'none';
 
-    if (apiSettingsModal) {
-      apiSettingsModal.classList.add('show-modal');
-      apiSettingsModal.style.display = 'flex';
+    if (keyInput) {
+      if (p === 'nara') keyInput.placeholder = 'NaRA API Key (Bearer token)';
+      else if (p === 'openrouter') keyInput.placeholder = 'sk-or-v1-... (OpenRouter API Key)';
+      else if (p === 'groq') keyInput.placeholder = 'gsk_... (Groq API Key)';
+      else if (p === 'deepseek') keyInput.placeholder = 'sk-... (DeepSeek API Key)';
+      else if (p === 'openai') keyInput.placeholder = 'sk-... (OpenAI API Key)';
+      else if (p === 'gemini') keyInput.placeholder = 'AIzaSy... (Gemini API Key)';
+      else keyInput.placeholder = 'Optional for local LLM';
+    }
+
+    if (modelInput) {
+      if (p === 'nara' && (!modelInput.value || modelInput.value.startsWith('gemini'))) modelInput.value = 'mistral-medium-3-5';
+      else if (p === 'openrouter' && (!modelInput.value || modelInput.value.startsWith('gemini'))) modelInput.value = 'anthropic/claude-3.5-sonnet';
+      else if (p === 'groq' && (!modelInput.value || modelInput.value.startsWith('gemini'))) modelInput.value = 'llama-3.3-70b-versatile';
+      else if (p === 'deepseek' && (!modelInput.value || modelInput.value.startsWith('gemini'))) modelInput.value = 'deepseek-chat';
     }
   });
 
-  closeApiBtn?.addEventListener('click', () => {
-    if (apiSettingsModal) {
-      apiSettingsModal.classList.remove('show-modal');
-      apiSettingsModal.style.display = 'none';
-    }
-  });
-
-  saveApiBtn?.addEventListener('click', () => {
-    const provider = document.getElementById('api-provider-select')?.value || 'gemini';
-    const key = document.getElementById('api-key-input')?.value.trim() || '';
-    const model = document.getElementById('api-model-input')?.value.trim() || 'gemini-3.1-pro';
-
-    localStorage.setItem('ultraminds_ai_provider', provider);
-    localStorage.setItem('ultraminds_api_provider', provider);
-    localStorage.setItem('ultraminds_ai_key', key);
-    localStorage.setItem('ultraminds_api_key', key);
-    localStorage.setItem('gemini_api_key', key);
-    localStorage.setItem('ultraminds_ai_model', model);
-    localStorage.setItem('ultraminds_api_model', model);
-
-    alert("⚙️ API Settings saved successfully in local browser storage!");
-    if (apiSettingsModal) {
-      apiSettingsModal.classList.remove('show-modal');
-      apiSettingsModal.style.display = 'none';
-    }
-  });
+  // Initialize Drag & Drop project file loader (.ultraminds / .umproj / .json)
+  if (window.SaveEngine && typeof window.SaveEngine.setupProjectFileDrop === 'function') {
+    window.SaveEngine.setupProjectFileDrop();
+  }
 });
 
 // Immediate Fallback Execution
 setTimeout(() => window.populateElementsPalette && window.populateElementsPalette(), 100);
+
+// API Settings Modal Global Functions
+window.openApiSettings = function() {
+  const settings = (window.AIService && typeof window.AIService.getSettings === 'function')
+    ? window.AIService.getSettings()
+    : {
+        provider: localStorage.getItem('ultraminds_ai_provider') || 'gemini',
+        apiKey: localStorage.getItem('ultraminds_ai_key') || localStorage.getItem('gemini_api_key') || '',
+        model: localStorage.getItem('ultraminds_ai_model') || 'gemini-2.5-flash',
+        customEndpoint: localStorage.getItem('ultraminds_ai_endpoint') || ''
+      };
+
+  const providerSelect = document.getElementById('api-provider-select');
+  const keyInput = document.getElementById('api-key-input');
+  const modelInput = document.getElementById('api-model-input');
+  const endpointInput = document.getElementById('api-endpoint-input');
+  const customGroup = document.getElementById('custom-endpoint-group');
+  const apiSettingsModal = document.getElementById('api-settings-modal');
+
+  if (providerSelect) providerSelect.value = settings.provider || 'gemini';
+  if (keyInput) keyInput.value = settings.apiKey || '';
+  if (modelInput) modelInput.value = settings.model || 'gemini-2.5-flash';
+  if (endpointInput) endpointInput.value = settings.customEndpoint || 'http://localhost:11434/v1/chat/completions';
+
+  if (customGroup) customGroup.style.display = (settings.provider === 'custom') ? 'block' : 'none';
+
+  if (apiSettingsModal) {
+    apiSettingsModal.classList.add('show-modal');
+    apiSettingsModal.style.cssText = 'display: flex !important; z-index: 99999 !important;';
+  }
+};
+
+window.closeApiSettings = function() {
+  const apiSettingsModal = document.getElementById('api-settings-modal');
+  if (apiSettingsModal) {
+    apiSettingsModal.classList.remove('show-modal');
+    apiSettingsModal.style.cssText = 'display: none !important;';
+  }
+};
+
+window.saveApiSettings = function() {
+  const provider = document.getElementById('api-provider-select')?.value || 'gemini';
+  const key = document.getElementById('api-key-input')?.value.trim() || '';
+  const model = document.getElementById('api-model-input')?.value.trim() || 'gemini-2.5-flash';
+  const customEndpoint = document.getElementById('api-endpoint-input')?.value.trim() || '';
+
+  if (window.AIService && typeof window.AIService.saveSettings === 'function') {
+    window.AIService.saveSettings({ provider, apiKey: key, model, customEndpoint });
+  } else {
+    localStorage.setItem('ultraminds_ai_provider', provider);
+    localStorage.setItem('ultraminds_ai_key', key);
+    localStorage.setItem('gemini_api_key', key);
+    localStorage.setItem('ultraminds_ai_model', model);
+    localStorage.setItem('ultraminds_ai_endpoint', customEndpoint);
+  }
+
+  alert("⚙️ API Settings saved successfully!");
+  window.closeApiSettings();
+};
