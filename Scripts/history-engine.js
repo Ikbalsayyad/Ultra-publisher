@@ -23,24 +23,37 @@ window.HistoryEngine = {
     return window.SaveEngine.captureSnapshot();
   },
 
+  _computeFingerprint(snap) {
+    if (!snap || !snap.pages) return '';
+    let fp = `p:${snap.pages.length}|`;
+    for (let i = 0; i < snap.pages.length; i++) {
+      const p = snap.pages[i];
+      const len = p.html ? p.html.length : 0;
+      const head = p.html ? p.html.slice(0, 30) : '';
+      const tail = p.html ? p.html.slice(-30) : '';
+      fp += `${i}:${len}:${head}:${tail}|`;
+    }
+    return fp;
+  },
+
   pushState(actionLabel = 'Edit') {
     if (this.isNavigating) return;
     const snap = this.captureState();
     if (!snap || !snap.pages) return;
+
+    // Fast fingerprint dirty check — avoids multi-megabyte JSON stringifications on every keystroke
+    const newFp = this._computeFingerprint(snap);
+    const currentItem = this.stack[this.currentIndex];
+    if (currentItem && currentItem.fp === newFp && this.stack.length > 0) {
+      return;
+    }
 
     // Discard any redo states if pushing a new action mid-history
     if (this.currentIndex < this.stack.length - 1) {
       this.stack = this.stack.slice(0, this.currentIndex + 1);
     }
 
-    // Check if new snapshot is identical to current to avoid redundant pushes
-    const currentSnapStr = this.stack[this.currentIndex] ? JSON.stringify(this.stack[this.currentIndex].snap.pages) : '';
-    const newSnapStr = JSON.stringify(snap.pages);
-    if (currentSnapStr === newSnapStr && this.stack.length > 0) {
-      return;
-    }
-
-    this.stack.push({ label: actionLabel, snap });
+    this.stack.push({ label: actionLabel, snap, fp: newFp });
 
     // Enforce 50-step action-specific history window
     if (this.stack.length > this.maxSteps) {
@@ -49,6 +62,9 @@ window.HistoryEngine = {
 
     this.currentIndex = this.stack.length - 1;
     this.updateUI();
+
+    // Trigger debounced auto-save
+    window.SaveEngine?.triggerAutoSave?.();
   },
 
   undo() {

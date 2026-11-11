@@ -63,6 +63,8 @@ window.SaveEngine = {
       bgImg: localStorage.getItem('ultraminds_page_bg_img') || '',
       bgOpacity: localStorage.getItem('ultraminds_page_bg_opacity') || '1.0',
       fontScale: document.documentElement.style.getPropertyValue('--font-scale') || '1',
+      // Fix #14: save page gap so it persists across save/load cycles
+      pageGap: document.documentElement.style.getPropertyValue('--page-gap') || '44px',
       twoPage: document.body.classList.contains('view-two-page'),
       manualMode: document.body.classList.contains('manual-mode')
     };
@@ -88,7 +90,8 @@ window.SaveEngine = {
         window.LayoutEngine.renderMission(snapshot.mission, document.getElementById('a4-canvas-container'));
         return true;
       }
-      alert('⚠️ Invalid or incompatible project file.');
+      // Fix #5: replace alert() with toast
+      this._showToast('⚠️ Invalid or incompatible project file.');
       return false;
     }
 
@@ -100,6 +103,8 @@ window.SaveEngine = {
     }
     if (s.zoom) document.documentElement.style.setProperty('--canvas-zoom', s.zoom);
     if (s.fontScale) document.documentElement.style.setProperty('--font-scale', s.fontScale);
+    // Fix #14: restore page gap
+    if (s.pageGap) document.documentElement.style.setProperty('--page-gap', s.pageGap);
     if (s.font) localStorage.setItem('ultraminds_global_font', s.font);
     if (s.bgImg) localStorage.setItem('ultraminds_page_bg_img', s.bgImg);
     if (s.bgOpacity) localStorage.setItem('ultraminds_page_bg_opacity', s.bgOpacity);
@@ -161,11 +166,11 @@ window.SaveEngine = {
       window.PageManager.loadSavedMargins();
     }
 
-    // Re-init canvas events
+    // Fix #3: Re-init only CanvasEditor (re-attaches canvas-level click handlers to new DOM).
+    // Do NOT re-init ContextMenu, InCardDesigner, PageManager — they bind document-level listeners
+    // and calling init() again creates duplicate event handlers that cause ghost drops,
+    // double-reflows, and erratic key handling.
     if (window.CanvasEditor) window.CanvasEditor.init();
-    if (window.ContextMenu) window.ContextMenu.init();
-    if (window.InCardDesigner) window.InCardDesigner.init();
-    if (window.PageManager) window.PageManager.init();
     if (window.LayoutEngine) {
       setTimeout(() => window.LayoutEngine.autoReflowPages(), 100);
     }
@@ -174,9 +179,9 @@ window.SaveEngine = {
     const themePicker = document.getElementById('theme-picker');
     if (themePicker && s.theme) themePicker.value = s.theme;
 
-    // Sync zoom slider
+    // Fix #12: Sync zoom label — try both IDs since they may differ between app.js and save-engine.js
     const zoomSlider = document.getElementById('canvas-zoom-slider');
-    const zoomLabel = document.getElementById('zoom-value-label');
+    const zoomLabel = document.getElementById('zoom-value-label') || document.getElementById('canvas-zoom-val');
     if (zoomSlider && s.zoom) {
       zoomSlider.value = parseFloat(s.zoom);
       if (zoomLabel) zoomLabel.textContent = `${Math.round(parseFloat(s.zoom) * 100)}%`;
@@ -213,19 +218,22 @@ window.SaveEngine = {
       return true;
     } catch (e) {
       console.error('Save slot error:', e);
-      alert('⚠️ Slot save failed — project may be too large for localStorage. Use Export File instead.');
+      this._showToast('⚠️ Slot save failed — project may be too large. Use Save to Device (.ultraminds) instead.');
       return false;
     }
   },
 
   loadFromSlot(slotIndex) {
     const raw = localStorage.getItem(`${this.SLOT_PREFIX}${slotIndex}`);
-    if (!raw) { alert('No project saved in this slot.'); return false; }
+    if (!raw) {
+      this._showToast('⚠️ No project saved in this slot.');
+      return false;
+    }
     try {
       const snap = JSON.parse(raw);
       return this.restoreSnapshot(snap);
     } catch (e) {
-      alert('Failed to load project: ' + e.message);
+      this._showToast('❌ Failed to load project: ' + e.message);
       return false;
     }
   },
@@ -239,25 +247,32 @@ window.SaveEngine = {
   // ─────────────────────────────────────────────────
   exportToFile() {
     const snap = this.captureSnapshot();
-    if (!snap) { alert('Nothing to save.'); return; }
+    if (!snap) {
+      this._showToast('⚠️ Nothing to save.');
+      return;
+    }
 
-    const customTitle = prompt("Enter project title for device file export:", snap.title || "UltraMinds Project");
-    if (customTitle === null) return;
-    if (customTitle.trim()) snap.title = customTitle.trim();
+    this._showPrompt(
+      "Enter project title for device file export:",
+      snap.title || "UltraMinds Project",
+      (customTitle) => {
+        if (customTitle && customTitle.trim()) snap.title = customTitle.trim();
 
-    const jsonStr = JSON.stringify(snap, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const safeName = (snap.title || 'project').replace(/[^a-zA-Z0-9_\- ]/g, '_');
-    a.href = url;
-    a.download = `${safeName}.ultraminds`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+        const jsonStr = JSON.stringify(snap, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const safeName = (snap.title || 'project').replace(/[^a-zA-Z0-9_\- ]/g, '_');
+        a.href = url;
+        a.download = `${safeName}.ultraminds`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
 
-    this._showToast(`💾 Exported "${snap.title}" to device file (.ultraminds)!`);
+        this._showToast(`💾 Exported "${snap.title}" to device file (.ultraminds)!`);
+      }
+    );
   },
 
   importFromFile() {
@@ -276,7 +291,7 @@ window.SaveEngine = {
           if (window.HistoryEngine) window.HistoryEngine.pushState(`Opened File: ${snap.title || file.name}`);
         }
       } catch (err) {
-        alert('Failed to import project file: ' + err.message);
+        this._showToast('❌ Failed to import project file: ' + err.message);
       }
     };
     input.click();
@@ -302,10 +317,13 @@ window.SaveEngine = {
             const text = await file.text();
             const snap = JSON.parse(text);
             if (snap.version || snap.pages || snap.mission) {
-              if (confirm(`📂 Load project file "${snap.title || file.name}" into editor?`)) {
-                this.restoreSnapshot(snap);
-                this._showToast(`✅ Project "${snap.title || file.name}" loaded from file!`);
-              }
+              this._showConfirm(
+                `📂 Load project file "${snap.title || file.name}" into editor?`,
+                () => {
+                  this.restoreSnapshot(snap);
+                  this._showToast(`✅ Project "${snap.title || file.name}" loaded from file!`);
+                }
+              );
             }
           } catch (err) {
             console.error('Project file drop error:', err);
@@ -327,11 +345,63 @@ window.SaveEngine = {
 
   quickLoad() {
     if (!localStorage.getItem(`${this.SLOT_PREFIX}0`)) {
-      alert('No quick-save found. Use File → Save first.');
+      this._showToast('ℹ️ No quick-save found. Use Save to Device first.');
       return;
     }
     const ok = this.loadFromSlot(0);
     if (ok) this._showToast('📂 Project loaded!');
+  },
+
+  // ─────────────────────────────────────────────────
+  // AUTO-SAVE ENGINE (Slot: umproj_autosave)
+  // ─────────────────────────────────────────────────
+  AUTOSAVE_KEY: 'umproj_autosave',
+  _autoSaveTimer: null,
+  _lastAutoSaveTime: null,
+
+  triggerAutoSave() {
+    clearTimeout(this._autoSaveTimer);
+    this._autoSaveTimer = setTimeout(() => {
+      this.performAutoSave();
+    }, 20000); // 20s debounce after last user action
+  },
+
+  performAutoSave() {
+    const snap = this.captureSnapshot();
+    if (!snap || !snap.pages || snap.pages.length === 0) return;
+    try {
+      snap.title = (snap.title || 'Project') + ' (Auto-Save)';
+      localStorage.setItem(this.AUTOSAVE_KEY, JSON.stringify(snap));
+      this._lastAutoSaveTime = new Date();
+      this._updateAutoSaveUI();
+    } catch (e) {
+      // If full snapshot exceeds quota (e.g. large base64 images), save lightweight snapshot
+      try {
+        const lightweightSnap = {
+          ...snap,
+          pages: (snap.pages || []).map(p => ({
+            ...p,
+            images: {},
+            html: p.html ? p.html.replace(/src="data:image\/[^"]+"/g, 'src=""') : ''
+          }))
+        };
+        localStorage.setItem(this.AUTOSAVE_KEY, JSON.stringify(lightweightSnap));
+        this._lastAutoSaveTime = new Date();
+        this._updateAutoSaveUI();
+      } catch (innerErr) {
+        // Quota completely full: clean up corrupted autosave key so other items can save
+        try { localStorage.removeItem(this.AUTOSAVE_KEY); } catch (_) {}
+      }
+    }
+  },
+
+  _updateAutoSaveUI() {
+    const indicator = document.getElementById('autosave-indicator');
+    if (indicator && this._lastAutoSaveTime) {
+      const timeStr = this._lastAutoSaveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      indicator.textContent = `● Auto-saved ${timeStr}`;
+      indicator.style.opacity = '1';
+    }
   },
 
   // ─────────────────────────────────────────────────
@@ -373,26 +443,158 @@ window.SaveEngine = {
   },
 
   _slotSave(index) {
-    const name = prompt('Project name:', window.currentMission?.missionTitle || `Project ${index + 1}`);
-    if (name === null) return;
-    const ok = this.saveToSlot(index, name || `Project ${index + 1}`);
-    if (ok) {
-      this._showToast(`💾 Saved to Slot ${index + 1}!`);
-      this.openModal();
-    }
+    this._showPrompt(
+      'Project name:',
+      window.currentMission?.missionTitle || `Project ${index + 1}`,
+      (name) => {
+        const ok = this.saveToSlot(index, name || `Project ${index + 1}`);
+        if (ok) {
+          this._showToast(`💾 Saved to Slot ${index + 1}!`);
+          this.openModal();
+        }
+      }
+    );
   },
 
-  _showToast(msg) {
-    let toast = document.getElementById('um-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'um-toast';
-      toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1E293B;color:#F8FAFC;padding:10px 22px;border-radius:24px;font-size:0.88rem;font-weight:600;z-index:999999;box-shadow:0 4px 24px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);transition:opacity 0.3s;pointer-events:none;';
-      document.body.appendChild(toast);
+  // ─────────────────────────────────────────────────
+  // TOAST QUEUE SYSTEM (Fix #9: Stacking & Animation)
+  // ─────────────────────────────────────────────────
+  _showToast(msg, duration = 2800) {
+    let container = document.getElementById('um-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'um-toast-container';
+      container.style.cssText = 'position:fixed;top:64px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:999999;pointer-events:none;';
+      document.body.appendChild(container);
     }
+
+    // Limit active toasts in queue to 3
+    const existing = container.querySelectorAll('.um-toast-item');
+    if (existing.length >= 3) {
+      existing[0].remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'um-toast-item';
+    toast.style.cssText = 'background:rgba(13,19,34,0.94);backdrop-filter:blur(20px);color:#F8FAFC;padding:9px 20px;border-radius:14px;font-size:0.82rem;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,0.65), inset 0 1px 1px rgba(255,255,255,0.2);border:1px solid rgba(0,240,255,0.38);opacity:0;transform:translateY(12px) scale(0.96);transition:all 0.22s cubic-bezier(0.16, 1, 0.3, 1);pointer-events:auto;user-select:none;display:flex;align-items:center;gap:8px;';
     toast.textContent = msg;
-    toast.style.opacity = '1';
-    clearTimeout(toast._hideTimer);
-    toast._hideTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2800);
+
+    container.appendChild(toast);
+
+    // Trigger entrance animation
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0) scale(1)';
+    });
+
+    // Auto dismiss
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(8px) scale(0.95)';
+      setTimeout(() => toast.remove(), 240);
+    }, duration);
+  },
+
+  // ─────────────────────────────────────────────────
+  // CUSTOM MODAL DIALOGS (Fix #5: _showConfirm & _showPrompt)
+  // ─────────────────────────────────────────────────
+  _showConfirm(message, onYes, onNo) {
+    document.getElementById('um-custom-dialog-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'um-custom-dialog-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,15,28,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:9999999;animation:umFadeIn 0.15s ease-out;';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#1E293B;border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:22px 24px;max-width:440px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:14px;color:#F8FAFC;font-family:inherit;';
+
+    card.innerHTML = `
+      <div style="font-size:1.0rem;font-weight:700;line-height:1.4;display:flex;align-items:flex-start;gap:10px;">
+        <span>${message}</span>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px;">
+        <button id="um-dialog-cancel" class="btn btn-secondary" style="padding:6px 16px;">Cancel</button>
+        <button id="um-dialog-confirm" class="btn btn-primary" style="background:#EF4444;border-color:#DC2626;padding:6px 18px;font-weight:700;">Confirm</button>
+      </div>
+    `;
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    const cleanup = () => overlay.remove();
+
+    card.querySelector('#um-dialog-confirm').onclick = () => {
+      cleanup();
+      if (typeof onYes === 'function') onYes();
+    };
+
+    card.querySelector('#um-dialog-cancel').onclick = () => {
+      cleanup();
+      if (typeof onNo === 'function') onNo();
+    };
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') { cleanup(); if (onNo) onNo(); document.removeEventListener('keydown', handleKey); }
+      if (e.key === 'Enter') { cleanup(); if (onYes) onYes(); document.removeEventListener('keydown', handleKey); }
+    };
+    document.addEventListener('keydown', handleKey);
+  },
+
+  _showPrompt(message, defaultValue = '', onOk, onCancel) {
+    document.getElementById('um-custom-dialog-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'um-custom-dialog-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,15,28,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:9999999;animation:umFadeIn 0.15s ease-out;';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#1E293B;border:1px solid rgba(0,240,255,0.3);border-radius:14px;padding:22px 24px;max-width:440px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:14px;color:#F8FAFC;font-family:inherit;';
+
+    card.innerHTML = `
+      <div style="font-size:0.95rem;font-weight:700;color:var(--accent-cyan);">${message}</div>
+      <input type="text" id="um-dialog-input" value="${defaultValue}" style="background:#0F172A;border:1px solid rgba(255,255,255,0.2);color:#FFF;border-radius:8px;padding:9px 12px;font-size:0.9rem;outline:none;font-family:inherit;width:100%;box-sizing:border-box;" />
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px;">
+        <button id="um-dialog-cancel" class="btn btn-secondary" style="padding:6px 16px;">Cancel</button>
+        <button id="um-dialog-submit" class="btn btn-primary" style="background:#2563EB;padding:6px 18px;font-weight:700;">Save / OK</button>
+      </div>
+    `;
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    const input = card.querySelector('#um-dialog-input');
+    input.focus();
+    input.select();
+
+    const cleanup = () => overlay.remove();
+
+    card.querySelector('#um-dialog-submit').onclick = () => {
+      const val = input.value;
+      cleanup();
+      if (typeof onOk === 'function') onOk(val);
+    };
+
+    card.querySelector('#um-dialog-cancel').onclick = () => {
+      cleanup();
+      if (typeof onCancel === 'function') onCancel();
+    };
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') { cleanup(); if (onCancel) onCancel(); document.removeEventListener('keydown', handleKey); }
+      if (e.key === 'Enter') {
+        const val = input.value;
+        cleanup();
+        if (onOk) onOk(val);
+        document.removeEventListener('keydown', handleKey);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
   }
+};
+
+// Expose unified dialogs globally
+window.UltraDialogs = {
+  confirm: (msg, onYes, onNo) => window.SaveEngine._showConfirm(msg, onYes, onNo),
+  prompt: (msg, def, onOk, onCancel) => window.SaveEngine._showPrompt(msg, def, onOk, onCancel),
+  toast: (msg, duration) => window.SaveEngine._showToast(msg, duration)
 };

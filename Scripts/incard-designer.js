@@ -5,8 +5,11 @@
 
 window.InCardDesigner = {
   activeSelectionRange: null,
+  initialized: false,
 
   init() {
+    if (this.initialized) return;
+    this.initialized = true;
     this.createToolbarMarkup();
     this.bindEvents();
   },
@@ -47,14 +50,21 @@ window.InCardDesigner = {
       
       <div class="floating-divider"></div>
       
-      <div style="display:flex; align-items:center; gap:2px;" title="Text Color for Selection">
-        <label style="font-size:0.68rem; color:#94A3B8; margin-right:2px;">Color:</label>
-        <input type="color" value="#2563EB" style="width:20px; height:20px; border:none; background:none; cursor:pointer;" onchange="window.InCardDesigner.applyTextColor(this.value)">
+      <div style="display:flex; align-items:center; gap:3px; padding:0 2px;" title="Text Color for Selection">
+        <span class="floating-color-dot" style="background:#0F172A;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#0F172A')" title="Dark / Black"></span>
+        <span class="floating-color-dot" style="background:#2563EB;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#2563EB')" title="Royal Blue"></span>
+        <span class="floating-color-dot" style="background:#16A34A;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#16A34A')" title="Emerald Green"></span>
+        <span class="floating-color-dot" style="background:#DC2626;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#DC2626')" title="Crimson Red"></span>
+        <span class="floating-color-dot" style="background:#7C3AED;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#7C3AED')" title="Purple"></span>
+        <span class="floating-color-dot" style="background:#D97706;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#D97706')" title="Amber Orange"></span>
+        <span class="floating-color-dot" style="background:#0284C7;" onmousedown="event.preventDefault(); window.InCardDesigner.applyTextColor('#0284C7')" title="Cyan"></span>
+        <input type="color" id="floating-color-picker" value="#2563EB" style="width:18px; height:18px; border:none; background:none; cursor:pointer; padding:0;" onmousedown="window.InCardDesigner.saveSelectionRange()" oninput="window.InCardDesigner.applyTextColor(this.value)" title="Custom Color Palette">
       </div>
 
       <div class="floating-divider"></div>
 
       <button class="floating-btn" style="background:#0F172A; border-color:var(--accent-cyan);" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.insertInCardImage()" title="Insert In-Card Image at Cursor">🖼️ Image</button>
+      <button class="floating-btn" style="background:#0F172A; border-color:#00F0FF;" onmousedown="event.preventDefault()" onclick="window.InCardDesigner.insertPureInCardImage()" title="Insert Pure Bezel-Free Image at Cursor">🖼️✨ Pure</button>
 
       <button class="floating-btn" style="background:rgba(255,255,255,0.1); font-size:0.65rem;" onclick="window.InCardDesigner.hideToolbar()" title="Close Toolbar (Esc)">✕</button>
     `;
@@ -232,10 +242,37 @@ window.InCardDesigner = {
     window.LayoutEngine.autoReflowPages();
   },
 
+  saveSelectionRange() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      this.activeSelectionRange = sel.getRangeAt(0).cloneRange();
+    }
+  },
+
   applyTextColor(colorHex) {
-    if (!this.restoreSelection()) return;
-    document.execCommand('foreColor', false, colorHex);
-    window.LayoutEngine.autoReflowPages();
+    if (!this.restoreSelection()) {
+      if (this.activeSelectionRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(this.activeSelectionRange);
+      } else {
+        return;
+      }
+    }
+
+    document.execCommand('styleWithCSS', false, true);
+    const ok = document.execCommand('foreColor', false, colorHex);
+    if (!ok) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.color = colorHex;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      }
+    }
+    window.LayoutEngine?.autoReflowPages();
   },
 
   changeFontSize(delta) {
@@ -254,6 +291,12 @@ window.InCardDesigner = {
   insertInCardImage() {
     if (!this.restoreSelection()) return;
     window.CanvasEditor.insertComponent('incard-image-holder');
+    this.hideToolbar();
+  },
+
+  insertPureInCardImage() {
+    if (!this.restoreSelection()) return;
+    window.CanvasEditor.insertComponent('pure-image-holder');
     this.hideToolbar();
   }
 };

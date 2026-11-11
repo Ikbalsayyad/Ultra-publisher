@@ -9,8 +9,11 @@
  */
 
 window.PageManager = {
+  initialized: false,
 
   init() {
+    if (this.initialized) return;
+    this.initialized = true;
     this.bindArrowKeys();
     this.bindPageControlBar();
     this.bindMarginModal();
@@ -20,7 +23,8 @@ window.PageManager = {
   // ─────────────────────────────────────────────────
   // ADD PAGE
   // ─────────────────────────────────────────────────
-  addPage(afterPage) {
+  // Fix #4: addPage accepts { silent: true } to skip autoReflowPages when called from moveElementDown
+  addPage(afterPage, options = {}) {
     const canvas = document.getElementById('a4-canvas-container');
     if (!canvas) return;
 
@@ -55,7 +59,7 @@ window.PageManager = {
     }
 
     // SMART OVERFLOW CAPTURE: If preceding page has overflowing cards, pull them into the new page!
-    if (refPage) {
+    if (refPage && !options.silent) {
       const refBody = refPage.querySelector('.page-body-container');
       if (refBody) {
         const isOverflowing = refBody.scrollHeight > (refBody.clientHeight + 10);
@@ -77,7 +81,8 @@ window.PageManager = {
     }
 
     this.syncPageNumbers();
-    if (window.LayoutEngine) window.LayoutEngine.autoReflowPages();
+    // Only trigger reflow if not in silent mode (silent = called from moveElementDown)
+    if (!options.silent && window.LayoutEngine) window.LayoutEngine.autoReflowPages();
     window.HistoryEngine?.pushState('Add Page');
     window.SaveEngine?._showToast('📄 Page added!');
 
@@ -85,6 +90,8 @@ window.PageManager = {
       newPage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       newPage.classList.remove('page-newly-added');
     }, 400);
+
+    return newPage;
   },
 
   // ─────────────────────────────────────────────────
@@ -94,34 +101,58 @@ window.PageManager = {
     const canvas = document.getElementById('a4-canvas-container');
     if (!canvas) return;
     const pages = canvas.querySelectorAll('.book-page');
-    if (pages.length <= 1) { alert('Cannot delete the last page.'); return; }
+
+    // Fix #5: Use toast for non-destructive block messages
+    if (pages.length <= 1) {
+      window.SaveEngine?._showToast('⚠️ Cannot delete the last page.');
+      return;
+    }
 
     page = page || this.getActivePage();
-    if (!page) { alert('Click on a page first to select it.'); return; }
-
-    if (!confirm('Delete this page and all its content?')) return;
-
-    window.HistoryEngine?.pushState('Delete Page');
-
-    // Move cards to prev page if possible
-    const prevPage = page.previousElementSibling?.closest('.book-page') || page.previousElementSibling;
-    const cards = page.querySelectorAll('.page-body-container > *');
-    if (prevPage && cards.length > 0) {
-      const prevBody = prevPage.querySelector('.page-body-container');
-      if (prevBody) cards.forEach(c => prevBody.appendChild(c));
+    if (!page) {
+      window.SaveEngine?._showToast('⚠️ Click on a page first to select it.');
+      return;
     }
 
-    page.remove();
+    // Fix #11: Use styled confirm instead of window.confirm()
+    const pageNum = page.dataset.pageNum || '?';
+    const cardCount = page.querySelectorAll('.draggable-element, .card-base').length;
+    this._showConfirm(
+      `⚠️ Delete Page ${pageNum}?${cardCount > 0 ? ` (${cardCount} card${cardCount > 1 ? 's' : ''} will move to the previous page)` : ''}`,
+      () => {
+        window.HistoryEngine?.pushState('Delete Page');
 
-    // Sync mission data
-    const pageNum = parseInt(page.dataset.pageNum) - 1;
-    if (window.currentMission?.pages && pageNum >= 0) {
-      window.currentMission.pages.splice(pageNum, 1);
+        // Move cards to prev page if possible
+        const prevPage = page.previousElementSibling?.closest('.book-page') || page.previousElementSibling;
+        const cards = page.querySelectorAll('.page-body-container > *');
+        if (prevPage && cards.length > 0) {
+          const prevBody = prevPage.querySelector('.page-body-container');
+          if (prevBody) cards.forEach(c => prevBody.appendChild(c));
+        }
+
+        page.remove();
+
+        // Sync mission data
+        const pNum = parseInt(page.dataset.pageNum) - 1;
+        if (window.currentMission?.pages && pNum >= 0) {
+          window.currentMission.pages.splice(pNum, 1);
+        }
+
+        this.syncPageNumbers();
+        if (window.LayoutEngine) window.LayoutEngine.autoReflowPages();
+        window.SaveEngine?._showToast('🗑 Page deleted.');
+      }
+    );
+  },
+
+  _showConfirm(message, onYes, onNo) {
+    if (window.UltraDialogs && window.UltraDialogs.confirm) {
+      window.UltraDialogs.confirm(message, onYes, onNo);
+    } else if (window.SaveEngine && window.SaveEngine._showConfirm) {
+      window.SaveEngine._showConfirm(message, onYes, onNo);
+    } else if (confirm(message)) {
+      if (onYes) onYes();
     }
-
-    this.syncPageNumbers();
-    if (window.LayoutEngine) window.LayoutEngine.autoReflowPages();
-    window.SaveEngine?._showToast('🗑 Page deleted.');
   },
 
   // ─────────────────────────────────────────────────
@@ -173,19 +204,23 @@ window.PageManager = {
       const currentPage = el.closest('.book-page');
       let nextPage = currentPage?.nextElementSibling;
       if (!nextPage || !nextPage.classList.contains('book-page')) {
-        this.addPage(currentPage);
+        // Fix #4: pass silent:true so addPage doesn't call autoReflowPages prematurely
+        // (that reflow would push the card back to the original page, creating the loop)
+        this.addPage(currentPage, { silent: true });
         nextPage = currentPage?.nextElementSibling;
       }
       if (nextPage) {
         const nextBody = nextPage.querySelector('.page-body-container');
         if (nextBody) {
+          const placeholder = nextBody.querySelector('.empty-page-placeholder');
+          if (placeholder) placeholder.remove();
           nextBody.insertBefore(el, nextBody.firstChild);
           window.SaveEngine?._showToast('⬇ Moved to next page');
         }
       }
     }
 
-    if (window.LayoutEngine) window.LayoutEngine.autoReflowPages();
+    window.LayoutEngine?.autoReflowPages();
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   },
 
@@ -265,7 +300,10 @@ window.PageManager = {
 
   addFooterToPage(pageTarget) {
     const page = pageTarget || this.getActivePage() || document.querySelector('.book-page');
-    if (!page) return alert("Please select a page first.");
+    if (!page) {
+      window.SaveEngine?._showToast("ℹ️ Please select a page first.");
+      return;
+    }
 
     window.HistoryEngine?.pushState('Add Page Footer');
 
@@ -389,8 +427,9 @@ window.PageManager = {
     const pages = Array.from(document.querySelectorAll('.book-page'));
     pages.forEach((p, idx) => {
       p.dataset.pageNum = idx + 1;
-      const zVal = Math.max(1, 1000 - idx);
-      p.style.setProperty('z-index', String(zVal), 'important');
+      // Note: do NOT assign descending z-index here — pages are stacked vertically in
+      // a flex column (not overlapping), so z-index ordering caused cards at page
+      // bottoms to visually bleed behind the next page. CSS handles z-index now.
       const ribbon = p.querySelector('.page-ribbon');
       if (ribbon) ribbon.textContent = `PAGE ${idx + 1}`;
     });

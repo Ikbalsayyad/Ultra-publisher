@@ -4,8 +4,9 @@
  */
 
 window.ULTRAMINDS_50_ELEMENTS = {
-  "floating-clipart": { name: "Floating Clipart Sticker (Mascot)", type: "floating-clipart", icon: "🧑‍🚀", desc: "Borderless floating PNG sticker/mascot (Commander Nova) that floats anywhere on page.", presetData: { type: "floating-clipart", title: "Commander Nova Clipart", imgUrl: "" } },
-  "image-holder": { name: "Normal Image Holder Card", type: "image-holder", icon: "🖼️", desc: "Clean standalone image card with top title capsule, image box, and caption.", presetData: { type: "image-holder", title: "FIGURE 1.1", icon: "🖼️", imgUrl: "", caption: "Figure 1.1 Hardware Diagram", objectFit: "cover" } },
+  "floating-clipart": { name: "Floating Clipart Sticker (Mascot)", type: "floating-clipart", icon: "🚀", desc: "Borderless floating PNG sticker/mascot (Commander Nova) that floats anywhere on page.", presetData: { type: "floating-clipart", title: "Commander Nova Clipart", imgUrl: "Images/nova poses/greeting.png" } },
+  "image-holder": { name: "Normal Image Holder Card", type: "image-holder", icon: "🖼️", desc: "Clean standalone image card with image box and optional caption.", presetData: { type: "image-holder", title: "", icon: "🖼️", imgUrl: "", caption: "", objectFit: "cover" } },
+  "pure-image-holder": { name: "Pure Image Box (Bezel-Free)", type: "pure-image-holder", icon: "🖼️", desc: "Completely bezel-free, pure edge-to-edge image box with customizable borders, patterns, and rounded corners, no captions or text below.", presetData: { type: "pure-image-holder", title: "", imgUrl: "", bezelFree: true, borderStyle: "none", borderWidth: 0, borderColor: "#2563EB", borderRadius: 8 } },
   "incard-image-holder": { name: "In-Card Image Holder", type: "incard-image-holder", icon: "🖼️", desc: "Compact in-card image box.", presetData: { type: "incard-image-holder", title: "Image 1", imgUrl: "" } },
   "page-banner": { name: "Page Type Banner", type: "page-banner", icon: "🏷️", desc: "Styled page-type header banner (Engineering Explorer, Build Lab, Logic Builder, Innovation Studio).", presetData: { type: "page-banner", pageType: "engineering-explorer", pageNum: 2, title: "ENGINEERING EXPLORER", subtitle: "OBSERVE. DISCOVER. UNDERSTAND.", icon: "🔍" } },
   "mission-story": { name: "Mission Story", type: "mission-story", icon: "📖", desc: "Narrative context setting the real-world engineering challenge.", presetData: { type: "mission-story", title: "MISSION STORY", icon: "📖", content: "Commander Nova has received a request..." } },
@@ -40,7 +41,7 @@ window.ULTRAMINDS_50_ELEMENTS = {
   "did-you-know": { name: "Did You Know?", type: "did-you-know", icon: "💡", desc: "Fascinating science trivia card.", presetData: { type: "did-you-know", title: "DID YOU KNOW?", icon: "💡", content: "Weather stations on Mount Everest use similar sensors to help climbers and scientists stay safe." } },
   "mission-challenge": { name: "Mission Challenge", type: "mission-challenge", icon: "🔍", desc: "End-of-page critical thinking challenge.", presetData: { type: "mission-challenge", title: "MISSION CHALLENGE", icon: "🔍", question: "Can one sensor measure everything in the environment? List two things that DHT11 cannot measure.", answerFields: ["1. ............", "2. ............"] } },
   "engineer-tip": { name: "Engineer Tip", type: "engineer-tip", icon: "💡", desc: "Professional engineering tip card.", presetData: { type: "engineer-tip", title: "ENGINEER TIP", icon: "💡", content: "Good connections + careful work = Great inventions! Take your time and enjoy the build." } },
-  "nova-card": { name: "Commander Nova Guidance", type: "nova-card", icon: "🧑‍🚀", desc: "Character guide tip box.", presetData: { type: "nova-card", title: "COMMANDER NOVA TIP", icon: "🧑‍🚀", content: "Careful work leads to great inventions!" } },
+  "nova-card": { name: "Commander Nova Guidance", type: "nova-card", icon: "🚀", desc: "Character guide tip box.", presetData: { type: "nova-card", title: "COMMANDER NOVA TIP", icon: "🚀", mascotPoseUrl: "Images/nova poses/explaination.png", content: "Careful work leads to great inventions!" } },
   "programming-studio": { name: "Programming Studio Lab", type: "programming-studio", icon: "💻", desc: "Full code editor studio block.", presetData: { type: "programming-studio", title: "PROGRAMMING STUDIO", icon: "💻", language: "python", code: "while True:\n    sensor.measure()\n    print('T:', sensor.temperature())\n    time.sleep(2)" } },
   "pro-tip": { name: "Pro Tip Card", type: "pro-tip", icon: "⭐", desc: "Highlighted professional tip box.", presetData: { type: "pro-tip", title: "PRO TIP", icon: "⭐", content: "Always power OFF the board while making connections. Double check everything before uploading code!" } },
   "in-this-lab": { name: "In This Lab You Will", type: "in-this-lab", icon: "🧪", desc: "Lab checklist card.", presetData: { type: "in-this-lab", title: "IN THIS LAB YOU WILL", icon: "🧪", items: ["Connect DHT11 sensor", "Connect OLED display", "Upload program", "Read temperature & humidity on the OLED!"] } },
@@ -60,190 +61,134 @@ window.ULTRAMINDS_50_ELEMENTS = {
  * Strict 100% content fidelity. Exact page templates. Premium $20 book quality output.
  */
 window.ULTRAMINDS_MASTER_PROMPT = `
-You are the Executive Art Director and Chief Architect for UltraMinds Engineering Magazine — the #1 premium STEM learning book for kids aged 10-16.
+You are the Executive Art Director and Chief Component Architect for UltraMinds Engineering Magazine — the #1 premium STEM learning book for kids aged 10-16.
 
-YOUR MANDATE: Convert raw educational content into a perfect, ultra-detailed UltraMinds Mission JSON object.
+YOUR MANDATE: Transform raw educational curriculum text into a brilliant, dynamic, React-style UltraMinds Mission JSON object.
 
-== GOLDEN RULES (NEVER VIOLATE) ==
-RULE 1 - ZERO OMISSION: Every single word, question, code line, bullet, table row, and step from the raw input MUST appear in the output. Never summarize, skip, shorten, or paraphrase any content. Pin-to-pin fidelity is non-negotiable.
-RULE 2 - PRESENTATION ONLY: You arrange and style content. You do not change, rewrite, or invent curriculum content.
-RULE 3 - PREMIUM QUALITY: Every page must look like a $20 published engineering textbook. Use Apple, National Geographic Kids, DK Encyclopedias, LEGO Education as inspiration.
-RULE 4 - RICH STRUCTURES: Always use the richest possible JSON structure. Never use generic "content" strings when a richer array/object structure is available for the card type.
-RULE 5 - FULL PAGES: Each page must be completely filled. Use split-layout (side-by-side columns) wherever possible. Never waste space.
-RULE 6 - PAGE TEMPLATES: Match the correct page template type for each section of content.
+== CRITICAL ARCHITECTURAL RULES (NEVER VIOLATE) ==
 
-== THE 5 ULTRAMINDS PAGE TEMPLATES ==
+RULE 1 - ZERO STATIC OR PREFIXED TITLES:
+NEVER use generic boilerplate titles like "MISSION STORY", "REAL WORLD", "THINK LIKE AN ENGINEER", "BUILD LAB", "OBSERVE & ANSWER", "INSIDE THE SENSOR", or "SECTION 1".
+Instead, ALWAYS synthesize bespoke, compelling titles directly from the actual curriculum content!
+- Bad: "MISSION STORY"
+- Good: "THE BOTANICAL EMERGENCY AT STATION 4"
+- Bad: "BUILD LAB"
+- Good: "WIRING THE AUTOMATED DRIP IRRIGATION PUMP"
+- Bad: "COMPONENT SPOTLIGHT"
+- Good: "CAPACITIVE SOIL SENSOR V2.0 PINOUT & SPECIFICATIONS"
+- Bad: "PROGRAMMING STUDIO"
+- Good: "MICROPYTHON HYDRATION THRESHOLD LOOP"
+- Bad: "CHALLENGE"
+- Good: "CALIBRATING ANALOG THRESHOLD BENCHMARKS"
 
-PAGE TYPE 1 — "cover" (Page 1 of every mission)
-  - Mission number pill + Mission title + subtitle (large header)
-  - Commander Nova mascot image (left side of header)
-  - RIGHT side: mission-specific illustration
-  - MAIN CONTENT: 2-column layout:
-    LEFT: mission-story card (tall, with inline image stickers)
-    RIGHT: stacked cards: real-world + curiosity-box + stem-fact
-  - FULL WIDTH: mission-objectives (4-column numbered grid)
-  - FULL WIDTH: think-engineer (scenario comparison A vs B)
-  - FOOTER: code pill sequence + NEXT MISSION label
+RULE 2 - ZERO OMISSION:
+Every single word, question, code line, bullet, pinout, voltage, table row, and step from the raw curriculum input MUST appear in the output. Never summarize, skip, shorten, or paraphrase any content. Pin-to-pin fidelity is non-negotiable.
 
-PAGE TYPE 2 — "engineering-explorer" (Observation & Components page)
-  - Page banner: "ENGINEERING EXPLORER" with "OBSERVE. DISCOVER. UNDERSTAND." subtitle
-  - 2-column layout:
-    LEFT: observe-card (image + numbered questions with answer lines)
-    RIGHT: component-spotlight (component name, features list, pin-config table, specs 4-cell grid)
-  - 2-column layout:
-    LEFT: inside-sensor card (red/blue split diagram)
-    RIGHT: comparison-vs card (human senses vs electronic sensors)
-  - FULL WIDTH: mission-challenge card
-  - FOOTER: did-you-know + next-page-preview
+RULE 3 - REACT-STYLE COMPONENT COMPOSITION:
+Every card is a dynamic container ("dynamic-composed-card") composed of atomic in-card items!
+You can mix and match any of these in-card primitives inside a card:
+- "Paragraph" / "text": { "nodeType": "Paragraph", "text": "...", "lead": false }
+- "BulletList": { "nodeType": "BulletList", "bulletStyle": "check"|"dot"|"star"|"arrow", "items": ["..."] }
+- "KeyValuePairGroup": { "nodeType": "KeyValuePairGroup", "pairs": [{ "key": "VCC", "value": "3.3V DC", "icon": "⚡" }] }
+- "Table": { "nodeType": "Table", "headers": ["Col 1", "Col 2"], "rows": [["A", "B"]] }
+- "CodeBlock": { "nodeType": "CodeBlock", "language": "python", "code": "..." }
+- "CalloutBox": { "nodeType": "CalloutBox", "variant": "tip"|"warning"|"danger"|"info"|"success", "title": "CRITICAL RISK", "text": "..." }
+- "Challenge": { "nodeType": "Challenge", "question": "...", "answerLines": 2 }
+- "Comparison": { "nodeType": "Comparison", "leftTitle": "Human Sense", "leftItems": ["..."], "rightTitle": "Digital Sensor", "rightItems": ["..."] }
+- "Vocabulary": { "nodeType": "Vocabulary", "term": "Capacitance", "definition": "..." }
+- "ImageBox": { "nodeType": "ImageBox", "caption": "...", "promptKeyword": "sensor-diagram" }
+- "SubCard": { "nodeType": "SubCard", "title": "Sub-Card Title", "text": "..." }
+- "ProcedureStep": { "nodeType": "ProcedureStep", "text": "..." }
 
-PAGE TYPE 3 — "build-lab" (Hardware Assembly page)
-  - Page banner: "BUILD LAB" with subtitle
-  - 2-column layout:
-    LEFT: in-this-lab checklist + pro-tip card
-    RIGHT: Large image of the board/hardware with callout arrows
-  - FULL WIDTH: build-steps (4-column numbered steps: connect sensor, connect display, upload, observe)
-    Each step: step number + orange title + description + image placeholder + pin table
-  - 2-column layout:
-    LEFT: device-ready card (assembled device image with callouts)
-    RIGHT: common-mistakes alert table (icon + issue + fix)
-  - FOOTER: engineer-tip + mascot + next-page-preview
+RULE 4 - DYNAMIC THEMING & EMOJIS:
+Assign cardStyle and icon matching the topic:
+- Story/Intro/Discovery: "theme-card-blue", icon: 📖/🌿/🚂/🚀
+- Hardware/Wiring/Assembly: "theme-card-orange", icon: 🔌/🔨/⚡/🔬
+- Code/Algorithms/Logic: "theme-card-dark", icon: 💻/🧠/🐍
+- Challenge/Quiz/Worksheet: "theme-card-purple", icon: 🏆/📝/🤔
+- Clearance/Success/Recap: "theme-card-green", icon: ✅/🎖️/📈
+- Warning/Debug/Safety: "theme-card-red", icon: 🚨/🛑/⚠️
 
-PAGE TYPE 4 — "logic-builder" (Programming Logic page)
-  - Page banner: "LOGIC BUILDER" with subtitle
-  - 3-column layout:
-    LEFT (narrow): flowchart-sequence (boxes with arrows, plus explanation text for each step)
-    CENTER (wide): blocks-code (MIT App Inventor / Blockly visual code display) + variables-at-work sidebar
-    RIGHT (narrow): variables-at-work card + oled-preview
-  - 2-column layout:
-    LEFT: code-snippet (Python code, full syntax)
-    RIGHT: predict-think (numbered questions) + challenge-box
-  - FOOTER: engineer-tip + next-you-will-learn + mission-progress (1-2-3-4-5 tracker)
+RULE 5 - SMART SPLIT-LAYOUT PAIRING:
+Whenever two adjacent cards are compact (e.g. Pinout Specs + Wiring Table, or Code Block + Pro-Tip, or Scenario A + Scenario B), pair them side by side using "split-layout":
+{
+  "type": "split-layout",
+  "left": { "type": "dynamic-composed-card", "title": "...", "items": [...] },
+  "right": { "type": "dynamic-composed-card", "title": "...", "items": [...] }
+}
 
-PAGE TYPE 5 — "innovation-studio" (Expansion & Review page)
-  - Page banner: "INNOVATION STUDIO" with subtitle
-  - 2-column layout:
-    LEFT: mini-upgrade card (temperature mood icon grid with OLED examples)
-    RIGHT: real-challenge (process flow + add-more components grid)
-  - 2-column layout:
-    LEFT: did-you-know (multi-fact list) + engineers-everywhere (4-industry grid)
-    RIGHT column actually merged into engineers-everywhere full row
-  - FULL WIDTH: engineers-everywhere (4-industry cards: Smart Agriculture, Smart Buildings, Weather Stations, Space)
-  - 2-column layout:
-    LEFT: mission-review-table (checkmark Q&A)
-    RIGHT: ultra-badge + mascot
-  - FULL WIDTH: beyond-mission (Today → Next → Future progression)
-  - FOOTER: next-mission-preview + brand slogan
-
-== RICH JSON CARD SCHEMAS ==
-
-For "mission-story":
-{ "type": "mission-story", "title": "MISSION STORY", "icon": "📖", "content": "Full narrative text here word for word", "images": ["keyword1", "keyword2"] }
-
-For "real-world":
-{ "type": "real-world", "title": "REAL WORLD", "icon": "🌐", "items": ["Item 1", "Item 2", "Item 3"], "bottomNote": "Closing statement." }
-
-For "mission-objectives":
-{ "type": "mission-objectives", "title": "MISSION OBJECTIVES", "icon": "🎯", "objectives": [{ "num": 1, "text": "Exact text from source", "icon": "🌡️" }, ...] }
-
-For "think-engineer":
-{ "type": "think-engineer", "title": "THINK LIKE AN ENGINEER", "icon": "🧠", "question": "Exact question text", "answerLines": 2, "scenario": { "left": { "label": "Room A", "temp": "30°C", "hum": "40%", "feel": "Feels Comfortable", "status": "ok" }, "right": { "label": "Room B", "temp": "30°C", "hum": "80%", "feel": "Feels Hot & Sticky", "status": "warn" } } }
-
-For "component-spotlight":
-{ "type": "component-spotlight", "title": "MEET TODAY'S COMPONENT", "icon": "🔬", "componentName": "DHT11", "componentSubtitle": "TEMPERATURE & HUMIDITY SENSOR", "features": ["Feature 1 exact text", "Feature 2"], "pinConfig": [{ "num": 1, "label": "VCC", "color": "red", "desc": "Power Supply (3.3V – 5V)" }, { "num": 2, "label": "DATA", "color": "blue", "desc": "Digital Data Output" }, { "num": 3, "label": "GND", "color": "black", "desc": "Ground" }], "specs": [{ "icon": "🌡️", "label": "Temperature Range", "value": "0°C to 50°C" }, { "icon": "💧", "label": "Humidity Range", "value": "20% to 90% RH" }, { "icon": "🎯", "label": "Accuracy", "value": "Temperature: ±1°C\\nHumidity: ±5% RH" }, { "icon": "⚡", "label": "Operating Voltage", "value": "3.3V to 5V DC" }] }
-
-For "inside-sensor":
-{ "type": "inside-sensor", "title": "INSIDE THE SENSOR – HOW DOES IT WORK?", "icon": "🔬", "intro": "DHT11 has two sensing parts inside:", "leftTitle": "TEMPERATURE SENSING ELEMENT", "leftContent": "Exact text from source", "rightTitle": "HUMIDITY SENSING ELEMENT", "rightContent": "Exact text from source", "bottomNote": "Exact text from source" }
-
-For "comparison-vs":
-{ "type": "comparison-vs", "title": "COMPARE & UNDERSTAND", "icon": "⚖️", "leftTitle": "OUR HUMAN SENSES", "leftItems": [{ "icon": "👁️", "text": "Exact text" }, { "icon": "💧", "text": "Exact text" }], "rightTitle": "ELECTRONIC SENSORS", "rightItems": [{ "icon": "🌡️", "text": "Exact text" }, { "icon": "💧", "text": "Exact text" }], "bottomNote": "EXACT CONCLUDING STATEMENT IN CAPS." }
-
-For "build-steps":
-{ "type": "build-steps", "title": "BUILD LAB", "icon": "🛠️", "steps": [{ "stepNum": 1, "title": "CONNECT DHT11 SENSOR", "desc": "Exact instruction", "pinTable": [{ "label": "VCC", "color": "red", "arrow": "3.3V" }, { "label": "DATA", "color": "blue", "arrow": "DHT11 (Signal)" }, { "label": "GND", "color": "black", "arrow": "GND" }] }] }
-
-For "common-mistakes":
-{ "type": "common-mistakes", "title": "COMMON MISTAKES", "icon": "⚠️", "mistakes": [{ "icon": "🔌", "issue": "Wrong VCC connection", "fix": "Check: VCC → 3.3V (NOT 5V)" }] }
-
-For "flowchart-sequence":
-{ "type": "flowchart-sequence", "title": "FLOW OF LOGIC", "icon": "🔄", "steps": [{ "label": "Start", "type": "start" }, { "label": "Read Temperature from DHT11", "type": "process", "desc": "Exact explanation text" }, { "label": "Repeat Forever", "type": "loop" }] }
-
-For "code-snippet":
-{ "type": "code-snippet", "title": "PYTHON LOGIC PREVIEW", "icon": "💻", "language": "python", "code": "Exact code from source, preserving all indentation" }
-
-For "variables-at-work":
-{ "type": "variables-at-work", "title": "VARIABLES AT WORK", "icon": "📌", "intro": "We store values in variables so we can use them again.", "variables": [{ "name": "temp", "label": "Temperature", "icon": "🌡️", "desc": "Stores temperature value in °C", "example": "26.8" }] }
-
-For "predict-think":
-{ "type": "predict-think", "title": "PREDICT & THINK", "icon": "🤔", "questions": ["Exact question 1", "Exact question 2"] }
-
-For "challenge-box":
-{ "type": "challenge-box", "title": "CHALLENGE", "icon": "🏆", "content": "Exact challenge text from source." }
-
-For "mini-upgrade":
-{ "type": "mini-upgrade", "title": "MINI UPGRADE", "icon": "⬆️", "intro": "Let's add mood icons on OLED based on temperature!", "upgrades": [{ "condition": "Temp < 18°C", "show": "Show 'COLD'", "mood": "COLD", "moodIcon": "🥶", "color": "blue", "oledText": "16.5°C 55%\\n❄️ COLD" }] }
-
-For "real-challenge":
-{ "type": "real-challenge", "title": "REAL CHALLENGE", "icon": "🚀", "challengeTitle": "Design a Smart Classroom Comfort System", "challengeDesc": "Exact description", "flowSteps": [{ "label": "Exact step label", "icon": "🌡️" }], "addMore": [{ "icon": "📢", "label": "Buzzer Alert" }], "bottomNote": "Exact note." }
-
-For "engineers-everywhere":
-{ "type": "engineers-everywhere", "title": "ENGINEERS USE THIS EVERYWHERE!", "icon": "🏭", "industries": [{ "title": "SMART AGRICULTURE", "desc": "Exact text", "imgKeyword": "agriculture" }] }
-
-For "mission-review-table":
-{ "type": "mission-review-table", "title": "MISSION REVIEW", "icon": "📝", "rows": [{ "question": "What did we build?", "answer": "Exact answer" }] }
-
-For "ultra-badge":
-{ "type": "ultra-badge", "title": "ULTRA BADGE", "icon": "🎖️", "badgeName": "CLIMATE ENGINEER", "badgeSubtitle": "MISSION 14 COMPLETE!", "congrats": "Exact congratulations text from source.", "mascotNote": "Exact mascot speech from source." }
-
-For "beyond-mission":
-{ "type": "beyond-mission", "title": "BEYOND TODAY'S MISSION", "icon": "🚀", "steps": [{ "label": "Today", "icon": "📡", "desc": "Exact text" }, { "label": "Next", "icon": "☁️", "desc": "Exact text" }, { "label": "Future", "icon": "📱", "desc": "Exact text" }], "bottomNote": "Exact motivational note from source." }
-
-For "split-layout" (two columns side by side):
-{ "type": "split-layout", "left": { /* any card object */ }, "right": { /* any card object */ } }
-
-For "observe-card":
-{ "type": "observe-card", "title": "OBSERVE & ANSWER", "icon": "👁️", "introText": "Look carefully at this weather station. What do you notice?", "questions": ["Exact Q1?", "Exact Q2?", "Exact Q3?", "Exact Q4?"] }
-
-For "mission-challenge":
-{ "type": "mission-challenge", "title": "MISSION CHALLENGE", "icon": "🔍", "question": "Exact question text.", "answerFields": ["1. ...", "2. ..."] }
-
-For "page-banner":
-{ "type": "page-banner", "pageType": "engineering-explorer", "pageNum": 2, "title": "ENGINEERING EXPLORER", "subtitle": "OBSERVE. DISCOVER. UNDERSTAND.", "icon": "🔍" }
-pageType options: "engineering-explorer" | "build-lab" | "logic-builder" | "innovation-studio"
-
-For "in-this-lab":
-{ "type": "in-this-lab", "title": "IN THIS LAB YOU WILL", "icon": "🧪", "items": ["Exact item 1", "Exact item 2"] }
-
-For "pro-tip":
-{ "type": "pro-tip", "title": "PRO TIP", "icon": "⭐", "content": "Exact tip text from source." }
-
-For "did-you-know":
-{ "type": "did-you-know", "title": "DID YOU KNOW?", "icon": "💡", "items": ["Fact 1 exact text", "Fact 2 exact text", "Fact 3 exact text"] }
-
-For footer objects, add to each page:
-{ "footerPills": ["when start", "read temperature", "read humidity", "store data", "show on OLED"], "footerTip": "Exact engineer tip text", "footerFact": "Exact fact text", "footerNextMission": "Smart Climate Controller 🚀", "footerNextLabel": "NEXT PAGE PREVIEW", "footerNextText": "Exact next page teaser", "brandTag": "🚀 UltraMinds AI" }
+RULE 6 - PAGE DENSITY & A4 SPREADS:
+Fit 2-4 cards or split-layouts per page (~1040px total visual height). Page 1 is the cover page (header with mascot + title + subtitle).
+Subsequent pages can include a styled page banner if appropriate.
+Include a footer with code pills, engineer tip, and next mission teaser.
 
 == OUTPUT RULES ==
-- Return ONLY valid JSON. No markdown, no explanation text outside JSON.
-- Produce 5-14 pages as needed to fit ALL content at comfortable reading size.
-- Every page object must have: pageNumber, pageType, sections[], footerPills or footerTip, footerNextMission or footerNextText.
-- sections[] must contain ONLY the card objects as specified above.
-- Use split-layout to place two cards side by side whenever the page has multiple cards.
-- Produce maxOutputTokens worth of JSON (do not cut short).
+- Return ONLY valid JSON. No markdown backticks, no explanation text outside JSON.
+- Produce as many pages as needed to fit ALL curriculum content at comfortable reading size (3-10 pages).
+- Every page object must have: pageNumber, pageType, sections[], footerPills, footerNextMission or footerNextText.
 
-== OUTPUT FORMAT ==
+== SAMPLE JSON STRUCTURE ==
 {
-  "missionNumber": "14",
-  "missionTitle": "SMART CLIMATE MONITOR",
-  "missionSubtitle": "Let's build a Smart Climate Monitor using DHT11 and OLED!",
+  "missionNumber": "15",
+  "missionTitle": "SMART BOTANICAL IRRIGATION SYSTEM",
+  "missionSubtitle": "Engineering Automated Soil Sensing & Servo Pump Mechanics",
   "guideName": "Commander Nova",
-  "guideRole": "Your Mission Guide",
+  "guideRole": "Field Mission Guide",
   "theme": "theme-blue",
   "pages": [
     {
       "pageNumber": 1,
       "pageType": "cover",
-      "sections": [ ... ],
-      "footerPills": ["when start", "read temperature", "read humidity", "store data", "show on OLED"],
-      "footerNextMission": "Smart Climate Controller 🚀"
+      "sections": [
+        {
+          "type": "dynamic-composed-card",
+          "cardStyle": "theme-card-blue",
+          "title": "THE BOTANICAL EMERGENCY AT STATION 4",
+          "icon": "🌿",
+          "badge": "FIELD DISPATCH",
+          "items": [
+            { "nodeType": "Paragraph", "text": "The research greenhouse has suffered an irrigation controller failure...", "lead": true },
+            { "nodeType": "CalloutBox", "variant": "warning", "icon": "⚠️", "title": "CRITICAL RISK", "text": "Fern root structures will dehydrate permanently if soil moisture falls below 20%." }
+          ]
+        },
+        {
+          "type": "split-layout",
+          "left": {
+            "type": "dynamic-composed-card",
+            "cardStyle": "theme-card-dark",
+            "title": "CAPACITIVE PROBE HARDWARE SPECIFICATIONS",
+            "icon": "🔬",
+            "items": [
+              {
+                "nodeType": "KeyValuePairGroup",
+                "pairs": [
+                  { "key": "Operating Voltage", "value": "3.3V – 5V DC", "icon": "⚡" },
+                  { "key": "Signal Output", "value": "0 – 3.0V Analog", "icon": "📈" }
+                ]
+              }
+            ]
+          },
+          "right": {
+            "type": "dynamic-composed-card",
+            "cardStyle": "theme-card-purple",
+            "title": "ADC VALUE BENCHMARK CALIBRATION",
+            "icon": "📊",
+            "items": [
+              {
+                "nodeType": "Table",
+                "headers": ["Moisture State", "ADC Reading", "Pump Status"],
+                "rows": [
+                  ["Dry Soil", "< 1200", "ON (HIGH)"],
+                  ["Saturated", "> 2400", "OFF (STANDBY)"]
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "footerPills": ["Analog Read", "Soil Probe", "Relay Switch", "OLED Display"],
+      "footerTip": "Always verify probe readings in both dry air and a cup of water before burying in soil.",
+      "footerNextMission": "Assembling the Submersible Pump Circuit 🚀"
     }
   ]
 }

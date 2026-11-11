@@ -880,6 +880,207 @@ window.ExportEngine = {
     this.downloadFile(pptxHtml, 'ultra-minds-mission-slides.html', 'text/html');
   },
 
+  exportJSON() {
+    const activePages = document.querySelectorAll('.book-page');
+    if (!activePages.length) return alert("No pages found to export.");
+
+    const missionTitle = window.currentMission?.missionTitle || 'UltraMinds_Mission';
+    const missionData = {
+      title: missionTitle,
+      exportedAt: new Date().toISOString(),
+      pageCount: activePages.length,
+      mission: window.currentMission || null,
+      pages: []
+    };
+
+    activePages.forEach((page, idx) => {
+      const pageNum = page.getAttribute('data-page-num') || (idx + 1);
+      const phaseName = page.querySelector('.capsule-header, h1, h2')?.textContent?.trim() || `Page ${pageNum}`;
+      const elements = [];
+      page.querySelectorAll('[data-element-id]').forEach(el => {
+        elements.push({
+          id: el.getAttribute('data-element-id'),
+          tag: el.tagName.toLowerCase(),
+          text: el.innerText.trim()
+        });
+      });
+      missionData.pages.push({
+        pageNumber: parseInt(pageNum, 10),
+        phaseName,
+        elementCount: elements.length,
+        elements
+      });
+    });
+
+    const safeTitle = (missionTitle || 'UltraMinds_Mission')
+      .replace(/[^a-zA-Z0-9_\-\s]/g, '_').trim().replace(/\s+/g, '_');
+    this.downloadFile(JSON.stringify(missionData, null, 2), `${safeTitle}.json`, 'application/json');
+    window.SaveEngine?._showToast('✅ Canonical JSON exported!');
+  },
+
+  async exportEPUB() {
+    const activePages = document.querySelectorAll('.book-page');
+    if (!activePages.length) return alert("No pages found to export.");
+
+    const JSZipClass = window.JSZip;
+    const missionTitle = window.currentMission?.missionTitle || 'UltraMinds STEM Mission';
+    const safeTitle = (missionTitle || 'UltraMinds_Mission')
+      .replace(/[^a-zA-Z0-9_\-\s]/g, '_').trim().replace(/\s+/g, '_');
+
+    if (!JSZipClass) {
+      window.SaveEngine?._showToast('ℹ️ Exporting standard XHTML e-book package...');
+      return this.exportXHTML();
+    }
+
+    window.SaveEngine?._showToast('📚 Building EPUB 3 publication...');
+
+    try {
+      const zip = new JSZipClass();
+
+      // 1. mimetype (Must be uncompressed STORE)
+      zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
+
+      // 2. META-INF/container.xml
+      const containerXml = `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`;
+      zip.folder('META-INF').file('container.xml', containerXml);
+
+      // 3. OEBPS folder
+      const oebps = zip.folder('OEBPS');
+
+      const epubCss = `
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #0F172A; margin: 0; padding: 20px; }
+h1, h2, h3 { color: #1E40AF; font-family: "Outfit", sans-serif; }
+.card-base, .concept-card, .code-snippet-card { border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #F8FAFC; }
+.capsule-header { background: #1E40AF; color: #FFF; padding: 6px 14px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; margin-bottom: 12px; display: inline-block; }
+pre, code { font-family: "Fira Code", monospace; background: #0F172A; color: #00F0FF; padding: 12px; border-radius: 8px; font-size: 0.88rem; overflow-x: auto; }
+.illustration-placeholder { border: 1.5px dashed #3B82F6; background: #EFF6FF; border-radius: 10px; padding: 16px; margin: 16px 0; }
+`;
+      oebps.file('styles.css', epubCss);
+
+      let manifestItems = [
+        '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
+        '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
+        '<item id="css" href="styles.css" media-type="text/css"/>'
+      ];
+      let spineItems = [];
+      let navLiItems = [];
+      let ncxNavPoints = [];
+
+      activePages.forEach((page, idx) => {
+        const pageIdx = idx + 1;
+        const pageClone = page.cloneNode(true);
+        pageClone.querySelectorAll('.transform-handle, #ultraminds-context-menu, #floating-selection-toolbar').forEach(el => el.remove());
+        pageClone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+        const pageTitle = page.querySelector('.capsule-header, h1, h2')?.textContent?.trim() || `Page ${pageIdx}`;
+        const chapterId = `chapter_${pageIdx}`;
+        const chapterHref = `${chapterId}.xhtml`;
+
+        manifestItems.push(`<item id="${chapterId}" href="${chapterHref}" media-type="application/xhtml+xml"/>`);
+        spineItems.push(`<itemref idref="${chapterId}"/>`);
+        navLiItems.push(`<li><a href="${chapterHref}">Page ${pageIdx}: ${this._escapeXhtml(pageTitle)}</a></li>`);
+        ncxNavPoints.push(`
+    <navPoint id="navPoint-${pageIdx}" playOrder="${pageIdx}">
+      <navLabel><text>Page ${pageIdx}: ${this._escapeXhtml(pageTitle)}</text></navLabel>
+      <content src="${chapterHref}"/>
+    </navPoint>`);
+
+        const chapterHtml = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>${this._escapeXhtml(pageTitle)}</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+  <section epub:type="chapter">
+    ${pageClone.innerHTML}
+  </section>
+</body>
+</html>`;
+        oebps.file(chapterHref, chapterHtml);
+      });
+
+      // nav.xhtml
+      const navXhtml = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Table of Contents</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+  <nav epub:type="toc" id="toc">
+    <h1>Table of Contents</h1>
+    <ol>
+      ${navLiItems.join('\n      ')}
+    </ol>
+  </nav>
+</body>
+</html>`;
+      oebps.file('nav.xhtml', navXhtml);
+
+      // toc.ncx
+      const tocNcx = `<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="urn:uuid:ultraminds-${Date.now()}"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle><text>${this._escapeXhtml(missionTitle)}</text></docTitle>
+  <navMap>
+    ${ncxNavPoints.join('\n    ')}
+  </navMap>
+</ncx>`;
+      oebps.file('toc.ncx', tocNcx);
+
+      // content.opf
+      const contentOpf = `<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="3.0">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>${this._escapeXhtml(missionTitle)}</dc:title>
+    <dc:language>en</dc:language>
+    <dc:identifier id="BookId">urn:uuid:ultraminds-${Date.now()}</dc:identifier>
+    <dc:publisher>UltraMinds Publisher</dc:publisher>
+    <meta property="dcterms:modified">${new Date().toISOString().split('.')[0]}Z</meta>
+  </metadata>
+  <manifest>
+    ${manifestItems.join('\n    ')}
+  </manifest>
+  <spine toc="ncx">
+    ${spineItems.join('\n    ')}
+  </spine>
+</package>`;
+      oebps.file('content.opf', contentOpf);
+
+      const contentBlob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });
+      const url = URL.createObjectURL(contentBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${safeTitle}.epub`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      window.SaveEngine?._showToast('✅ EPUB 3 E-Book exported!');
+    } catch (err) {
+      console.error('EPUB export error:', err);
+      window.SaveEngine?._showToast('❌ EPUB export error — see console.');
+    }
+  },
+
   downloadFile(content, fileName, contentType) {
     const blob = new Blob([content], { type: contentType });
     const url = URL.createObjectURL(blob);

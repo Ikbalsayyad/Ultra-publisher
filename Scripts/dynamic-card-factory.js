@@ -52,7 +52,7 @@ window.DynamicCardFactory = {
     'image-holder':       ['image', 'photo', 'picture', 'diagram', 'illustration', 'figure', 'chart', 'schematic', 'hero image', 'final hero image'],
     'dynamic-subheader':  [], // fallback for h2/h3 headings
     'dynamic-table':      ['table', 'row', 'column', 'comparison table', '| '],
-    'dynamic-comparison': ['vs', 'compare', 'pros', 'cons', 'advantages', 'disadvantages'],
+    'dynamic-comparison': ['vs', 'compare', 'pros', 'cons', 'advantages', 'disadvantages', 'match the pair', 'match the following', 'match pairs', 'column a', 'column b', 'code compare', 'code comparison', 'python vs', 'blocks vs', 'before vs after'],
     'dynamic-bullets':    ['•', '-', '*', 'list', 'points', 'items', 'mit features', 'iot features'],
     'dynamic-mixed':      [],  // ultimate fallback
     'dynamic-text':       [],  // for long plain text paragraphs
@@ -63,6 +63,10 @@ window.DynamicCardFactory = {
    * Score a text block against all card types.
    * Returns the best-matching card type name.
    */
+  classifyCardType(text, context = '') {
+    return this.detect(text, context);
+  },
+
   detect(text, context = '') {
     if (!text) return 'dynamic-text';
     const lower = (text + ' ' + context).toLowerCase();
@@ -117,6 +121,14 @@ window.DynamicCardFactory = {
     const tableRows = lines.filter(l => l.includes('|')).length;
     if (tableRows >= 2) {
       return 'dynamic-table';
+    }
+
+    // Detect comparison, match pairs, or code compare
+    if (/match the following|match the pair|match pairs|column\s*a.*column\s*b/i.test(text)) {
+      return 'dynamic-comparison';
+    }
+    if (/code\s*compare|code\s*vs|python\s*vs\s*blocks|blocks\s*vs\s*python|before\s*vs\s*after\s*code/i.test(text)) {
+      return 'dynamic-comparison';
     }
 
     // Detect code blocks
@@ -316,14 +328,70 @@ window.DynamicCardFactory = {
         };
 
       case 'dynamic-comparison':
-      case 'comparison-vs': {
+      case 'comparison-vs':
+      case 'code-compare':
+      case 'match-pairs': {
+        const isMatch = type === 'match-pairs' || /match/i.test(heading) || /match/i.test(text);
+        const isCode = type === 'code-compare' || /code/i.test(heading) || /code\s*compare|python\s*vs/i.test(text);
+
+        if (isCode && window.DynamicCardComposer?.parseTwoSidedCodeCompare) {
+          const codeData = window.DynamicCardComposer.parseTwoSidedCodeCompare(text);
+          if (codeData && (codeData.leftCode || codeData.rightCode)) {
+            return {
+              ...base,
+              type: 'dynamic-comparison',
+              subtype: 'code-compare',
+              isCodeCompare: true,
+              icon: '⚖️',
+              title: heading || "NOVA'S CODE LOGIC MYSTERY",
+              leftTitle: codeData.leftTitle,
+              rightTitle: codeData.rightTitle,
+              leftCode: codeData.leftCode,
+              rightCode: codeData.rightCode,
+              leftNotes: codeData.leftNotes,
+              rightNotes: codeData.rightNotes,
+              leftItems: [{ icon: '❌', text: codeData.leftCode }],
+              rightItems: [{ icon: '✅', text: codeData.rightCode }],
+              badgeText: 'VS',
+              bottomNote: codeData.bottomNote
+            };
+          }
+        }
+
+        if (isMatch && window.DynamicCardComposer?.parseMatchPairs) {
+          const lines = text.split('\n').filter(Boolean).map(t => ({ text: t }));
+          const matchData = window.DynamicCardComposer.parseMatchPairs(lines);
+          if (matchData && (matchData.leftItems.length || matchData.rightItems.length)) {
+            return {
+              ...base,
+              type: 'dynamic-comparison',
+              subtype: 'match-pairs',
+              isMatchPairs: true,
+              icon: '🧩',
+              title: heading || 'MATCH THE PAIRS',
+              prompt: matchData.prompt,
+              leftTitle: 'COLUMN A (TERMS)',
+              rightTitle: 'COLUMN B (DUTIES)',
+              leftItems: matchData.leftItems,
+              rightItems: matchData.rightItems,
+              badgeText: '⟷',
+              bottomNote: matchData.bottomNote
+            };
+          }
+        }
+
         const sides = this._extractComparison(text);
         return {
           ...base,
+          type: 'dynamic-comparison',
+          subtype: isMatch ? 'match-pairs' : (isCode ? 'code-compare' : 'comparison'),
+          icon: isMatch ? '🧩' : (isCode ? '💻' : '⚖️'),
+          title: isMatch ? 'MATCH THE PAIRS' : (isCode ? 'CODE COMPARE' : 'COMPARISON'),
           leftTitle: sides.leftTitle,
           rightTitle: sides.rightTitle,
-          leftItems: sides.leftItems.map(i => ({ icon: '✅', text: i })),
-          rightItems: sides.rightItems.map(i => ({ icon: '✅', text: i })),
+          leftItems: sides.leftItems.map(i => ({ icon: isMatch ? '🧩' : (isCode ? '❌' : '✅'), text: i })),
+          rightItems: sides.rightItems.map(i => ({ icon: isMatch ? '🎯' : (isCode ? '✅' : '✅'), text: i })),
+          badgeText: isMatch ? '⟷' : 'VS',
           bottomNote: sides.bottomNote,
           content: !sides.leftItems.length ? text : undefined,
         };
@@ -382,6 +450,9 @@ window.DynamicCardFactory = {
       case 'image-holder':
         return { ...base, imgUrl: '', caption: text || heading, content: text };
 
+      case 'pure-image-holder':
+        return { ...base, imgUrl: '', caption: '', bezelFree: true, borderRadius: 8 };
+
       case 'dynamic-mixed':
       default: {
         const bullets = this._extractBullets(text);
@@ -434,12 +505,24 @@ window.DynamicCardFactory = {
 
   _extractComparison(text) {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    let leftTitle = 'OPTION A', rightTitle = 'OPTION B';
+    const isMatch = /match/i.test(text);
+    const isCode = /code/i.test(text);
+
+    let leftTitle = isMatch ? 'COLUMN A (TERMS)' : (isCode ? 'BEFORE (BUGGY CODE)' : 'OPTION A');
+    let rightTitle = isMatch ? 'COLUMN B (MATCHES)' : (isCode ? 'AFTER (FIXED CODE)' : 'OPTION B');
     const leftItems = [], rightItems = [];
     let bottomNote = '';
     let side = 'left';
 
     for (const line of lines) {
+      if (line.includes('→') || line.includes('->') || line.includes('⟷')) {
+        const parts = line.split(/→|->|⟷/);
+        if (parts[0] && parts[1]) {
+          leftItems.push(parts[0].trim());
+          rightItems.push(parts[1].trim());
+          continue;
+        }
+      }
       if (/^#+\s/.test(line) || /:\s*$/.test(line)) {
         if (leftItems.length === 0) leftTitle = line.replace(/^#+\s*|:\s*$/g, '').trim();
         else rightTitle = line.replace(/^#+\s*|:\s*$/g, '').trim();

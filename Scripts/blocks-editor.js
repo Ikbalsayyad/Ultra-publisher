@@ -12,8 +12,11 @@
 window.BlocksEditor = {
   blocks: [],
   activeBlock: null,
+  initialized: false,
 
   init() {
+    if (this.initialized) return;
+    this.initialized = true;
     this.createModalMarkup();
     this.bindEvents();
   },

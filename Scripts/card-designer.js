@@ -10,8 +10,11 @@
  */
 
 window.CardDesigner = {
+  initialized: false,
 
   init() {
+    if (this.initialized) return;
+    this.initialized = true;
     this.createModalMarkup();
   },
 
@@ -75,6 +78,7 @@ window.CardDesigner = {
               <option value="none">No Image Holder</option>
               <option value="top">Image at Top</option>
               <option value="bottom">Image at Bottom</option>
+              <option value="pure">Pure Bezel-Free Image</option>
             </select>
           </div>
         </div>
@@ -179,7 +183,13 @@ window.CardDesigner = {
     }
 
     let imgHtml = '';
-    if (imgPos !== 'none') {
+    if (imgPos === 'pure') {
+      imgHtml = `<div class="image-frame-container" style="height:150px; margin:8px 0; border-radius:8px; background:transparent; border:none; overflow:hidden; cursor:pointer;" title="Double-click or drag image here">
+        <img class="holder-img" src="" alt="Click to upload image"
+          style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <div class="img-placeholder-label" style="display:flex; align-items:center; justify-content:center; height:100%; color:#475569; font-size:0.8rem; pointer-events:none;">🖼️✨ Double-click to upload pure image</div>
+      </div>`;
+    } else if (imgPos !== 'none') {
       // Must include an <img> tag so canvas-editor.js triggerImageUpload / drag-drop can find and replace it
       imgHtml = `<div class="image-frame-container" style="height:150px; margin:10px 0; border-radius:6px; background:transparent; border:1.5px dashed rgba(59,130,246,0.3); overflow:hidden; cursor:pointer;" title="Double-click or drag image here">
         <img class="holder-img" src="" alt="Click to upload image"

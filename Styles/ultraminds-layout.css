@@ -146,7 +146,7 @@ body.studio-app {
   padding: 20px;
   display: flex; flex-direction: column; align-items: center; gap: 20px;
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 0 !important; /* Canvas sits at the lowest layer — nothing clips behind it */
 }
 
 /* ──────────────────────────────────────────────────
@@ -157,8 +157,10 @@ body.studio-app {
 .book-page {
   width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
   background: #FFFFFF; position: relative !important;
-  z-index: 2;
-  isolation: isolate !important; /* Scopes each page's internal stacking context */
+  color: #1E293B !important;
+  /* All pages have equal z-index — they are stacked vertically, NOT overlapping.
+     JS (syncPageNumbers) no longer overrides this with descending values. */
+  z-index: 1;
   display: flex; flex-direction: column;
   box-shadow:
     0 0 0 1px rgba(0,0,0,0.04),
@@ -168,7 +170,9 @@ body.studio-app {
   transform: scale(var(--canvas-zoom));
   margin-bottom: calc((var(--canvas-zoom) - 1) * 1123px + var(--page-gap, 44px)) !important;
   border-radius: 2px;
-  overflow: hidden;
+  /* Critical: hard-clip all content — no card ever escapes page boundary visually */
+  overflow: hidden !important;
+  clip-path: inset(0px);
   font-family: var(--page-global-font, 'Inter', sans-serif);
   box-sizing: border-box;
 }
@@ -184,7 +188,7 @@ body.studio-app {
    PAGE TOP BAR
    ────────────────────────────────────────────────── */
 .page-top-bar {
-  position: relative; z-index: 10;
+  position: relative; z-index: 5;
   display: flex; align-items: center; justify-content: space-between;
   padding: 6px 14px;
   background: #fff; border-bottom: 1px solid #F1F5F9;
@@ -213,21 +217,39 @@ body.studio-app {
    PAGE BODY
    ────────────────────────────────────────────────── */
 .page-body-container {
-  flex: 1; position: relative; z-index: 1;
-  padding: 6px 10px 48px 10px !important;
+  flex: 1; position: relative; z-index: 20 !important;
+  padding: 16px 10px 48px 10px !important;
   display: flex; flex-direction: column; gap: 6px;
-  overflow: hidden !important; box-sizing: border-box;
+  /* Double-enforce overflow so cards never bleed into the inter-page gap */
+  overflow: hidden !important;
+  clip-path: inset(0px);
+  box-sizing: border-box;
+}
+
+/* Allow hover action menus, tabs and badges to float cleanly above top bar during interactive editing */
+body:not(.exporting-pdf) .page-body-container {
+  overflow: visible !important;
+  clip-path: none !important;
+}
+
+.page-body-container > .card-base:first-child,
+.page-body-container > .draggable-element:first-child {
+  margin-top: 6px !important;
+}
+
+.page-body-container > .card-base:first-child:has(.card-capsule-tab),
+.page-body-container > .card-base:first-child.has-capsule-tab {
+  margin-top: 18px !important;
 }
 
 /* ──────────────────────────────────────────────────
    PAGE FOOTER
    ────────────────────────────────────────────────── */
 .page-footer {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   box-sizing: border-box !important;
   margin: 0 !important;
   z-index: 10 !important;
@@ -235,6 +257,12 @@ body.studio-app {
   padding: 6px 14px;
   display: flex; align-items: center; gap: 12px;
   flex-wrap: wrap; min-height: 36px;
+}
+.page-footer.selected-card,
+.page-footer.transform-handles-active {
+  outline: 1.5px dashed rgba(59, 130, 246, 0.7) !important;
+  overflow: visible !important;
+  z-index: 99999 !important;
 }
 .footer-pills-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .footer-code-pill {
@@ -309,6 +337,41 @@ body.studio-app {
    ────────────────────────────────────────────────── */
 .draggable-element { cursor: grab; }
 .draggable-element:active { cursor: grabbing; }
+.draggable-element:has(.um-resize-handle:active),
+.draggable-element:has(.capsule-resize-handle:active),
+.draggable-element:has(.transform-handle:active),
+.draggable-element:has(button:active),
+.draggable-element:has([contenteditable="true"]:focus) {
+  cursor: default !important;
+}
+
+.um-resize-handle,
+.um-resize-handle:hover,
+.um-resize-handle:active {
+  cursor: se-resize !important;
+  user-select: none !important;
+  touch-action: none !important;
+}
+
+.capsule-resize-handle,
+.capsule-resize-handle:hover,
+.capsule-resize-handle:active {
+  cursor: ew-resize !important;
+  user-select: none !important;
+  touch-action: none !important;
+}
+
+.transform-handle {
+  user-select: none !important;
+  touch-action: none !important;
+}
+
+.floating-clipart-sticker,
+.card-floating,
+.cover-mascot-wrapper,
+.badge-mascot-wrapper {
+  z-index: 2000 !important;
+}
 .draggable-element.drag-over {
   outline: 2px dashed #2563EB;
   outline-offset: 2px;
@@ -316,18 +379,133 @@ body.studio-app {
 }
 .drag-source { opacity: 0.4; }
 
+/* Cross-page drag target highlight — shows when dragging a card over a new page body */
+.page-body-drag-over {
+  outline: 2px dashed rgba(0, 240, 255, 0.5) !important;
+  outline-offset: -4px;
+  background: rgba(0, 240, 255, 0.03) !important;
+}
+
 /* Manual mode: no drag indicators */
 body.manual-mode .draggable-element { cursor: default; }
 body.manual-mode .draggable-element:hover { outline: none; }
 
 /* ──────────────────────────────────────────────────
-   FLOATING CLIPART STICKER
+   OVERFLOW & HIDDEN CARDS VISIBILITY (Fix for cut-off / hidden cards)
+   ────────────────────────────────────────────────── */
+.book-page.is-overflowing {
+  box-shadow:
+    0 0 0 2px #EF4444,
+    0 0 24px rgba(239, 68, 68, 0.4),
+    0 8px 40px rgba(0,0,0,0.35) !important;
+}
+
+/* When a page overflows in editor view, allow scrolling and reveal all hidden cards */
+.book-page.is-overflowing .page-body-container {
+  overflow-y: auto !important;
+  clip-path: none !important;
+}
+
+/* Custom glowing red/amber scrollbar for overflowing pages */
+.book-page.is-overflowing .page-body-container::-webkit-scrollbar {
+  width: 6px;
+}
+.book-page.is-overflowing .page-body-container::-webkit-scrollbar-thumb {
+  background: #EF4444;
+  border-radius: 4px;
+}
+
+/* Highlight overflowing cards that extend past the bottom */
+.card-overflowing {
+  outline: 2px dashed #EF4444 !important;
+  outline-offset: 2px;
+  position: relative !important;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25) !important;
+}
+
+.card-overflow-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: linear-gradient(135deg, #DC2626, #EF4444);
+  color: #FFF !important;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.7);
+  cursor: pointer;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, background 0.15s;
+}
+.card-overflow-pill:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #B91C1C, #DC2626);
+}
+
+.page-overflow-banner {
+  position: absolute;
+  bottom: 40px;
+  left: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.8);
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 9999;
+  color: #F8FAFC;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  gap: 8px;
+}
+
+/* ──────────────────────────────────────────────────
+   FLOATING CLIPART STICKER (MASCOT)
    ────────────────────────────────────────────────── */
 .floating-clipart-sticker {
-  position: absolute; z-index: 100; cursor: move;
+  position: absolute;
+  z-index: 1000 !important;
+  cursor: move;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
-.clipart-img { pointer-events: none; }
+.floating-clipart-sticker img,
+.floating-clipart-sticker .clipart-img {
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+}
+.floating-clipart-sticker.selected-card,
+.floating-clipart-sticker.transform-handles-active {
+  outline: 1.5px dashed rgba(59, 130, 246, 0.7) !important;
+  overflow: visible !important;
+  z-index: 100000 !important;
+}
+
+/* ──────────────────────────────────────────────────
+   BEZEL-FREE PURE IMAGE BOX
+   ────────────────────────────────────────────────── */
+.bezel-free-pure-image {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.bezel-free-pure-image .incard-bottom-capsule,
+.bezel-free-pure-image .card-caption-text {
+  display: none !important;
+}
 
 /* ──────────────────────────────────────────────────
    SCROLLBAR STYLING

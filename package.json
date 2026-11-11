@@ -4,10 +4,22 @@
   "description": "UltraMinds AI Studio & Premium Engineering Magazine Publisher",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'Static deployment ready'",
-    "start": "npx serve ."
+    "start": "node proxy.js",
+    "proxy": "node proxy.js",
+    "serve": "npx serve .",
+    "build": "echo 'Static deployment ready'"
   },
-  "keywords": ["stem", "publisher", "ultraminds"],
+  "keywords": [
+    "stem",
+    "publisher",
+    "ultraminds"
+  ],
   "author": "UltraMinds",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jsdom": "^30.1.1"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.14.0"
+  }
 }

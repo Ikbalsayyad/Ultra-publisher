@@ -4,27 +4,65 @@
 
 window.CanvasEditor = {
   selectedElement: null,
+  initialized: false,
 
   init() {
+    // Fix #2: Don't guard with initialized — restoreSnapshot() needs to call init() after
+    // each Undo/Redo to re-attach canvas-level click handlers. Document-level listeners
+    // (drag, resize, keydown) are attached conditionally to avoid duplication.
+    const firstInit = !this.initialized;
+    this.initialized = true;
     this.bindEvents();
-    this.setupDragAndDrop();
-    this.setupImageHolderEvents();
-    this.setupStickerDrag();
-    this.setupResizeHandles();
-    this.setupStickerDeleteHandler();
-    this.setupClipboardAndFileDrop();
+    if (firstInit) {
+      // These attach to `document` once — only on first init
+      this.setupDragAndDrop();
+      this.setupImageHolderEvents();
+      this.setupStickerDrag();
+      this.setupResizeHandles();
+      this.setupStickerDeleteHandler();
+      this.setupClipboardAndFileDrop();
+      this.setupUniversalPointerSafetyWatchdog();
+    }
+  },
+
+  setupUniversalPointerSafetyWatchdog() {
+    const releaseAllPointersAndCursors = (e) => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      if (e && e.target && e.target.releasePointerCapture && e.pointerId !== undefined) {
+        try {
+          if (e.target.hasPointerCapture && e.target.hasPointerCapture(e.pointerId)) {
+            e.target.releasePointerCapture(e.pointerId);
+          }
+        } catch (err) {}
+      }
+    };
+
+    window.addEventListener('mouseup', releaseAllPointersAndCursors, { capture: true, passive: true });
+    window.addEventListener('pointerup', releaseAllPointersAndCursors, { capture: true, passive: true });
+    window.addEventListener('pointercancel', releaseAllPointersAndCursors, { capture: true, passive: true });
+    window.addEventListener('blur', releaseAllPointersAndCursors, { passive: true });
   },
 
   bindEvents() {
     const canvas = document.getElementById('a4-canvas-container');
     if (!canvas) return;
 
-    const SUBCARD_SELECTOR = '.build-step-col, .mistake-row, .hero-item, .objective-cell, .rc-flow-step, .beyond-step, .fc-step-group, .in-card-step, .lab-step, .incard-image-box, .inline-sub-capsule, .mistake-item, .objective-card, .step-card, .wiring-step-card, .sub-card';
+    const SUBCARD_SELECTOR = '.footer-code-pill-wrapper, .footer-next-zone, .footer-brand-wrapper, .footer-tip-zone, .footer-fact-zone, .cover-mascot-wrapper, .badge-mascot-wrapper, .build-step-col, .mistake-row, .hero-item, .objective-cell, .rc-flow-step, .beyond-step, .fc-step-group, .in-card-step, .lab-step, .incard-image-box, .inline-sub-capsule, .mistake-item, .objective-card, .step-card, .wiring-step-card, .sub-card';
 
     // Selection on Click (Innermost In-Card subcards get absolute priority!)
     canvas.addEventListener('click', (e) => {
+      // 1. If mascot/icon/sticker delete button clicked, trigger immediate deletion
+      const delBtn = e.target.closest('.mascot-del-btn');
+      if (delBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.deleteMascotOrIcon(delBtn);
+        return;
+      }
+
       const inCardChild = e.target.closest(SUBCARD_SELECTOR);
-      const outerCard = e.target.closest('.card-base, .concept-card, .code-snippet-card, .mission-header-banner, .space-filler-card, .image-holder-card');
+      const outerCard = e.target.closest('.page-footer, .pure-image-holder-card, .card-base, .concept-card, .code-snippet-card, .mission-header-banner, .space-filler-card, .image-holder-card, .floating-clipart-sticker, .card-floating');
 
       const target = inCardChild || outerCard;
 
@@ -38,6 +76,13 @@ window.CanvasEditor = {
 
     // Double-click to upload image file or replace emoji with image (Universal for all cards)
     canvas.addEventListener('dblclick', (e) => {
+      // Check for illustration slot box placeholder first
+      const illustrationSlot = e.target.closest('.illustration-slot-box');
+      if (illustrationSlot) {
+        this.triggerIllustrationSlotUpload(illustrationSlot);
+        return;
+      }
+
       // ONLY target specific image frame containers or actual image tags, NEVER outer card containers!
       const frame = e.target.closest('.image-frame-container, img.holder-img, img.clipart-img, .floating-clipart-sticker img, .incard-image-box img, .image-placeholder-prompt');
       const mascotWrapper = e.target.closest('.cover-mascot-wrapper, .cover-illustration-placeholder, .badge-mascot, .badge-mascot-wrapper, .cover-mascot-area, .story-img-sticker, .floating-clipart-sticker, .badge-mascot-note');
@@ -79,7 +124,7 @@ window.CanvasEditor = {
       }
     });
 
-    // Keyboard Delete & Backspace listener for active selected element
+    // Keyboard Delete & Backspace listener for active selected element & empty line cleanups
     document.addEventListener('keydown', (e) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && !e.shiftKey) {
         const isTyping = document.activeElement && (
@@ -88,51 +133,150 @@ window.CanvasEditor = {
           document.activeElement.tagName === 'TEXTAREA' ||
           document.activeElement.tagName === 'SELECT'
         );
+
+        // When pressing Backspace on an empty text line / pill box, delete the wrapper cleanly
+        if (isTyping && document.activeElement.isContentEditable && (e.key === 'Backspace' || e.key === 'Delete')) {
+          const activeEl = document.activeElement;
+          const text = (activeEl.textContent || '').trim();
+          if (text === '' || text === '\n') {
+            const wrapper = activeEl.closest(
+              '.dynamic-paragraph-wrapper, .cca-options-pill-box, .answer-key-ribbon-box, ' +
+              '.incard-text-line-wrapper, .incard-text-wrapper, .procedure-step-item, ' +
+              '.worksheet-q-item, .worksheet-a-item, .dynamic-bullet-item, .cover-extra-text'
+            );
+            if (wrapper && wrapper.parentElement) {
+              e.preventDefault();
+              const allEditables = Array.from(document.querySelectorAll('[contenteditable="true"]'));
+              const curIdx = allEditables.indexOf(activeEl);
+              const targetEditable = curIdx > 0 ? allEditables[curIdx - 1] : (allEditables[curIdx + 1] || null);
+
+              wrapper.remove();
+              window.LayoutEngine?.autoReflowPages();
+
+              if (targetEditable && document.body.contains(targetEditable)) {
+                targetEditable.focus();
+                try {
+                  const range = document.createRange();
+                  range.selectNodeContents(targetEditable);
+                  range.collapse(false);
+                  const sel = window.getSelection();
+                  sel.removeAllRanges();
+                  sel.addRange(range);
+                } catch (err) {}
+              }
+              return;
+            }
+          }
+        }
+
         if (!isTyping && this.selectedElement) {
           e.preventDefault();
           window.ContextMenu.deleteElement(this.selectedElement);
         }
+      }
+
+      // Fix #13: Escape key deselects the active card and closes context menu
+      if (e.key === 'Escape' && this.selectedElement) {
+        this.deselectElement();
+        window.ContextMenu?.hideMenu();
       }
     });
   },
 
   setupStickerDrag() {
     let activeSticker = null;
-    let offsetX = 0, offsetY = 0;
+    let startClientX = 0, startClientY = 0;
+    let startLeft = 0, startTop = 0;
+    let isDragging = false;
+    let hasMoved = false;
 
     document.addEventListener('mousedown', (e) => {
-      // Also allow free drag on .card-floating cards (#7)
-      const sticker = e.target.closest('.floating-clipart-sticker, .card-floating');
-      // Don't intercept if user is clicking contenteditable or a button
-      if (sticker && !e.target.isContentEditable && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+      // Don't intercept if user is clicking contenteditable, buttons, inputs, resize handles or action overlays
+      if (e.target.isContentEditable || e.target.closest('button, input, select, textarea, .um-resize-handle, .transform-handle, .capsule-resize-handle, .card-move-arrows-overlay')) {
+        return;
+      }
+
+      // Allow free drag on .floating-clipart-sticker, .card-floating, and mascots
+      const sticker = e.target.closest('.floating-clipart-sticker, .card-floating, .cover-mascot-wrapper');
+      if (sticker) {
+        // Prepare drag session without modifying DOM or position yet (prevents click jumps)
         activeSticker = sticker;
-        const rect = sticker.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        this.selectElement(sticker);
-        e.stopPropagation();
+        startClientX = e.clientX;
+        startClientY = e.clientY;
+        startLeft = parseFloat(sticker.style.left) || 0;
+        startTop = parseFloat(sticker.style.top) || 0;
+        isDragging = false;
+        hasMoved = false;
+
+        // Clear any conflicting 'right' or 'bottom' style when starting a drag session
+        if (sticker.style.right) sticker.style.right = '';
       }
     });
 
     document.addEventListener('mousemove', (e) => {
-      if (activeSticker) {
-        const page = activeSticker.closest('.book-page');
-        if (page) {
-          const pageRect = page.getBoundingClientRect();
-          const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-zoom')) || 0.7;
+      if (!activeSticker) return;
 
-          const relX = (e.clientX - pageRect.left) / zoom - (offsetX / zoom);
-          const relY = (e.clientY - pageRect.top) / zoom - (offsetY / zoom);
+      const dx = e.clientX - startClientX;
+      const dy = e.clientY - startClientY;
+      const dist = Math.hypot(dx, dy);
 
-          activeSticker.style.left = `${Math.max(0, relX)}px`;
-          activeSticker.style.top = `${Math.max(0, relY)}px`;
-        }
+      // Dead-zone threshold: require at least 4px intentional movement before initiating drag
+      // This completely stops clicks/double-clicks from displacing or hiding the mascot!
+      if (e.buttons === 0) {
+        endStickerDrag();
+        return;
       }
+
+      if (!isDragging) {
+        if (dist < 4) return;
+        isDragging = true;
+        hasMoved = true;
+        activeSticker.style.transition = 'none';
+        activeSticker.style.cursor = 'grabbing';
+        // Highest z-index while dragging so mascot floats above header box and title cards without fighting
+        activeSticker.style.zIndex = '9999999';
+
+        const overlay = activeSticker.querySelector('.card-move-arrows-overlay');
+        if (overlay) overlay.style.display = 'none';
+      }
+
+      const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-zoom')) || 0.75;
+      const nextLeft = startLeft + (dx / zoom);
+      const nextTop = startTop + (dy / zoom);
+
+      activeSticker.style.left = `${Math.round(nextLeft)}px`;
+      activeSticker.style.top = `${Math.round(nextTop)}px`;
     });
 
-    document.addEventListener('mouseup', () => {
-      activeSticker = null;
-    });
+    const endStickerDrag = () => {
+      document.body.style.cursor = '';
+      if (activeSticker) {
+        activeSticker.style.cursor = '';
+        activeSticker.style.transition = '';
+        // Keep mascot comfortably above header banner & title center after drag
+        activeSticker.style.zIndex = '2000';
+
+        const overlay = activeSticker.querySelector('.card-move-arrows-overlay');
+        if (overlay) overlay.style.display = 'flex';
+
+        if (isDragging && hasMoved) {
+          window.HistoryEngine?.pushState('Move Element Position');
+        } else {
+          // If it was just a click without dragging, select element cleanly
+          this.selectElement(activeSticker);
+        }
+
+        activeSticker = null;
+        isDragging = false;
+        hasMoved = false;
+      }
+    };
+
+    window.addEventListener('mouseup', endStickerDrag, { capture: true });
+    window.addEventListener('pointerup', endStickerDrag, { capture: true });
+    window.addEventListener('pointercancel', endStickerDrag, { capture: true });
+    window.addEventListener('mouseleave', endStickerDrag);
+    window.addEventListener('blur', endStickerDrag);
   },
 
   // ─── UNIVERSAL RESIZE ENGINE ─────────────────────────────────────────────────
@@ -141,13 +285,68 @@ window.CanvasEditor = {
     let activeResize = null;
     let startX = 0, startY = 0, startW = 0, startH = 0;
 
-    document.addEventListener('mousedown', (e) => {
+    const endResize = () => {
+      window.removeEventListener('mousemove', onResizeMove, { capture: true });
+      window.removeEventListener('mouseup', endResize, { capture: true });
+      window.removeEventListener('pointermove', onResizeMove, { capture: true });
+      window.removeEventListener('pointerup', endResize, { capture: true });
+      window.removeEventListener('pointercancel', endResize, { capture: true });
+      window.removeEventListener('blur', endResize);
+
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+
+      if (activeResize) {
+        activeResize = null;
+        try {
+          window.HistoryEngine?.pushState('Resize Card');
+          window.LayoutEngine?.autoReflowPages();
+        } catch (err) {
+          console.warn('Resize card autoReflow error:', err);
+        }
+      }
+    };
+
+    const onResizeMove = (e) => {
+      if (!activeResize) {
+        endResize();
+        return;
+      }
+      if (e.buttons === 0) {
+        endResize();
+        return;
+      }
+
+      const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-zoom')) || 0.75;
+      const dx = (e.clientX - startX) / zoom;
+      const dy = (e.clientY - startY) / zoom;
+      const newH = Math.max(32, startH + dy);
+
+      if (activeResize.classList.contains('incard-image-box') || activeResize.classList.contains('pure-image-holder-card')) {
+        const frame = activeResize.querySelector('.image-frame-container');
+        if (frame) {
+          const subH = activeResize.classList.contains('pure-image-holder-card') || activeResize.classList.contains('bezel-free-pure-image') ? 0 : 32;
+          frame.style.height = Math.max(50, newH - subH) + 'px';
+        }
+      } else if (activeResize.classList.contains('page-footer')) {
+        // Footer is pinned to bottom: 0, dragging handle adjusts height upwards
+        const footH = Math.max(32, startH - dy);
+        activeResize.style.height = footH + 'px';
+        activeResize.style.minHeight = footH + 'px';
+        return;
+      }
+
+      activeResize.style.minHeight = newH + 'px';
+      activeResize.style.height = newH + 'px';
+    };
+
+    const onResizeStart = (e) => {
       const handle = e.target.closest('.um-resize-handle');
       if (!handle) return;
       e.preventDefault();
       e.stopPropagation();
 
-      const card = handle.closest('.card-base, .draggable-element, .dynamic-subheader-card, .split-layout');
+      const card = handle.closest('.card-base, .draggable-element, .dynamic-subheader-card, .split-layout, .incard-image-box, .pure-image-holder-card, .page-footer');
       if (!card) return;
 
       activeResize = card;
@@ -162,24 +361,20 @@ window.CanvasEditor = {
 
       document.body.style.cursor = 'se-resize';
       document.body.style.userSelect = 'none';
-    });
 
-    document.addEventListener('mousemove', (e) => {
-      if (!activeResize) return;
-      const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-zoom')) || 0.75;
-      const dx = (e.clientX - startX) / zoom;
-      const dy = (e.clientY - startY) / zoom;
-      const newH = Math.max(60, startH + dy);
-      activeResize.style.minHeight = newH + 'px';
-      activeResize.style.height = newH + 'px';
-    });
+      window.addEventListener('mousemove', onResizeMove, { capture: true });
+      window.addEventListener('mouseup', endResize, { capture: true });
+      window.addEventListener('pointermove', onResizeMove, { capture: true });
+      window.addEventListener('pointerup', endResize, { capture: true });
+      window.addEventListener('pointercancel', endResize, { capture: true });
+      window.addEventListener('blur', endResize);
+    };
 
-    document.addEventListener('mouseup', () => {
-      if (activeResize) {
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-        activeResize = null;
-        window.LayoutEngine?.autoReflowPages();
+    document.addEventListener('pointerdown', onResizeStart);
+    document.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.um-resize-handle')) {
+        e.preventDefault();
+        e.stopPropagation();
       }
     });
   },
@@ -215,8 +410,101 @@ window.CanvasEditor = {
     this._insertSectionAtActivePosition(secData);
   },
 
+  startCapsuleResize(e, handleEl) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (handleEl._isResizing) return;
+    handleEl._isResizing = true;
+
+    const capsule = handleEl.closest('.capsule-header');
+    if (!capsule) {
+      handleEl._isResizing = false;
+      return;
+    }
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = capsule.offsetWidth;
+    const startH = capsule.offsetHeight;
+    const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-zoom')) || 0.75;
+
+    let hasResized = false;
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+
+    const onPointerMove = (ev) => {
+      if (ev.buttons === 0) {
+        onPointerUp();
+        return;
+      }
+      const dx = (ev.clientX - startX) / zoom;
+      const dy = (ev.clientY - startY) / zoom;
+
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasResized = true;
+
+      // Adjust Width: minWidth expands/contracts capsule horizontally without touching text font-size
+      const newWidth = Math.max(60, startW + dx);
+      capsule.style.minWidth = `${Math.round(newWidth)}px`;
+      capsule.style.width = `${Math.round(newWidth)}px`;
+
+      // Adjust Height: if dragging vertically, adjust padding and minHeight cleanly without changing font-size
+      if (Math.abs(dy) > 2) {
+        const newHeight = Math.max(22, startH + dy);
+        capsule.style.minHeight = `${Math.round(newHeight)}px`;
+        capsule.style.height = `${Math.round(newHeight)}px`;
+      }
+    };
+
+    const onPointerUp = () => {
+      window.removeEventListener('mousemove', onPointerMove, { capture: true });
+      window.removeEventListener('mouseup', onPointerUp, { capture: true });
+      window.removeEventListener('pointermove', onPointerMove, { capture: true });
+      window.removeEventListener('pointerup', onPointerUp, { capture: true });
+      window.removeEventListener('pointercancel', onPointerUp, { capture: true });
+      window.removeEventListener('blur', onPointerUp);
+
+      handleEl._isResizing = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+
+      if (hasResized) {
+        try {
+          window.HistoryEngine?.pushState('Resize Capsule Dimensions');
+          window.LayoutEngine?.autoReflowPages();
+        } catch (err) {
+          console.warn('Capsule resize autoReflow error:', err);
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', onPointerMove, { capture: true });
+    window.addEventListener('mouseup', onPointerUp, { capture: true });
+    window.addEventListener('pointermove', onPointerMove, { capture: true });
+    window.addEventListener('pointerup', onPointerUp, { capture: true });
+    window.addEventListener('pointercancel', onPointerUp, { capture: true });
+    window.addEventListener('blur', onPointerUp);
+
+    handleEl.ondblclick = (evt) => {
+      evt.stopPropagation();
+      capsule.style.minWidth = '';
+      capsule.style.width = '';
+      capsule.style.minHeight = '';
+      capsule.style.height = '';
+      capsule.style.paddingRight = '';
+      capsule.style.paddingTop = '';
+      capsule.style.paddingBottom = '';
+      window.SaveEngine?._showToast('↺ Capsule dimensions reset to auto');
+      window.LayoutEngine?.autoReflowPages();
+    };
+  },
+
   insertImageCard() {
     this.insertComponent('image-holder');
+  },
+
+  insertPureImageCard() {
+    this.insertComponent('pure-image-holder');
   },
 
   insertMixedCard() {
@@ -233,25 +521,118 @@ window.CanvasEditor = {
   insertComparisonCard() {
     const secData = {
       type: 'dynamic-comparison',
+      subtype: 'comparison',
       title: 'COMPARISON',
       icon: '⚖️',
       leftTitle: 'OPTION A',
       rightTitle: 'OPTION B',
-      leftItems: [{ text: 'Point one' }, { text: 'Point two' }],
-      rightItems: [{ text: 'Point one' }, { text: 'Point two' }],
+      leftItems: [{ icon: '✅', text: 'Point one' }, { icon: '✅', text: 'Point two' }],
+      rightItems: [{ icon: '✅', text: 'Point one' }, { icon: '✅', text: 'Point two' }],
+      badgeText: 'VS'
+    };
+    this._insertSectionAtActivePosition(secData);
+  },
+
+  insertMatchPairsCard() {
+    const secData = {
+      type: 'dynamic-comparison',
+      subtype: 'match-pairs',
+      isMatchPairs: true,
+      title: 'MATCH THE PAIRS',
+      icon: '🧩',
+      prompt: 'Match each IoT block with its network duty:',
+      leftTitle: 'COLUMN A (TERMS)',
+      rightTitle: 'COLUMN B (DUTIES)',
+      leftItems: [
+        { icon: '🧩', text: '(1) Connect WiFi' },
+        { icon: '🧩', text: '(2) Subscribe Topic' },
+        { icon: '🧩', text: '(3) Publish Data' }
+      ],
+      rightItems: [
+        { icon: '🎯', text: '[   ] A. Broadcasts live sensor telemetry to the cloud' },
+        { icon: '🎯', text: '[   ] B. Links the UltraBoard to the local wireless router' },
+        { icon: '🎯', text: '[   ] C. Listens for remote commands on a named channel' }
+      ],
+      badgeText: '⟷',
+      bottomNote: 'Draw connecting lines or write the matching letters in the brackets above.'
+    };
+    this._insertSectionAtActivePosition(secData);
+  },
+
+  insertCodeCompareCard() {
+    const secData = {
+      type: 'dynamic-comparison',
+      subtype: 'code-compare',
+      isCodeCompare: true,
+      title: "NOVA'S CODE LOGIC MYSTERY",
+      icon: '⚖️',
+      prompt: 'Inspect these two cloud-listening algorithms in Ultra Studio, team:',
+      leftTitle: '[❌ CODE IDEA A: BLOCKING DELAY TRAP]',
+      rightTitle: '[✅ CODE IDEA B: EVENT-DRIVEN CLOUD]',
+      leftCode: 'repeat while <true> do\n  If Data Received Topic: "relay1" Do:\n    Output Port # 1 Data(Power): 99\n  wait (10) Sec',
+      rightCode: 'repeat while <true> do\n  If Data Received Topic: "relay1" Do:\n    Output Port # 1 Data(Power): 99\n    Set motor M1 speed 75 dir Forward\n    // No freezing delays! Instant response!',
+      leftNotes: ['• Why Code A Fails: Code A pauses the processor for 10 full seconds with wait (10) Sec!'],
+      rightNotes: ['• Why Code B Wins: Code B uses Non-Blocking Event Listening! Checks incoming topics hundreds of times per second!'],
+      leftItems: [
+        { icon: '❌', text: 'repeat while <true> do\n  If Data Received Topic: "relay1" Do:\n    Output Port # 1 Data(Power): 99\n  wait (10) Sec' }
+      ],
+      rightItems: [
+        { icon: '✅', text: 'repeat while <true> do\n  If Data Received Topic: "relay1" Do:\n    Output Port # 1 Data(Power): 99\n    Set motor M1 speed 75 dir Forward\n    // No freezing delays! Instant response!' }
+      ],
+      badgeText: 'VS',
+      bottomNote: 'Space for illustration: Diagram showing frozen processor missing Wi-Fi packets vs. non-blocking instant cloud event execution'
     };
     this._insertSectionAtActivePosition(secData);
   },
 
   insertTableCard() {
+    const rInput = window.prompt ? window.prompt("Enter number of rows (e.g. 3):", "3") : "3";
+    if (rInput === null) return;
+    const cInput = window.prompt ? window.prompt("Enter number of columns (e.g. 3):", "3") : "3";
+    if (cInput === null) return;
+
+    const rowCount = Math.max(1, parseInt(rInput, 10) || 3);
+    const colCount = Math.max(1, parseInt(cInput, 10) || 3);
+
+    const headers = [];
+    for (let c = 1; c <= colCount; c++) headers.push(`Column ${c}`);
+    const rows = [];
+    for (let r = 1; r <= rowCount; r++) {
+      const row = [];
+      for (let c = 1; c <= colCount; c++) row.push(`Data ${r}.${c}`);
+      rows.push(row);
+    }
+
     const secData = {
       type: 'dynamic-table',
       title: 'DATA TABLE',
       icon: '📊',
-      tableHeaders: ['Column A', 'Column B', 'Column C'],
-      tableRows: [['Row 1A', 'Row 1B', 'Row 1C'], ['Row 2A', 'Row 2B', 'Row 2C']]
+      tableHeaders: headers,
+      tableRows: rows
     };
     this._insertSectionAtActivePosition(secData);
+  },
+
+  insertTableInsideCard() {
+    if (this.selectedElement && window.LayoutEngine?.addInCardItem) {
+      window.LayoutEngine.addInCardItem(this.selectedElement, 'table');
+    } else {
+      this.insertTableCard();
+    }
+  },
+
+  insertTextLine() {
+    if (this.selectedElement && window.LayoutEngine?.addInCardItem) {
+      window.LayoutEngine.addInCardItem(this.selectedElement, 'line');
+    } else {
+      const secData = {
+        type: 'dynamic-text',
+        title: 'NOTE / LINE',
+        icon: '📝',
+        content: 'New text line — click to edit'
+      };
+      this._insertSectionAtActivePosition(secData);
+    }
   },
 
   insertCapsuleCard() {
@@ -395,6 +776,46 @@ window.CanvasEditor = {
     fileInput.click();
   },
 
+  triggerIllustrationSlotUpload(slotEl) {
+    if (!slotEl) return;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        window.HistoryEngine?.pushState('Upload Illustration Slot Image');
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const captionText = slotEl.querySelector('.dynamic-paragraph')?.textContent || 'Figure: Illustration';
+          const html = window.LayoutEngine?.renderIncardImageBoxHtml(captionText, evt.target.result);
+          if (html && slotEl.parentNode) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            const newBox = temp.firstElementChild;
+            slotEl.parentNode.replaceChild(newBox, slotEl);
+          } else {
+            slotEl.innerHTML = `
+              <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center;">
+                <img class="holder-img" src="${evt.target.result}" style="max-width:100%; max-height:260px; object-fit:contain; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);" />
+                <button class="incard-del-btn slot-del-btn" title="Delete Image" onclick="event.stopPropagation(); this.closest('.illustration-slot-box').remove(); window.LayoutEngine?.autoReflowPages();" style="position:absolute; top:4px; right:4px; width:22px; height:22px; background:#EF4444; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; z-index:100;">✕</button>
+              </div>
+            `;
+            slotEl.style.border = 'none';
+            slotEl.style.background = 'transparent';
+            slotEl.style.padding = '4px 0';
+          }
+          window.SaveEngine?._showToast('🖼️ Image loaded into in-card image box!');
+          window.LayoutEngine?.autoReflowPages();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    fileInput.click();
+  },
+
   triggerEmojiToImageUpload(emojiEl) {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -453,6 +874,29 @@ window.CanvasEditor = {
   },
 
   triggerMascotUpload(wrapperEl) {
+    if (window.NovaPoseEngine && typeof window.NovaPoseEngine.openPosePicker === 'function') {
+      window.NovaPoseEngine.openPosePicker((poseUrl) => {
+        window.HistoryEngine?.pushState('Change Nova Mascot Pose');
+        let img = wrapperEl.querySelector('img');
+        if (img) {
+          img.src = poseUrl;
+          img.style.display = 'block';
+        } else {
+          wrapperEl.innerHTML = `
+            <img src="${poseUrl}"
+              class="cover-mascot-img holder-img"
+              style="width:72px; height:72px; object-fit:contain; border-radius:8px; display:inline-block;
+                     box-shadow:0 4px 16px rgba(0,0,0,0.4); cursor:pointer;"
+              title="Commander Nova (Double-click to change pose or replace image)" />
+            <button class="mascot-del-btn" onclick="event.stopPropagation(); window.CanvasEditor.deleteMascotOrIcon(this);" title="Delete Mascot">✕</button>
+          `;
+        }
+        window.SaveEngine?._showToast('✨ Commander Nova pose updated!');
+        window.LayoutEngine?.autoReflowPages();
+      });
+      return;
+    }
+
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -540,7 +984,10 @@ window.CanvasEditor = {
       }
     }
 
-    if (!targetCard) return alert("Please create or select a page canvas first.");
+    if (!targetCard) {
+      window.SaveEngine?._showToast("ℹ️ Please create or select a page canvas first.");
+      return;
+    }
 
     if (type === 'subcard') {
       if (window.LayoutEngine?._addInCardSubcard) {
@@ -560,7 +1007,10 @@ window.CanvasEditor = {
       }
     }
 
-    if (!card) return alert("Please select or create an Image Card first.");
+    if (!card) {
+      window.SaveEngine?._showToast("ℹ️ Please select or create an Image Card first.");
+      return;
+    }
 
     window.HistoryEngine?.pushState('Add Image Caption Capsule');
 
@@ -657,11 +1107,36 @@ window.CanvasEditor = {
   },
 
   createImageFromDataUrl(dataUrl, pageTarget) {
+    if (!dataUrl) return;
+
+    // If an image placeholder or frame is currently selected, fill it directly
+    if (this.selectedElement) {
+      const frame = this.selectedElement.classList.contains('image-frame-container')
+        ? this.selectedElement
+        : this.selectedElement.querySelector('.image-frame-container');
+      if (frame) {
+        let img = frame.querySelector('img.holder-img, img');
+        if (!img) {
+          img = document.createElement('img');
+          img.className = 'holder-img';
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+          frame.appendChild(img);
+        }
+        img.src = dataUrl;
+        img.style.display = 'block';
+        const label = frame.querySelector('.img-placeholder-label, .image-placeholder-prompt');
+        if (label) label.style.display = 'none';
+        window.HistoryEngine?.pushState('Paste Image into Card');
+        window.SaveEngine?._showToast('🖼️ Image loaded into selected card!');
+        window.LayoutEngine?.autoReflowPages();
+        return;
+      }
+    }
+
     window.HistoryEngine?.pushState('Paste / Drop Image');
     const newEl = window.LayoutEngine.renderSection({
       type: 'image-holder',
-      title: 'IMAGE CARD',
-      image: dataUrl
+      imgUrl: dataUrl
     });
 
     if (!newEl) return;
@@ -672,7 +1147,7 @@ window.CanvasEditor = {
       img.src = dataUrl;
       img.style.display = 'block';
     }
-    const prompt = newEl.querySelector('.image-placeholder-prompt');
+    const prompt = newEl.querySelector('.image-placeholder-prompt, .img-placeholder-label');
     if (prompt) prompt.style.display = 'none';
 
     if (this.selectedElement && this.selectedElement.parentNode) {
@@ -684,11 +1159,7 @@ window.CanvasEditor = {
 
     this.selectElement(newEl);
     window.LayoutEngine?.autoReflowPages();
-
-    window.SaveEngine?._showToast(
-      '🖼️ Image pasted! <button style="background:#00F0FF; color:#0F172A; border:none; border-radius:4px; padding:2px 8px; font-weight:700; cursor:pointer; margin-left:8px;" onclick="window.CanvasEditor.makeElementFloating(window.CanvasEditor.selectedElement)">Make Floating Sticker</button>',
-      4500
-    );
+    window.SaveEngine?._showToast('🖼️ Image pasted!');
   },
 
   insertTextCardFromPaste(text) {
@@ -814,24 +1285,25 @@ window.CanvasEditor = {
     const computedStyle = window.getComputedStyle(el);
 
     inspector.innerHTML = `
-      <div class="inspector-section">
-        <div class="ctx-label">Active Element Inspector</div>
+      <div class="inspector-section" style="background:rgba(24,34,56,0.65); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:12px; box-shadow:var(--clay-shadow-sm);">
+        <div class="ctx-label" style="margin-bottom:8px;">Active Element Inspector</div>
         <div class="inspector-row">
-          <label>Type:</label>
-          <span style="font-weight:bold; color:var(--accent-cyan);">${el.classList[1] || el.tagName.toLowerCase()}</span>
+          <label style="font-size:0.75rem; color:#94A3B8;">Type:</label>
+          <span style="font-weight:700; font-size:0.76rem; color:var(--accent-cyan); font-family:'Fira Code', monospace;">${el.classList[1] || el.tagName.toLowerCase()}</span>
         </div>
         <div class="inspector-row">
-          <label>Bg Color:</label>
-          <input type="color" value="${this.rgbToHex(computedStyle.backgroundColor)}" onchange="window.ContextMenu.setCardBg(this.value)">
+          <label style="font-size:0.75rem; color:#94A3B8;">Bg Color:</label>
+          <input type="color" value="${this.rgbToHex(computedStyle.backgroundColor)}" onchange="window.ContextMenu.setCardBg(this.value)" style="width:32px; height:24px; border:none; border-radius:6px; cursor:pointer; background:none;">
         </div>
         <div class="inspector-row">
-          <label>Text Color:</label>
-          <input type="color" value="${this.rgbToHex(computedStyle.color)}" onchange="window.ContextMenu.setTextColor(this.value)">
+          <label style="font-size:0.75rem; color:#94A3B8;">Text Color:</label>
+          <input type="color" value="${this.rgbToHex(computedStyle.color)}" onchange="window.ContextMenu.setTextColor(this.value)" style="width:32px; height:24px; border:none; border-radius:6px; cursor:pointer; background:none;">
         </div>
-        <div class="inspector-actions">
-          <button class="btn btn-primary" style="font-size:0.7rem; padding:4px 6px;" onclick="window.CanvasEditor.insertImageInsideCard()">🖼️ Insert In-Card Image</button>
-          <button class="btn btn-secondary" onclick="window.ContextMenu.duplicateElement()">📋 Duplicate</button>
-          <button class="btn btn-danger" onclick="window.ContextMenu.deleteElement()">🗑️ Delete</button>
+        <button class="btn btn-clay-hero" style="width:100%; margin-top:8px; font-size:0.74rem; padding:7px;" onclick="window.ContextMenu?.showMenu(null, window.CanvasEditor.selectedElement)">🎨 Open Full Style &amp; Margin Drawer</button>
+        <div class="inspector-actions" style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+          <button class="btn btn-primary" style="font-size:0.7rem; padding:6px; grid-column:1 / -1;" onclick="window.CanvasEditor.insertImageInsideCard()">🖼️ Insert In-Card Image</button>
+          <button class="btn btn-secondary" style="font-size:0.7rem; padding:6px;" onclick="window.ContextMenu.duplicateElement()">📋 Duplicate</button>
+          <button class="btn btn-danger" style="font-size:0.7rem; padding:6px;" onclick="window.ContextMenu.deleteElement()">🗑️ Delete</button>
         </div>
       </div>
     `;
@@ -841,7 +1313,7 @@ window.CanvasEditor = {
     window.HistoryEngine?.pushState(`Insert ${typeKey}`);
     const elementSpec = window.ULTRAMINDS_50_ELEMENTS[typeKey];
     if (!elementSpec) {
-      alert("Element type specification not found: " + typeKey);
+      window.SaveEngine?._showToast("⚠️ Element type specification not found: " + typeKey);
       return;
     }
 
@@ -855,13 +1327,14 @@ window.CanvasEditor = {
     const newEl = window.LayoutEngine.renderSection(secData);
     if (!newEl) return;
 
-    const activePage = document.querySelector('.book-page');
+    const activePage = (this.selectedElement ? this.selectedElement.closest('.book-page') : null) || document.querySelector('.book-page');
 
     if (typeKey === 'floating-clipart') {
       if (activePage) {
+        newEl.style.zIndex = '1000';
         activePage.appendChild(newEl);
       } else {
-        alert("Please load or create a page canvas first!");
+        window.SaveEngine?._showToast("ℹ️ Please load or create a page canvas first!");
         return;
       }
     } else if (this.selectedElement) {
@@ -877,7 +1350,7 @@ window.CanvasEditor = {
       if (activePageBody) {
         activePageBody.appendChild(newEl);
       } else {
-        alert("Please load or create a page canvas first!");
+        window.SaveEngine?._showToast("ℹ️ Please load or create a page canvas first!");
         return;
       }
     }
@@ -895,14 +1368,35 @@ window.CanvasEditor = {
 
   setupDragAndDrop() {
     let dragged = null;
+    let dropIndicator = null;
     const subcardSelector = '.build-step-col, .mistake-row, .hero-item, .objective-cell, .rc-flow-step, .beyond-step, .fc-step-group, .in-card-step, .lab-step, .incard-image-box, .inline-sub-capsule, .mistake-item, .objective-card, .step-card, .wiring-step-card, .sub-card';
 
+    // Create a persistent drop indicator element
+    const getDropIndicator = () => {
+      if (!dropIndicator) {
+        dropIndicator = document.createElement('div');
+        dropIndicator.id = 'um-drop-indicator';
+        dropIndicator.style.cssText = 'height:3px;background:linear-gradient(90deg,#00F0FF,#2563EB);border-radius:3px;margin:2px 0;pointer-events:none;transition:opacity 0.1s;box-shadow:0 0 8px rgba(0,240,255,0.6);';
+        dropIndicator.style.display = 'none';
+        document.body.appendChild(dropIndicator);
+      }
+      return dropIndicator;
+    };
+
+    const hideDropIndicator = () => {
+      if (dropIndicator) dropIndicator.style.display = 'none';
+    };
+
     document.addEventListener('dragstart', (e) => {
+      // Do not initiate card drag when interacting with resize handles, buttons, inputs, contenteditable or overlays
+      if (e.target.closest('.um-resize-handle, .capsule-resize-handle, .transform-handle, .card-move-arrows-overlay, .mascot-del-btn, .header-del-btn, .incard-del-btn, .step-del-btn, .bullet-del-btn, button, input, select, textarea, [contenteditable="true"]')) {
+        e.preventDefault();
+        return;
+      }
+
       const inCardItem = e.target.closest(subcardSelector);
       const outerCard = e.target.closest('.concept-card, .card-base, .code-snippet-card, .image-holder-card, .space-filler-card');
-
       const target = inCardItem ? inCardItem : outerCard;
-
       if (target) {
         dragged = target;
         dragged.style.opacity = '0.5';
@@ -914,13 +1408,74 @@ window.CanvasEditor = {
       if (dragged) {
         dragged.style.opacity = '';
         dragged = null;
+        hideDropIndicator();
+        // Clean up any drag-over highlights on page bodies
+        document.querySelectorAll('.page-body-drag-over').forEach(el => el.classList.remove('page-body-drag-over'));
         window.HistoryEngine?.pushState('Reorder Cards');
         window.LayoutEngine.autoReflowPages();
       }
     });
 
     document.addEventListener('dragover', (e) => {
+      if (!dragged) return;
       e.preventDefault();
+
+      const isInCardDragged = dragged.matches(subcardSelector);
+      if (isInCardDragged) return; // sub-card dragging handled separately
+
+      // ── Check if hovering over a page body container (cross-page drop zone)
+      const pageBody = e.target.closest('.page-body-container');
+      if (pageBody) {
+        e.dataTransfer.dropEffect = 'move';
+
+        // Find best insertion position using mouse Y position
+        const bodyCards = Array.from(pageBody.querySelectorAll(':scope > .draggable-element, :scope > .card-base, :scope > section'))
+          .filter(c => c !== dragged && !c.classList.contains('empty-page-placeholder'));
+
+        const indicator = getDropIndicator();
+
+        if (bodyCards.length === 0) {
+          // Empty body — show indicator at top
+          pageBody.classList.add('page-body-drag-over');
+          indicator.style.display = 'none';
+          return;
+        }
+
+        // Find the card closest to mouse Y
+        let targetCard = null;
+        let insertBefore = true;
+
+        for (const card of bodyCards) {
+          const rect = card.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          if (e.clientY <= midY) {
+            targetCard = card;
+            insertBefore = true;
+            break;
+          }
+          targetCard = card;
+          insertBefore = false;
+        }
+
+        // Position the drop indicator
+        if (targetCard) {
+          const rect = targetCard.getBoundingClientRect();
+          const refY = insertBefore ? rect.top : rect.bottom;
+          const scrollY = window.scrollY || document.documentElement.scrollTop;
+          indicator.style.display = 'block';
+          indicator.style.position = 'fixed';
+          indicator.style.top = `${refY - 2}px`;
+          indicator.style.left = `${rect.left}px`;
+          indicator.style.width = `${rect.width}px`;
+          indicator.style.zIndex = '999999';
+        }
+
+        document.querySelectorAll('.page-body-drag-over').forEach(el => el.classList.remove('page-body-drag-over'));
+        pageBody.classList.add('page-body-drag-over');
+      } else {
+        document.querySelectorAll('.page-body-drag-over').forEach(el => el.classList.remove('page-body-drag-over'));
+        hideDropIndicator();
+      }
     });
 
     document.addEventListener('drop', (e) => {
@@ -929,12 +1484,11 @@ window.CanvasEditor = {
       const isInCardDragged = dragged.matches(subcardSelector);
 
       if (isInCardDragged) {
-        // Reorder strictly inside parent card body container!
+        // Reorder strictly inside parent card body container
         const dropTarget = e.target.closest(subcardSelector + ', .card-body-text, .build-lab, .mistakes-list, .build-steps-grid, .heroes-grid');
         if (dropTarget && dropTarget !== dragged) {
           e.preventDefault();
           e.stopPropagation();
-
           if (dropTarget.parentNode === dragged.parentNode) {
             dragged.parentNode.insertBefore(dragged, dropTarget);
           } else if (dropTarget.classList.contains('card-body-text') || dropTarget.classList.contains('build-lab') || dropTarget.classList.contains('mistakes-list') || dropTarget.classList.contains('build-steps-grid') || dropTarget.classList.contains('heroes-grid')) {
@@ -943,13 +1497,43 @@ window.CanvasEditor = {
           window.LayoutEngine.autoReflowPages();
         }
       } else {
-        // Reorder outer cards on page
+        e.preventDefault();
+        hideDropIndicator();
+        document.querySelectorAll('.page-body-drag-over').forEach(el => el.classList.remove('page-body-drag-over'));
+
+        // ── Try cross-page drop onto page body directly
+        const pageBody = e.target.closest('.page-body-container');
+        if (pageBody) {
+          // Find insertion position using mouse Y
+          const bodyCards = Array.from(pageBody.querySelectorAll(':scope > .draggable-element, :scope > .card-base, :scope > section'))
+            .filter(c => c !== dragged && !c.classList.contains('empty-page-placeholder'));
+
+          let inserted = false;
+          for (const card of bodyCards) {
+            const rect = card.getBoundingClientRect();
+            if (e.clientY <= rect.top + rect.height / 2) {
+              pageBody.insertBefore(dragged, card);
+              inserted = true;
+              break;
+            }
+          }
+          if (!inserted) pageBody.appendChild(dragged);
+          window.LayoutEngine.autoReflowPages();
+          return;
+        }
+
+        // ── Standard same-page card-to-card reorder
         const targetCard = e.target.closest('.card-base, .concept-card, .code-snippet-card, .image-holder-card, .space-filler-card');
         if (targetCard && targetCard !== dragged) {
-          e.preventDefault();
           const parent = targetCard.parentNode;
           if (parent) {
-            parent.insertBefore(dragged, targetCard);
+            // Insert before or after based on mouse Y
+            const rect = targetCard.getBoundingClientRect();
+            if (e.clientY > rect.top + rect.height / 2) {
+              parent.insertBefore(dragged, targetCard.nextSibling);
+            } else {
+              parent.insertBefore(dragged, targetCard);
+            }
             window.LayoutEngine.autoReflowPages();
           }
         }
@@ -966,18 +1550,24 @@ window.CanvasEditor = {
 
   setupStickerDeleteHandler() {
     document.addEventListener('click', (e) => {
-      const sticker = e.target.closest('.story-img-sticker, .badge-mascot, .cover-mascot-wrapper, .card-icon-badge');
+      const delBtn = e.target.closest('.mascot-del-btn');
+      if (delBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.deleteMascotOrIcon(delBtn);
+        return;
+      }
+
+      const sticker = e.target.closest('.story-img-sticker, .badge-mascot, .cover-mascot-wrapper, .card-icon-badge, .round-icon-badge, .card-emoji-area');
       if (!sticker) return;
 
       const rect = sticker.getBoundingClientRect();
-      // Check if clicked in top-right 22px area (delete button zone)
-      if (e.clientX >= rect.right - 22 && e.clientY <= rect.top + 22) {
+      // Check if clicked in top-right 24px area (delete button zone)
+      if (e.clientX >= rect.right - 24 && e.clientY <= rect.top + 24) {
         e.stopPropagation();
         e.preventDefault();
-        window.HistoryEngine?.pushState('Delete Emoji Sticker');
-        sticker.remove();
-        window.LayoutEngine?.autoReflowPages();
+        this.deleteMascotOrIcon(sticker);
       }
-    });
+    }, true);
   }
 };
